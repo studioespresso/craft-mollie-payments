@@ -10,6 +10,8 @@
 
 namespace studioespresso\molliepayments;
 
+use studioespresso\molliepayments\elements\Payment;
+use studioespresso\molliepayments\services\FormService;
 use studioespresso\molliepayments\variables\MolliePaymentsVariable;
 use studioespresso\molliepayments\twigextensions\MolliePaymentsTwigExtension;
 use studioespresso\molliepayments\models\Settings;
@@ -32,6 +34,8 @@ use yii\base\Event;
  * @author    Studio Espresso
  * @package   MolliePayments
  * @since     1.0.0
+ *
+ * @property FormService $forms
  *
  */
 class MolliePayments extends Plugin
@@ -63,11 +67,18 @@ class MolliePayments extends Plugin
         parent::init();
         self::$plugin = $this;
 
+        $this->setComponents([
+            'forms' => FormService::class
+        ]);
+
         Event::on(
             UrlManager::class,
             UrlManager::EVENT_REGISTER_CP_URL_RULES,
             function (RegisterUrlRulesEvent $event) {
                 $event->rules['mollie-payments'] = 'mollie-payments/default/index';
+                $event->rules['mollie-payments/forms'] = 'mollie-payments/forms/index';
+                $event->rules['mollie-payments/forms/add'] = 'mollie-payments/forms/edit';
+                $event->rules['mollie-payments/forms/edit/<formId:\d+>'] = 'mollie-payments/forms/edit';
                 $event->rules['mollie-payments/settings'] = 'mollie-payments/settings/edit';
 
             }
@@ -77,7 +88,7 @@ class MolliePayments extends Plugin
             Elements::class,
             Elements::EVENT_REGISTER_ELEMENT_TYPES,
             function (RegisterComponentTypesEvent $event) {
-
+                $event->types[] = Payment::class;
             }
         );
 
@@ -88,6 +99,13 @@ class MolliePayments extends Plugin
         $subNavs = [];
         $navItem = parent::getCpNavItem();
         $navItem['label'] = Craft::t("mollie-payments", "Payments");
+
+        if (Craft::$app->getUser()->getIsAdmin() && Craft::$app->getConfig()->getGeneral()->allowAdminChanges) {
+            $subNavs['forms'] = [
+                'label' => 'Forms',
+                'url' => 'mollie-payments/forms',
+            ];
+        }
 
         if (Craft::$app->getUser()->getIsAdmin() && Craft::$app->getConfig()->getGeneral()->allowAdminChanges) {
             $subNavs['settings'] = [

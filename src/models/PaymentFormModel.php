@@ -16,6 +16,8 @@ class PaymentFormModel extends Model
 
     public $id;
 
+    public $handle;
+
     public $currency;
 
     public $fieldLayout;

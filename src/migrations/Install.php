@@ -4,6 +4,7 @@ namespace studioespresso\molliepayments\migrations;
 
 use Craft;
 use craft\db\Migration;
+use studioespresso\molliepayments\records\PaymentFormRecord;
 
 /***
  * @author    Studio Espresso
@@ -16,7 +17,6 @@ class Install extends Migration
     // =========================================================================
     public $driver;
 
-    public $tablename = "mollie_payments";
 
     // Public Methods
     // =========================================================================
@@ -25,9 +25,7 @@ class Install extends Migration
         $this->driver = Craft::$app->getConfig()->getDb()->driver;
         if ($this->createTables()) {
             $this->addForeignKeys();
-            // Refresh the db schema caches
             Craft::$app->db->schema->refresh();
-            $this->createSiteDefaults();
         }
 
         return true;
@@ -46,13 +44,16 @@ class Install extends Migration
     protected function createTables()
     {
         $tablesCreated = false;
-        $tableSchema = Craft::$app->db->schema->getTableSchema($this->tablename);
+        $tableSchema = Craft::$app->db->schema->getTableSchema(PaymentFormRecord::tableName());
         if ($tableSchema === null) {
             $tablesCreated = true;
             $this->createTable(
-                $this->tablename,
+                PaymentFormRecord::tableName(),
                 [
                     'id' => $this->primaryKey(),
+                    'title' => $this->string(255)->notNull()->defaultValue(''),
+                    'handle' => $this->string(255)->notNull()->defaultValue(''),
+                    'fieldLayout' => $this->integer(10),
                     'dateCreated' => $this->dateTime()->notNull(),
                     'dateUpdated' => $this->dateTime()->notNull(),
                     'uid' => $this->uid(),
@@ -71,6 +72,6 @@ class Install extends Migration
 
     protected function removeTables()
     {
-        $this->dropTableIfExists();
+        $this->dropTableIfExists(PaymentFormRecord::tableName());
     }
 }

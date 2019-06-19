@@ -1,0 +1,69 @@
+{# @var craft \craft\web\twig\variables\CraftVariable #}
+
+
+{% extends "_layouts/cp" %}
+{% import "_includes/forms" as forms %}
+
+{% set fullPageForm = true %}
+{% set title = form.title is defined ? form.title : 'New payment form' %}
+
+{% set crumbs = [
+    { label: "Mollie Payments", url: url('mollie-payments/forms') },
+] %}
+
+{# The content of the CP Section#}
+{% block content %}
+    {{ csrfInput() }}
+    {{ actionInput('mollie-payments/forms/save') }}
+    {{ redirectInput('mollie-payments/forms') }}
+    {% if form is defined and form.id is defined %}
+        <input type="hidden" name="data[id]" value="{{ form.id }}">
+    {% endif %}
+    <div class="field" id="name-field">
+        <div class="heading">
+            <label id="name-label" class="required" for="title">{{ 'Title'|t('navigate') }}</label>
+            <div class="instructions"><p>{{ 'What this form will be called in the CP.'|t('navigate') }}</p>
+            </div>
+        </div>
+        <div class="input ltr {% if errors is defined and errors.title is defined %}errors{% endif %}">
+            <input class="text fullwidth" type="text" id="title" name="data[title]"
+                   {% if navigation is defined %}value="{{ navigation.title }}"{% endif %} autofocus=""
+                   autocomplete="off" required="required">
+        </div>
+        {% if errors is defined and errors.title is defined %}
+            <ul class="errors">
+                {% for error in errors.title %}
+                    <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+    <div class="field" id="handle-field">
+        <div class="heading">
+            <label id="handle-label" class="required" for="handle">{{ 'Handle'|t('navigate') }}</label>
+            <div class="instructions"><p>{{ 'How you’ll refer to this field in the templates.'|t('navigate') }}</p>
+            </div>
+        </div>
+        <div class="input ltr {% if errors is defined and errors.handle is defined %}errors{% endif %}">
+            <input class="text code fullwidth" type="text" id="handle" name="data[handle]"
+                   {% if navigation is defined %}value="{{ navigation.handle }}"{% endif %} maxlength="64"
+                   autocomplete="off" required="required">
+        </div>
+        {% if errors is defined and errors.handle is defined %}
+            <ul class="errors">
+                {% for error in errors.handle %}
+                    <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+    {% if navigation is not defined or not navigation.handle|length %}
+        {% js %}
+            new Craft.HandleGenerator('#title', '#handle');
+        {% endjs %}
+    {% endif %}
+    {% include "_includes/fieldlayoutdesigner" with {
+        fieldLayout: craft.app.fields.getLayoutByType('ns\\prefix\\elements\\Product')
+    } only %}
+
+{% endblock %}
