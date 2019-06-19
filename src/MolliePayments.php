@@ -63,13 +63,13 @@ class MolliePayments extends Plugin
         parent::init();
         self::$plugin = $this;
 
-        Craft::$app->view->registerTwigExtension(new MolliePaymentsTwigExtension());
-
         Event::on(
             UrlManager::class,
             UrlManager::EVENT_REGISTER_CP_URL_RULES,
             function (RegisterUrlRulesEvent $event) {
-                $event->rules['cpActionTrigger1'] = 'mollie-payments/default/do-something';
+                $event->rules['mollie-payments'] = 'mollie-payments/default/index';
+                $event->rules['mollie-payments/settings'] = 'mollie-payments/settings/edit';
+
             }
         );
 
@@ -81,24 +81,29 @@ class MolliePayments extends Plugin
             }
         );
 
-        Event::on(
-            CraftVariable::class,
-            CraftVariable::EVENT_INIT,
-            function (Event $event) {
-                /** @var CraftVariable $variable */
-                $variable = $event->sender;
-                $variable->set('molliePayments', MolliePaymentsVariable::class);
-            }
-        );
+    }
 
+    public function getCpNavItem()
+    {
+        $subNavs = [];
+        $navItem = parent::getCpNavItem();
+        $navItem['label'] = Craft::t("mollie-payments", "Payments");
+
+        if (Craft::$app->getUser()->getIsAdmin() && Craft::$app->getConfig()->getGeneral()->allowAdminChanges) {
+            $subNavs['settings'] = [
+                'label' => 'Settings',
+                'url' => 'mollie-payments/settings',
+            ];
+        }
+
+        $navItem = array_merge($navItem, [
+            'subnav' => $subNavs,
+        ]);
+        return $navItem;
     }
 
     // Protected Methods
     // =========================================================================
-
-    /**
-     * @inheritdoc
-     */
     protected function createSettingsModel()
     {
         return new Settings();
