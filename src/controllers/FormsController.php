@@ -12,13 +12,19 @@ class FormsController extends Controller
 {
     public function actionIndex()
     {
-        return $this->renderTemplate('mollie-payments/_forms/_index.twig', ['forms' => []]);
+        $forms = MolliePayments::getInstance()->forms->getAllForms();
+        return $this->renderTemplate('mollie-payments/_forms/_index.twig', ['forms' => $forms]);
     }
 
     public function actionEdit($formId = null)
     {
         if (!$formId) {
             return $this->renderTemplate('mollie-payments/_forms/_edit');
+        } else {
+            $form = MolliePayments::getInstance()->forms->getFormById($formId);
+            $layout = Craft::$app->getFields()->getLayoutById($form->fieldLayout);
+            return $this->renderTemplate('mollie-payments/_forms/_edit', ['form' => $form, 'layout' => $layout]);
+            
         }
     }
 

@@ -37,7 +37,7 @@
                     <th scope="row" data-title="Title">{{ form.title }}</th>
                     <td data-title="Handle"><code>{{ form.handle }}</code></td>
                     <td data-title="Settings">
-                        {% if not form.adminOnly or currentUser.admin %}
+                        {% if currentUser.admin %}
                             <a href="{{ url('mollie-payments/forms/'~form.id) }}" role="button"><span
                                         data-icon="settings"></span></a>
                         {% endif %}

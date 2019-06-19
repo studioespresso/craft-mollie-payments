@@ -14,7 +14,17 @@ class FormService extends Component
         $paymentFormRecord->title = $paymentFormModel->title;
         $paymentFormRecord->handle = $paymentFormModel->handle;
         $paymentFormRecord->fieldLayout = $paymentFormModel->fieldLayout;
+        return $paymentFormRecord->save();
+    }
 
-        dd($paymentFormRecord->save());
+    public function getAllForms()
+    {
+        $forms = PaymentFormRecord::find()->all();
+        return $forms;
+    }
+
+    public function getFormByid($id)
+    {
+        return PaymentFormRecord::find(['id' => $id])->one();
     }
 }

@@ -78,7 +78,7 @@ class MolliePayments extends Plugin
                 $event->rules['mollie-payments'] = 'mollie-payments/default/index';
                 $event->rules['mollie-payments/forms'] = 'mollie-payments/forms/index';
                 $event->rules['mollie-payments/forms/add'] = 'mollie-payments/forms/edit';
-                $event->rules['mollie-payments/forms/edit/<formId:\d+>'] = 'mollie-payments/forms/edit';
+                $event->rules['mollie-payments/forms/<formId:\d+>'] = 'mollie-payments/forms/edit';
                 $event->rules['mollie-payments/settings'] = 'mollie-payments/settings/edit';
 
             }
