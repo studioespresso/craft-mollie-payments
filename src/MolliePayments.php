@@ -100,6 +100,11 @@ class MolliePayments extends Plugin
         $navItem = parent::getCpNavItem();
         $navItem['label'] = Craft::t("mollie-payments", "Payments");
 
+        $subNavs['payments'] = [
+            'label' => 'Payments',
+            'url' => 'mollie-payments',
+        ];
+
         if (Craft::$app->getUser()->getIsAdmin() && Craft::$app->getConfig()->getGeneral()->allowAdminChanges) {
             $subNavs['forms'] = [
                 'label' => 'Forms',

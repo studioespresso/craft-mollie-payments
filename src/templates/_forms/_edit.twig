@@ -6,6 +6,7 @@
 
 {% set fullPageForm = true %}
 {% set title = form.title is defined ? form.title : 'New payment form' %}
+{% set selectedSubnavItem = 'forms' %}
 
 {% set crumbs = [
     { label: "Mollie Payments", url: url('mollie-payments/forms') },

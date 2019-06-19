@@ -6,6 +6,7 @@
 {# The title of this CP section #}
 {% set title = "Forms" %}
 {% set createUrl = url('mollie-payments/forms/add') %}
+{% set selectedSubnavItem = 'forms' %}
 
 {% block actionButton %}
     {% if (not currentUser.admin and settings.anyoneCanAdd) or currentUser.admin %}
