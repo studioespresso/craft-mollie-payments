@@ -6,6 +6,7 @@ use Craft;
 use craft\db\Migration;
 use studioespresso\molliepayments\records\PaymentFormRecord;
 use studioespresso\molliepayments\records\PaymentRecord;
+use studioespresso\molliepayments\records\PaymentTransactionRecord;
 
 /***
  * @author    Studio Espresso
@@ -71,6 +72,17 @@ class Install extends Migration
             'uid' => $this->uid(),
             'PRIMARY KEY(id)',
         ]);
+
+        $this->createTable(PaymentTransactionRecord::tableName(), [
+            'id' => $this->string()->notNull(),
+            'payment' => $this->integer()->notNull(),
+            'status' => $this->integer()->notNull(),
+            'data' => $this->string()->notNull(),
+            'dateCreated' => $this->dateTime()->notNull(),
+            'dateUpdated' => $this->dateTime()->notNull(),
+            'uid' => $this->uid(),
+        ]);
+
         return $tablesCreated;
     }
 
@@ -85,5 +97,6 @@ class Install extends Migration
     {
         $this->dropTableIfExists(PaymentFormRecord::tableName());
         $this->dropTableIfExists(PaymentRecord::tableName());
+        $this->dropTableIfExists(PaymentTransactionRecord::tableName());
     }
 }
