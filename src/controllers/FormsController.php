@@ -45,7 +45,14 @@ class FormsController extends Controller
         $paymentFormModel->fieldLayout = $fieldLayout->id;
 
         $saved = MolliePayments::getInstance()->forms->save($paymentFormModel);
-        dd($saved);
+        $this->redirectToPostedUrl();
+    }
 
+    public function actionDelete() {
+        $id = Craft::$app->getRequest()->getRequiredBodyParam('id');
+        if(MolliePayments::getInstance()->forms->delete($id)) {
+            $returnData['success'] = true;
+            return $this->asJson($returnData);
+        };
     }
 }

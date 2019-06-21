@@ -63,7 +63,7 @@
             new Craft.HandleGenerator('#title', '#handle');
         {% endjs %}
     {% endif %}
-    {% if form %}
+    {% if form is defined %}
         {% include "_includes/fieldlayoutdesigner" with {
             fieldLayout: layout
         } only %}

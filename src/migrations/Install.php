@@ -5,6 +5,7 @@ namespace studioespresso\molliepayments\migrations;
 use Craft;
 use craft\db\Migration;
 use studioespresso\molliepayments\records\PaymentFormRecord;
+use studioespresso\molliepayments\records\PaymentRecord;
 
 /***
  * @author    Studio Espresso
@@ -24,7 +25,6 @@ class Install extends Migration
     {
         $this->driver = Craft::$app->getConfig()->getDb()->driver;
         if ($this->createTables()) {
-            $this->addForeignKeys();
             Craft::$app->db->schema->refresh();
         }
 
@@ -60,6 +60,17 @@ class Install extends Migration
                 ]
             );
         }
+
+        $this->createTable(PaymentRecord::tableName(), [
+            'id' => $this->integer()->notNull(),
+            'email' => $this->string()->notNull(),
+            'amount' => $this->integer()->notNull(),
+            'formId' => $this->integer()->notNull(),
+            'dateCreated' => $this->dateTime()->notNull(),
+            'dateUpdated' => $this->dateTime()->notNull(),
+            'uid' => $this->uid(),
+            'PRIMARY KEY(id)',
+        ]);
         return $tablesCreated;
     }
 
@@ -73,5 +84,6 @@ class Install extends Migration
     protected function removeTables()
     {
         $this->dropTableIfExists(PaymentFormRecord::tableName());
+        $this->dropTableIfExists(PaymentRecord::tableName());
     }
 }

@@ -10,12 +10,15 @@
 
 namespace studioespresso\molliepayments\elements;
 
+use craft\helpers\UrlHelper;
+use studioespresso\molliepayments\elements\db\PaymentQuery;
 use studioespresso\molliepayments\MolliePayments;
 
 use Craft;
 use craft\base\Element;
 use craft\elements\db\ElementQuery;
 use craft\elements\db\ElementQueryInterface;
+use studioespresso\molliepayments\records\PaymentRecord;
 
 /**
  * @author    Studio Espresso
@@ -30,8 +33,9 @@ class Payment extends Element
     /**
      * @var string
      */
-    public $email = '';
+    public $email;
     public $amount = 0;
+    public $formId;
 
     // Static Methods
     // =========================================================================
@@ -60,35 +64,87 @@ class Payment extends Element
         return false;
     }
 
-    /**
-     * @inheritdoc
-     */
-    public static function isLocalized(): bool
+    public static function hasStatuses(): bool
     {
         return true;
+    }
+
+    public static function statuses(): array
+    {
+        return [
+            'pending' => ['label' => Craft::t('mollie-payments', 'Pending'), 'color' => '27AE60'],
+            'payed' => ['label' => Craft::t('mollie-payments', 'Payed'), 'color' => 'F2842D'],
+        ];
+    }
+
+    public function getStatus()
+    {
+        return 'payed';
     }
 
     /**
      * @inheritdoc
      */
+    public static function isLocalized(): bool
+    {
+        return false;
+    }
+
+    /**
+     *
+     * @return ElementQueryInterface The newly created [[ElementQueryInterface]] instance.
+     */
     public static function find(): ElementQueryInterface
     {
-        return new ElementQuery(get_called_class());
+        return new PaymentQuery(static::class);
     }
+
 
     /**
      * @inheritdoc
      */
     protected static function defineSources(string $context = null): array
     {
-        $sources = [];
+        $sources[] = [
+            'key' => '*',
+            'label' => 'All',
+            'criteria' => ['id' => '*'],
+        ];
+        $forms = MolliePayments::getInstance()->forms->getAllForms();
+
+        foreach ($forms as $form) {
+            $sources[] = [
+                'key' => 'form:' . $form['handle'],
+                'label' => $form['title'],
+//                'badgeCount' => count(Payment::findAll(['formId' => $form['id']])),
+                'criteria' => [
+                    'formId' => $form['id'],
+                ],
+                'defaultSort' => ['dateCreated', 'desc'],
+            ];
+        }
 
         return $sources;
     }
 
+    protected static function defineTableAttributes(): array
+    {
+        return [
+            'id' => Craft::t('mollie-payments', 'ID'),
+            'email' => Craft::t('mollie-payments', 'Email'),
+            'amount' => Craft::t('mollie-payments', 'Amount'),
+            'status' => Craft::t('mollie-payments', 'Status'),
+        ];
+    }
+
+
+
     // Public Methods
     // =========================================================================
-
+    public function getCpEditUrl()
+    {
+        return UrlHelper::cpUrl("mollie-payments/payments/" . $this->uid);
+    }
     /**
      * @inheritdoc
      */
@@ -105,46 +161,12 @@ class Payment extends Element
      */
     public function getIsEditable(): bool
     {
-        return true;
+        return false;
     }
-
-    /**
-     * @inheritdoc
-     */
-    public function getFieldLayout()
-    {
-        $tagGroup = $this->getGroup();
-
-        if ($tagGroup) {
-            return $tagGroup->getFieldLayout();
-        }
-
-        return null;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getGroup()
-    {
-        if ($this->groupId === null) {
-            throw new InvalidConfigException('Tag is missing its group ID');
-        }
-
-        if (($group = Craft::$app->getTags()->getTagGroupById($this->groupId)) === null) {
-            throw new InvalidConfigException('Invalid tag group ID: '.$this->groupId);
-        }
-
-        return $group;
-    }
-
-    // Indexes, etc.
-    // -------------------------------------------------------------------------
 
 
     // Events
     // -------------------------------------------------------------------------
-
     /**
      * @inheritdoc
      */
@@ -160,17 +182,19 @@ class Payment extends Element
     {
         if ($isNew) {
             \Craft::$app->db->createCommand()
-                ->insert('{{%mollie_payments}}', [
+                ->insert(PaymentRecord::tableName(), [
                     'id' => $this->id,
-                    'price' => $this->price,
-                    'currency' => $this->currency,
+                    'email' => $this->email,
+                    'amount' => $this->amount,
+                    'formId' => $this->formId,
                 ])
                 ->execute();
         } else {
             \Craft::$app->db->createCommand()
-                ->update('{{%mollie_payments}}', [
-                    'price' => $this->price,
-                    'currency' => $this->currency,
+                ->update(PaymentRecord::tableName(), [
+                    'email' => $this->email,
+                    'amount' => $this->amount,
+                    'formId' => $this->formId,
                 ], ['id' => $this->id])
                 ->execute();
         }

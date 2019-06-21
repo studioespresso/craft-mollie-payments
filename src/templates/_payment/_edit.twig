@@ -1,0 +1,31 @@
+{% extends "_layouts/cp" %}
+{% import "_includes/forms" as forms %}
+
+{% set fullPageForm = true %}
+{% set saveShortcutRedirect = continueEditingUrl ?? "" %}
+
+{% set title = "blaa" %}
+{% block header %}
+    {{ block('pageTitle') }}
+    {{ block('contextMenu') }}
+{% endblock %}
+
+{% block content %}
+    <div id="fields">
+        <div>
+            {% for tab in element.getFieldLayout().getTabs() %}
+                <div id="{{ tab.getHtmlId() }}"{% if not loop.first %} class="hidden"{% endif %}>
+                    {% include "_includes/fields" with {
+                        fields:  tab.getFields(),
+                        element: element,
+                    } only %}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block details %}
+    <div id="settings" class="meta">
+    </div>
+{% endblock %}

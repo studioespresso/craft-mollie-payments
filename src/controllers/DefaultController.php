@@ -8,6 +8,6 @@ use craft\web\Controller;
 class DefaultController extends Controller
 {
     public function actionIndex() {
-        return  $this->renderTemplate('mollie-payments/_index.twig');
+        return  $this->renderTemplate('mollie-payments/_payment/_index.twig');
     }
 }
