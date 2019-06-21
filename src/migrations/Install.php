@@ -7,6 +7,7 @@ use craft\db\Migration;
 use studioespresso\molliepayments\records\PaymentFormRecord;
 use studioespresso\molliepayments\records\PaymentRecord;
 use studioespresso\molliepayments\records\PaymentTransactionRecord;
+use studioespresso\navigate\records\NodeRecord;
 
 /***
  * @author    Studio Espresso
@@ -26,6 +27,7 @@ class Install extends Migration
     {
         $this->driver = Craft::$app->getConfig()->getDb()->driver;
         if ($this->createTables()) {
+            $this->addForeignKeys();
             Craft::$app->db->schema->refresh();
         }
 
@@ -89,7 +91,25 @@ class Install extends Migration
     protected function addForeignKeys()
     {
         // $name, $table, $columns, $refTable, $refColumns, $delete = null, $update = null)
-//        $this->addForeignKey();
+        $this->addForeignKey(
+            $this->db->getForeignKeyName("{{%mollie_payments}}", 'formId'),
+            "{{%mollie_payments}}",
+            'formId',
+            PaymentFormRecord::tableName(),
+            'id',
+            'CASCADE',
+            NULL
+        );
+
+        $this->addForeignKey(
+            $this->db->getForeignKeyName(PaymentTransactionRecord::tableName(), 'payment'),
+            PaymentTransactionRecord::tableName(),
+            'payment',
+            "{{%mollie_payments}}",
+            'id',
+            'CASCADE',
+            NULL
+        );
 
     }
 
