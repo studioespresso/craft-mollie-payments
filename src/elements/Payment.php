@@ -127,6 +127,14 @@ class Payment extends Element
         return $sources;
     }
 
+    protected static function defineSortOptions(): array
+    {
+        return [
+            'dateCreated' => \Craft::t('app', 'Date created'),
+        ];
+    }
+
+
     protected static function defineTableAttributes(): array
     {
         return [
