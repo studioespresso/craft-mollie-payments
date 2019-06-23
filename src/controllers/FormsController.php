@@ -7,6 +7,7 @@ use craft\web\Controller;
 use studioespresso\molliepayments\elements\Payment;
 use studioespresso\molliepayments\models\PaymentFormModel;
 use studioespresso\molliepayments\MolliePayments;
+use studioespresso\molliepayments\records\PaymentFormRecord;
 
 class FormsController extends Controller
 {
@@ -35,11 +36,15 @@ class FormsController extends Controller
         $fieldLayout->type = Payment::class;
         Craft::$app->getFields()->saveLayout($fieldLayout);
 
-        if(!isset($data['formId'])) {
+        if(!isset($data['id'])) {
             $paymentFormModel = new PaymentFormModel();
+        } else {
+            /** @var PaymentFormRecord $record */
+            $record = MolliePayments::getInstance()->forms->getFormById($data['id']);
+            $paymentFormModel = new PaymentFormModel();
+            $paymentFormModel->id = $record->id ;
         }
-        
-        
+
         $paymentFormModel->title = $data['title'];
         $paymentFormModel->handle = $data['handle'];
         $paymentFormModel->fieldLayout = $fieldLayout->id;

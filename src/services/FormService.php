@@ -10,7 +10,18 @@ class FormService extends Component
 {
     public function save(PaymentFormModel $paymentFormModel)
     {
-        $paymentFormRecord = new PaymentFormRecord();
+        $paymentFormRecord = false;
+        if (isset($paymentFormModel->id)) {
+            $paymentFormRecord = PaymentFormRecord::findOne([
+                'id' => $paymentFormModel->id
+            ]);
+        }
+
+        if (!$paymentFormRecord) {
+            $paymentFormRecord = new PaymentFormRecord();
+        }
+
+
         $paymentFormRecord->title = $paymentFormModel->title;
         $paymentFormRecord->handle = $paymentFormModel->handle;
         $paymentFormRecord->fieldLayout = $paymentFormModel->fieldLayout;
@@ -25,7 +36,8 @@ class FormService extends Component
 
     public function getFormByid($id)
     {
-        return PaymentFormRecord::find(['id' => $id])->one();
+        $form = PaymentFormRecord::findOne(['id' => $id]);
+        return $form;
     }
 
     public function delete($id) {
