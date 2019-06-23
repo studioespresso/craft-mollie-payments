@@ -26,6 +26,7 @@
         <table id="forms" class="data fullwidth collapsible">
             <thead>
             <tr>
+                <th scope="col">{{ 'ID'|t('mollie-payments') }}</th>
                 <th scope="col">{{ 'Name'|t('mollie-payments') }}</th>
                 <th scope="col">{{ 'Handle'|t('mollie-payments') }}</th>
                 <th scope="col">{{ 'Remove'|t('mollie-payments') }}</th>
@@ -34,6 +35,7 @@
             <tbody>
             {% for form in forms %}
                 <tr data-id="{{ form.id }}" data-name="{{ form.title }}">
+                    <td data-title="Id"><code>{{ form.id }}</code></td>
                     <th scope="row" data-title="Name"><a
                                 href="{{ url('mollie-payments/forms/'~form.id) }}">{{ form.title }}</a></th>
                     <td data-title="Handle"><code>{{ form.handle }}</code></td>
