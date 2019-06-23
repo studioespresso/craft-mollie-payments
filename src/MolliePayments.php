@@ -10,8 +10,10 @@
 
 namespace studioespresso\molliepayments;
 
+use craft\helpers\UrlHelper;
 use studioespresso\molliepayments\elements\Payment;
 use studioespresso\molliepayments\services\FormService;
+use studioespresso\molliepayments\services\MollieService;
 use studioespresso\molliepayments\variables\MolliePaymentsVariable;
 use studioespresso\molliepayments\twigextensions\MolliePaymentsTwigExtension;
 use studioespresso\molliepayments\models\Settings;
@@ -36,6 +38,7 @@ use yii\base\Event;
  * @since     1.0.0
  *
  * @property FormService $forms
+ * @property MollieService $mollie
  *
  */
 class MolliePayments extends Plugin
@@ -68,7 +71,8 @@ class MolliePayments extends Plugin
         self::$plugin = $this;
 
         $this->setComponents([
-            'forms' => FormService::class
+            'forms' => FormService::class,
+            'mollie' => MollieService::class
         ]);
 
         Event::on(
@@ -124,6 +128,11 @@ class MolliePayments extends Plugin
             'subnav' => $subNavs,
         ]);
         return $navItem;
+    }
+
+    public function getSettingsResponse()
+    {
+        return Craft::$app->getResponse()->redirect(UrlHelper::cpUrl('mollie-payments/settings'));
     }
 
     // Protected Methods

@@ -5,3 +5,19 @@
 {% set title = form.title is defined ? form.title : 'Mollie payment settings' %}
 
 {% set selectedSubnavItem = 'settings' %}
+{% set fullPageForm = true %}
+
+
+{# The content of the CP Section#}
+{% block content %}
+    {{ csrfInput() }}
+    {{ actionInput('mollie-payments/settings/save') }}
+    {{ redirectInput('mollie-payments/settings'|hash) }}
+
+    {{ forms.textField({
+        label: 'Mollie API key'|t('mollie-payments'),
+        id: 'apiKey',
+        name: 'settings[apiKey]',
+        value: settings['apiKey']})
+    }}
+{% endblock %}

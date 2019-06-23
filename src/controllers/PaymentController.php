@@ -19,12 +19,13 @@ class PaymentController extends Controller
         $amount = Craft::$app->request->getRequiredBodyParam('amount');
         $email = Craft::$app->request->getRequiredBodyParam('email');
         $form = Craft::$app->request->getRequiredBodyParam('form');
+        $redirect = Craft::$app->request->getRequiredBodyParam('redirect');
         $amount = Craft::$app->security->validateData($amount);
 
         if ($amount == false) {
             throw new HttpException(400);
         }
-        
+
         $paymentForm = MolliePayments::getInstance()->forms->getFormByid($form);
         if ($paymentForm) {
             throw new HttpException(404);
@@ -38,6 +39,9 @@ class PaymentController extends Controller
         $payment->fieldLayoutId = $paymentForm->fieldLayout;
         $payment->setFieldValuesFromRequest('fields');
         Craft::$app->getElements()->saveElement($payment);
+
+        $url = MolliePayments::getInstance()->mollie->generatePayment($payment, $redirect);
+        $this->redirect($url);
 
     }
 
