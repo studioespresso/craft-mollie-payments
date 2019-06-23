@@ -27,7 +27,7 @@ class PaymentController extends Controller
         }
 
         $paymentForm = MolliePayments::getInstance()->forms->getFormByid($form);
-        if ($paymentForm) {
+        if (!$paymentForm) {
             throw new HttpException(404);
         }
 
