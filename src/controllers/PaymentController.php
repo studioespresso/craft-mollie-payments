@@ -15,7 +15,7 @@ class PaymentController extends Controller
 
     public function actionPay()
     {
-        
+
         $amount = Craft::$app->request->getRequiredBodyParam('amount');
         $email = Craft::$app->request->getRequiredBodyParam('email');
         $form = Craft::$app->request->getRequiredBodyParam('form');
@@ -24,13 +24,17 @@ class PaymentController extends Controller
         if ($amount == false) {
             throw new HttpException(400);
         }
+        
+        $paymentForm = MolliePayments::getInstance()->forms->getFormByid($form);
+        if ($paymentForm) {
+            throw new HttpException(404);
+        }
 
         $payment = new Payment();
 
-        $payment->amount = $amount;
         $payment->email = $email;
+        $payment->amount = $amount;
         $payment->formId = $form;
-        $paymentForm = MolliePayments::getInstance()->forms->getFormByid($form);
         $payment->fieldLayoutId = $paymentForm->fieldLayout;
         $payment->setFieldValuesFromRequest('fields');
         Craft::$app->getElements()->saveElement($payment);
