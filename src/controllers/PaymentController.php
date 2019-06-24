@@ -19,7 +19,7 @@ class PaymentController extends Controller
         $amount = Craft::$app->request->getRequiredBodyParam('amount');
         $email = Craft::$app->request->getRequiredBodyParam('email');
         $form = Craft::$app->request->getRequiredBodyParam('form');
-        $redirect = Craft::$app->request->getRequiredBodyParam('redirect');
+        $redirect = Craft::$app->request->getBodyParam('redirect');
         $amount = Craft::$app->security->validateData($amount);
 
         if ($amount == false) {
