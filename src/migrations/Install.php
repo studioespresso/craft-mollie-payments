@@ -79,7 +79,7 @@ class Install extends Migration
             'id' => $this->string()->notNull(),
             'payment' => $this->integer()->notNull(),
             'status' => $this->integer()->notNull(),
-            'data' => $this->string()->notNull(),
+            'data' => $this->string(),
             'dateCreated' => $this->dateTime()->notNull(),
             'dateUpdated' => $this->dateTime()->notNull(),
             'uid' => $this->uid(),
@@ -115,8 +115,8 @@ class Install extends Migration
 
     protected function removeTables()
     {
-        $this->dropTableIfExists(PaymentFormRecord::tableName());
-        $this->dropTableIfExists(PaymentRecord::tableName());
         $this->dropTableIfExists(PaymentTransactionRecord::tableName());
+        $this->dropTableIfExists(PaymentRecord::tableName());
+        $this->dropTableIfExists(PaymentFormRecord::tableName());
     }
 }
