@@ -24,6 +24,7 @@ class FormService extends Component
 
         $paymentFormRecord->title = $paymentFormModel->title;
         $paymentFormRecord->handle = $paymentFormModel->handle;
+        $paymentFormRecord->currency = $paymentFormModel->currency;
         $paymentFormRecord->fieldLayout = $paymentFormModel->fieldLayout;
         return $paymentFormRecord->save();
     }

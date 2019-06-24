@@ -47,6 +47,7 @@ class FormsController extends Controller
 
         $paymentFormModel->title = $data['title'];
         $paymentFormModel->handle = $data['handle'];
+        $paymentFormModel->currency = $data['currency'];
         $paymentFormModel->fieldLayout = $fieldLayout->id;
 
         $saved = MolliePayments::getInstance()->forms->save($paymentFormModel);
