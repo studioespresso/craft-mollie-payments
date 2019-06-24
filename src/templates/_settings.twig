@@ -12,7 +12,7 @@
 {% block content %}
     {{ csrfInput() }}
     {{ actionInput('mollie-payments/settings/save') }}
-    {{ redirectInput('mollie-payments/settings'|hash) }}
+    {{ redirectInput('mollie-payments/settings') }}
 
     {{ forms.textField({
         label: 'Mollie API key'|t('mollie-payments'),

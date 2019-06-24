@@ -14,6 +14,7 @@ use craft\helpers\UrlHelper;
 use studioespresso\molliepayments\elements\Payment;
 use studioespresso\molliepayments\services\FormService;
 use studioespresso\molliepayments\services\MollieService;
+use studioespresso\molliepayments\services\TransactionService;
 use studioespresso\molliepayments\variables\MolliePaymentsVariable;
 use studioespresso\molliepayments\twigextensions\MolliePaymentsTwigExtension;
 use studioespresso\molliepayments\models\Settings;
@@ -39,7 +40,7 @@ use yii\base\Event;
  *
  * @property FormService $forms
  * @property MollieService $mollie
- *
+ * @property TransactionService $transaction
  */
 class MolliePayments extends Plugin
 {
@@ -72,7 +73,8 @@ class MolliePayments extends Plugin
 
         $this->setComponents([
             'forms' => FormService::class,
-            'mollie' => MollieService::class
+            'mollie' => MollieService::class,
+            'transaction' => TransactionService::class
         ]);
 
         Event::on(
@@ -81,14 +83,22 @@ class MolliePayments extends Plugin
             function (RegisterUrlRulesEvent $event) {
                 $event->rules['mollie-payments'] = 'mollie-payments/default/index';
                 $event->rules['mollie-payments/payments/<uid:{uid}>'] = 'mollie-payments/payment/edit';
+                $event->rules['mollie-payments/payments/<uid:{uid}>'] = 'mollie-payments/payment/edit';
                 $event->rules['mollie-payments/forms'] = 'mollie-payments/forms/index';
                 $event->rules['mollie-payments/forms/add'] = 'mollie-payments/forms/edit';
                 $event->rules['mollie-payments/forms/<formId:\d+>'] = 'mollie-payments/forms/edit';
                 $event->rules['mollie-payments/settings'] = 'mollie-payments/settings/index';
-
             }
         );
-
+        
+        Event::on(
+            UrlManager::class,
+            UrlManager::EVENT_REGISTER_SITE_URL_RULES,
+            function (RegisterUrlRulesEvent $event) {
+                $event->rules['mollie-payments/payment/callback'] = 'mollie-payments/payment/callback';
+            }
+        );
+        
         Event::on(
             Elements::class,
             Elements::EVENT_REGISTER_ELEMENT_TYPES,
