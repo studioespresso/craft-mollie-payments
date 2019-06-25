@@ -4,6 +4,7 @@ namespace studioespresso\molliepayments\services;
 
 use Craft;
 use craft\base\Component;
+use craft\helpers\UrlHelper;
 use studioespresso\molliepayments\elements\Payment;
 use studioespresso\molliepayments\models\PaymentFormModel;
 use studioespresso\molliepayments\models\PaymentTransactionModel;
@@ -29,8 +30,11 @@ class MollieService extends Component
                 "value" => number_format($payment->amount, 2, '.', '') // You must send the correct number of decimals, thus we enforce the use of strings
             ],
             "description" => "Order #{$payment->id}",
-            "redirectUrl" => "{$baseUrl}mollie-payments/payment/callback?order_id={$payment->uid}",
-            "webhookUrl" => "{$baseUrl}mollie-payments/payment/webhook",
+            "redirectUrl" => UrlHelper::url("{$baseUrl}mollie-payments/payment/redirect", [
+                "order_id" => $payment->uid,
+                "redirect" => $redirect
+            ]),
+//            "webhookUrl" => "{$baseUrl}mollie-payments/payment/webhook",
             "metadata" => [
                 "redirectUrl" => $redirect,
                 "element" => $payment->uid,
@@ -44,9 +48,14 @@ class MollieService extends Component
         $transaction->status = $authorization->status;
 
         MolliePayments::getInstance()->transaction->save($transaction);
-        
+
 
         return $authorization->_links->checkout->href;
+    }
+
+    public function getStatus($orderId)
+    {
+        return $this->mollie->payments->get($orderId);
     }
 
 }
