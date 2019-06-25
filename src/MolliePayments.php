@@ -11,6 +11,7 @@
 namespace studioespresso\molliepayments;
 
 use craft\helpers\UrlHelper;
+use studioespresso\molliepayments\behaviours\CraftVariableBehavior;
 use studioespresso\molliepayments\elements\Payment;
 use studioespresso\molliepayments\services\FormService;
 use studioespresso\molliepayments\services\MollieService;
@@ -98,6 +99,16 @@ class MolliePayments extends Plugin
                 $event->rules['mollie-payments/payment/redirect'] = 'mollie-payments/payment/redirect';
             }
         );
+
+        Event::on(CraftVariable::class, CraftVariable::EVENT_INIT, function(Event $e) {
+            /** @var CraftVariable $variable */
+            $variable = $e->sender;
+
+            // Attach a behavior:
+            $variable->attachBehaviors([
+                CraftVariableBehavior::class,
+            ]);
+        });
         
         Event::on(
             Elements::class,

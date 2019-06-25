@@ -62,7 +62,7 @@ class PaymentController extends Controller
         $payment = Payment::findOne(['uid' => $uid]);
         $transaction = MolliePayments::getInstance()->transaction->getTransactionbyPayment($payment->id);
         $molliePayment = MolliePayments::getInstance()->mollie->getStatus($transaction->id);
-        
+
         $this->redirect(UrlHelper::url($redirect, ['payment' => $uid, 'status' => $molliePayment->status]));
     }
 }
