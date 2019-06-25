@@ -95,7 +95,7 @@ class MolliePayments extends Plugin
             UrlManager::class,
             UrlManager::EVENT_REGISTER_SITE_URL_RULES,
             function (RegisterUrlRulesEvent $event) {
-                $event->rules['mollie-payments/payment/callback'] = 'mollie-payments/payment/callback';
+                $event->rules['mollie-payments/payment/redirect'] = 'mollie-payments/payment/redirect';
             }
         );
         
