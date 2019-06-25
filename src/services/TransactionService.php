@@ -23,4 +23,10 @@ class TransactionService extends Component
         return $transactionRecord->save();
     }
 
+    public function getTransactionbyPayment($id)
+    {
+        $transactionRecord = PaymentTransactionRecord::findOne(['payment' => $id]);
+        return $transactionRecord;
+    }
+
 }
