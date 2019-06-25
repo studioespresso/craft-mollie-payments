@@ -12,7 +12,16 @@ use yii\web\HttpException;
 
 class PaymentController extends Controller
 {
-    protected $allowAnonymous = ['pay', 'redirect'];
+    protected $allowAnonymous = ['pay', 'redirect', 'webhook'];
+
+    public function beforeAction($action)
+    {
+        if($action->id === 'webhook') {
+            $this->enableCsrfValidation = false;
+        }
+        return parent::beforeAction($action);
+    }
+
 
     public function actionPay()
     {
@@ -65,4 +74,14 @@ class PaymentController extends Controller
 
         $this->redirect(UrlHelper::url($redirect, ['payment' => $uid, 'status' => $molliePayment->status]));
     }
+
+    public function actionWebhook()
+    {
+        $id = Craft::$app->getRequest()->getRequiredParam('id');
+        $transaction = MolliePayments::getInstance()->transaction->getTransactionbyId($id);
+        $molliePayment = MolliePayments::getInstance()->mollie->getStatus($id);
+
+    }
+
+
 }

@@ -34,7 +34,7 @@ class MollieService extends Component
                 "order_id" => $payment->uid,
                 "redirect" => $redirect
             ]),
-//            "webhookUrl" => "{$baseUrl}mollie-payments/payment/webhook",
+            "webhookUrl" => "{$baseUrl}mollie-payments/payment/webhook",
             "metadata" => [
                 "redirectUrl" => $redirect,
                 "element" => $payment->uid,
