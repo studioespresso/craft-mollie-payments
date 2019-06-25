@@ -3,6 +3,7 @@
 namespace studioespresso\molliepayments\controllers;
 
 use Craft;
+use craft\helpers\UrlHelper;
 use craft\web\Controller;
 use studioespresso\molliepayments\elements\db\PaymentQuery;
 use studioespresso\molliepayments\elements\Payment;
@@ -11,7 +12,7 @@ use yii\web\HttpException;
 
 class PaymentController extends Controller
 {
-    protected $allowAnonymous = true;
+    protected $allowAnonymous = ['pay', 'redirect'];
 
     public function actionPay()
     {
@@ -21,6 +22,7 @@ class PaymentController extends Controller
         $form = Craft::$app->request->getRequiredBodyParam('form');
         $redirect = Craft::$app->request->getBodyParam('redirect');
         $amount = Craft::$app->security->validateData($amount);
+        $redirect = Craft::$app->security->validateData($redirect);
 
         if ($amount == false) {
             throw new HttpException(400);
@@ -40,7 +42,7 @@ class PaymentController extends Controller
         $payment->setFieldValuesFromRequest('fields');
         Craft::$app->getElements()->saveElement($payment);
 
-        $url = MolliePayments::getInstance()->mollie->generatePayment($payment, $redirect);
+        $url = MolliePayments::getInstance()->mollie->generatePayment($payment, UrlHelper::url($redirect));
         $this->redirect($url);
 
     }
@@ -51,5 +53,16 @@ class PaymentController extends Controller
         $query->uid = $uid;
 
         $this->renderTemplate('mollie-payments/_payment/_edit', ['element' => $query->one()]);
+    }
+
+    public function actionRedirect()
+    {
+        $uid = Craft::$app->getRequest()->getRequiredParam('order_id');
+        $redirect = Craft::$app->getRequest()->getParam('redirect');
+        $payment = Payment::findOne(['uid' => $uid]);
+        $transaction = MolliePayments::getInstance()->transaction->getTransactionbyPayment($payment->id);
+        $molliePayment = MolliePayments::getInstance()->mollie->getStatus($transaction->id);
+        
+        $this->redirect(UrlHelper::url($redirect, ['payment' => $uid, 'status' => $molliePayment->status]));
     }
 }
