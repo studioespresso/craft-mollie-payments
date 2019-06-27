@@ -19,12 +19,11 @@ class PaymentQuery extends ElementQuery
     protected function statusCondition(string $status)
     {
         switch ($status) {
-            case 'foo':
-                return ['foo' => true];
-            case 'bar':
-                return ['bar' => true];
+            case 'paid':
+                return ['paid' => true];
+            case 'expired':
+                return ['expired' => true];
             default:
-                // call the base method for `enabled` or `disabled`
                 return parent::statusCondition($status);
         }
     }

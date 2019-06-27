@@ -73,13 +73,19 @@ class Payment extends Element
     {
         return [
             'pending' => ['label' => Craft::t('mollie-payments', 'Pending'), 'color' => '27AE60'],
-            'payed' => ['label' => Craft::t('mollie-payments', 'Payed'), 'color' => 'F2842D'],
+            'paid' => ['label' => Craft::t('mollie-payments', 'Paid'), 'color' => '055900'],
+            'expired' => ['label' => Craft::t('mollie-payments', 'Expired'), 'color' => 'b30d0f'],
         ];
     }
 
     public function getStatus()
     {
-        return 'payed';
+        $status = MolliePayments::getInstance()->transaction->getStatusForPayment($this->id);
+        if ($status == 'paid') {
+            return 'paid';
+        }
+
+        return 'pending';
     }
 
     /**
@@ -193,6 +199,7 @@ class Payment extends Element
                 ->insert(PaymentRecord::tableName(), [
                     'id' => $this->id,
                     'email' => $this->email,
+                    'status' => $this->status,
                     'amount' => $this->amount,
                     'formId' => $this->formId,
                 ])
@@ -201,8 +208,8 @@ class Payment extends Element
             \Craft::$app->db->createCommand()
                 ->update(PaymentRecord::tableName(), [
                     'email' => $this->email,
+                    'status' => $this->status,
                     'amount' => $this->amount,
-                    'formId' => $this->formId,
                 ], ['id' => $this->id])
                 ->execute();
         }

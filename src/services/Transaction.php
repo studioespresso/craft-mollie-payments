@@ -40,15 +40,27 @@ class Transaction extends Component
             $transaction->expiresAt = $molliePayment->expiresAt;
         }
 
-        if ($transaction->validate()) {
-            $transaction->save();
+        if ($transaction->validate() && $transaction->save()) {
+
             $payment = Payment::findOne(['id' => $transaction->payment]);
+            $payment->getStatus('payed');
+            Craft::$app->getElements()->saveElement($payment);
             $this->trigger(MolliePayments::EVENT_AFTER_TRANSACTION_UPDATE,
                 new TransactionUpdateEvent([
                     'transaction' => $transaction,
                     'payment' => $payment,
                     'status' => $molliePayment->status
-                ]));
+                ])
+            );
+        }
+    }
+
+    public function getStatusForPayment($id) {
+        $transaction = PaymentTransactionRecord::findOne(['payment' => $id]);
+        if ($transaction) {
+            return $transaction->status;
+        } else {
+            return false;
         }
     }
 

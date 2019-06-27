@@ -68,6 +68,7 @@ class Install extends Migration
         $this->createTable(PaymentRecord::tableName(), [
             'id' => $this->integer()->notNull(),
             'email' => $this->string()->notNull(),
+            'status' => $this->string()->notNull(),
             'amount' => $this->integer()->notNull(),
             'formId' => $this->integer()->notNull(),
             'dateCreated' => $this->dateTime()->notNull(),
