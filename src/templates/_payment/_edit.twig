@@ -14,13 +14,16 @@
     {% set data = { label: tab.name, url: '#' ~ tab.getHtmlId()} %}
     {% set tabData = tabData|merge({ (tab.id) : data}) %}
 {% endfor %}
+{% set tabData = tabData|merge( {translactions: { label: "Transactions", url : "#tab-transactions"} }) %}
+
 {% set tabs = tabData %}
+
+{# TODO: add breadcrumbs #}
 
 
 {% block content %}
-{% set tabs = element.getFieldLayout().getTabs() %}
-
-    {% for tab in element.getFieldLayout().getTabs() %}
+    {% set tabs = element.getFieldLayout().getTabs() %}
+    {% for tab in tabs %}
         <div id="{{ tab.getHtmlId() }}" {% if not loop.first %} class="hidden"{% endif %}>
             {% include "_includes/fields" with {
                 fields:  tab.getFields(),
@@ -28,9 +31,37 @@
             } only %}
         </div>
     {% endfor %}
+    <div id="tab-transactions" class="{% if tabs|length %}hidden{% endif %}">
+        {% include 'mollie-payments/_payment/_transactions.twig' with {transactions : transactions } only %}
+    </div>
+
 {% endblock %}
 
 {% block details %}
     <div id="settings" class="meta">
+        <div class="field" id="email-field">
+            <div class="heading">
+                <label id="slug-label" for="slug">{{ "Form"|t("mollie-payments") }}</label>
+            </div>
+            <div class="input ltr">
+                <input class="text fullwidth" disabled type="text" value="{{ form.title }}" autocomplete="off" autocorrect="off" autocapitalize="off" placeholder="Enter slug">
+            </div>
+        </div>
+        <div class="field" id="email-field">
+            <div class="heading">
+                <label id="slug-label" for="slug">{{ "Email"|t("mollie-payments") }}</label>
+            </div>
+            <div class="input ltr">
+                <input class="text fullwidth" disabled type="text" value="{{ element.email }}" autocomplete="off" autocorrect="off" autocapitalize="off" placeholder="Enter slug">
+            </div>
+        </div>
+        <div class="field" id="amount-field">
+            <div class="heading">
+                <label id="slug-label" for="slug">{{ "Amount"|t("mollie-payments") }}</label>
+            </div>
+            <div class="input ltr">
+                <input class="text fullwidth" disabled type="text" value="{{ element.amount }} {{ form.currency }}" autocomplete="off" autocorrect="off" autocapitalize="off" placeholder="Enter slug">
+            </div>
+        </div>
     </div>
 {% endblock %}

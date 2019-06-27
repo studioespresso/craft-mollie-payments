@@ -44,7 +44,7 @@ class Transaction extends Component
 
             $payment = Payment::findOne(['id' => $transaction->payment]);
             $payment->paymentStatus = 'paid';
-            
+
             Craft::$app->getElements()->saveElement($payment);
             $this->trigger(MolliePayments::EVENT_AFTER_TRANSACTION_UPDATE,
                 new TransactionUpdateEvent([
@@ -56,7 +56,8 @@ class Transaction extends Component
         }
     }
 
-    public function getStatusForPayment($id) {
+    public function getStatusForPayment($id)
+    {
         $transaction = PaymentTransactionRecord::findOne(['payment' => $id]);
         if ($transaction) {
             return $transaction->status;
@@ -68,6 +69,12 @@ class Transaction extends Component
     public function getTransactionbyId($id)
     {
         $transactionRecord = PaymentTransactionRecord::findOne(['id' => $id]);
+        return $transactionRecord;
+    }
+
+    public function getAllByPayment($id)
+    {
+        $transactionRecord = PaymentTransactionRecord::findAll(['payment' => $id]);
         return $transactionRecord;
     }
 

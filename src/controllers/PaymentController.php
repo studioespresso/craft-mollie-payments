@@ -65,8 +65,12 @@ class PaymentController extends Controller
     {
         $query = Payment::find();
         $query->uid = $uid;
+        $payment = $query->one();
 
-        $this->renderTemplate('mollie-payments/_payment/_edit', ['element' => $query->one()]);
+        $paymentForm = MolliePayments::getInstance()->forms->getFormByid($payment->formId);
+        $transactions = MolliePayments::getInstance()->transaction->getAllByPayment($payment->id);
+
+        $this->renderTemplate('mollie-payments/_payment/_edit', ['element' => $payment, 'transactions' => $transactions, 'form' => $paymentForm]);
     }
 
     public function actionRedirect()
