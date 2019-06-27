@@ -80,7 +80,7 @@ class Install extends Migration
             'id' => $this->string()->notNull(),
             'payment' => $this->integer()->notNull(),
             'amount' => $this->integer()->notNull(),
-            'currency' => $this->integer()->notNull(),
+            'currency' => $this->string(3)->defaultValue('EUR'),
             'status' => $this->string()->notNull(),
             'method' => $this->string(),
             'paidAt' => $this->dateTime(),
