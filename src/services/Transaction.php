@@ -5,13 +5,14 @@ namespace studioespresso\molliepayments\services;
 use Craft;
 use craft\base\Component;
 use studioespresso\molliepayments\elements\Payment;
+use studioespresso\molliepayments\events\TransactionUpdateEvent;
 use studioespresso\molliepayments\models\PaymentFormModel;
 use studioespresso\molliepayments\models\PaymentTransactionModel;
 use studioespresso\molliepayments\MolliePayments;
 use studioespresso\molliepayments\records\PaymentFormRecord;
 use studioespresso\molliepayments\records\PaymentTransactionRecord;
 
-class TransactionService extends Component
+class Transaction extends Component
 {
 
     public function save(PaymentTransactionModel $transactionModel)
@@ -29,18 +30,25 @@ class TransactionService extends Component
     {
         $transaction->status = $molliePayment->status;
         $transaction->method = $molliePayment->method;
-        if($molliePayment->status == 'method') {
+        if ($molliePayment->status == 'method') {
             $transaction->paidAt = $molliePayment->paidAt;
-        } elseif($molliePayment->status == 'failed') {
+        } elseif ($molliePayment->status == 'failed') {
             $transaction->failedAt = $molliePayment->failedAt;
-        } elseif($molliePayment->status == 'canceled') {
+        } elseif ($molliePayment->status == 'canceled') {
             $transaction->canceledAt = $molliePayment->canceledAt;
-        } elseif($molliePayment->status == 'expired') {
+        } elseif ($molliePayment->status == 'expired') {
             $transaction->expiresAt = $molliePayment->expiresAt;
         }
 
-        if($transaction->validate()) {
+        if ($transaction->validate()) {
             $transaction->save();
+            $payment = Payment::findOne(['id' => $transaction->payment]);
+            $this->trigger(MolliePayments::EVENT_AFTER_TRANSACTION_UPDATE,
+                new TransactionUpdateEvent([
+                    'transaction' => $transaction,
+                    'payment' => $payment,
+                    'status' => $molliePayment->status
+                ]));
         }
     }
 

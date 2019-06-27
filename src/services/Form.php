@@ -6,7 +6,7 @@ use craft\base\Component;
 use studioespresso\molliepayments\models\PaymentFormModel;
 use studioespresso\molliepayments\records\PaymentFormRecord;
 
-class FormService extends Component
+class Form extends Component
 {
     public function save(PaymentFormModel $paymentFormModel)
     {

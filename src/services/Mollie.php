@@ -11,7 +11,7 @@ use studioespresso\molliepayments\models\PaymentTransactionModel;
 use studioespresso\molliepayments\MolliePayments;
 use studioespresso\molliepayments\records\PaymentFormRecord;
 
-class MollieService extends Component
+class Mollie extends Component
 {
     private $mollie;
 
