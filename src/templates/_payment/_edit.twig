@@ -9,20 +9,25 @@
     {{ block('pageTitle') }}
     {{ block('contextMenu') }}
 {% endblock %}
+{% set tabData = [] %}
+{% for tab in element.getFieldLayout().getTabs() %}
+    {% set data = { label: tab.name, url: '#' ~ tab.getHtmlId()} %}
+    {% set tabData = tabData|merge({ (tab.id) : data}) %}
+{% endfor %}
+{% set tabs = tabData %}
+
 
 {% block content %}
-    <div id="fields">
-        <div>
-            {% for tab in element.getFieldLayout().getTabs() %}
-                <div id="{{ tab.getHtmlId() }}"{% if not loop.first %} class="hidden"{% endif %}>
-                    {% include "_includes/fields" with {
-                        fields:  tab.getFields(),
-                        element: element,
-                    } only %}
-                </div>
-            {% endfor %}
+{% set tabs = element.getFieldLayout().getTabs() %}
+
+    {% for tab in element.getFieldLayout().getTabs() %}
+        <div id="{{ tab.getHtmlId() }}" {% if not loop.first %} class="hidden"{% endif %}>
+            {% include "_includes/fields" with {
+                fields:  tab.getFields(),
+                element: element
+            } only %}
         </div>
-    </div>
+    {% endfor %}
 {% endblock %}
 
 {% block details %}
