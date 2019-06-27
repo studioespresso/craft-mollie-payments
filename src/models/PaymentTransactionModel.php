@@ -18,6 +18,10 @@ class PaymentTransactionModel extends Model
 
     public $status;
 
+    public $amount;
+
+    public $currency;
+
     public $data;
 
 }

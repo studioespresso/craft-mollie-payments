@@ -19,6 +19,8 @@ class TransactionService extends Component
         $transactionRecord = new PaymentTransactionRecord();
         $transactionRecord->id = $transactionModel->id;
         $transactionRecord->payment = $transactionModel->payment;
+        $transactionRecord->amount = $transactionModel->amount;
+        $transactionRecord->currency = $transactionModel->currency;
         $transactionRecord->status = $transactionModel->status;
         return $transactionRecord->save();
     }

@@ -23,10 +23,12 @@ class MollieService extends Component
 
     public function generatePayment(Payment $payment, $redirect)
     {
+        $paymentForm = MolliePayments::getInstance()->forms->getFormByid($payment->formId);
         $baseUrl = Craft::$app->getSites()->getCurrentSite()->getBaseUrl();
+        
         $authorization = $this->mollie->payments->create([
             "amount" => [
-                "currency" => "EUR",
+                "currency" => $paymentForm->currency,
                 "value" => number_format($payment->amount, 2, '.', '') // You must send the correct number of decimals, thus we enforce the use of strings
             ],
             "description" => "Order #{$payment->id}",
@@ -42,9 +44,12 @@ class MollieService extends Component
             ],
         ]);
 
+
         $transaction = new PaymentTransactionModel();
         $transaction->id = $authorization->id;
         $transaction->payment = $payment->id;
+        $transaction->currency = $paymentForm->currency;
+        $transaction->amount = $payment->amount;
         $transaction->status = $authorization->status;
 
         MolliePayments::getInstance()->transaction->save($transaction);
