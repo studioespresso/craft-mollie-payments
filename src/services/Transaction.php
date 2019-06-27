@@ -43,7 +43,7 @@ class Transaction extends Component
         if ($transaction->validate() && $transaction->save()) {
 
             $payment = Payment::findOne(['id' => $transaction->payment]);
-            $payment->paymentStatus = 'paid';
+            $payment->paymentStatus = $molliePayment->status;
 
             Craft::$app->getElements()->saveElement($payment);
             $this->trigger(MolliePayments::EVENT_AFTER_TRANSACTION_UPDATE,
