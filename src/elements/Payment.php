@@ -36,7 +36,7 @@ class Payment extends Element
     public $email;
     public $amount = 0;
     public $formId;
-
+    public $paymentStatus;
     // Static Methods
     // =========================================================================
 
@@ -72,20 +72,15 @@ class Payment extends Element
     public static function statuses(): array
     {
         return [
-            'pending' => ['label' => Craft::t('mollie-payments', 'Pending'), 'color' => '27AE60'],
-            'paid' => ['label' => Craft::t('mollie-payments', 'Paid'), 'color' => '055900'],
-            'expired' => ['label' => Craft::t('mollie-payments', 'Expired'), 'color' => 'b30d0f'],
+            'pending' => ['label' => Craft::t('mollie-payments', 'Pending'), 'color' => 'orange'],
+            'paid' => ['label' => Craft::t('mollie-payments', 'Paid'), 'color' => 'green'],
+            'expired' => ['label' => Craft::t('mollie-payments', 'Expired'), 'color' => 'red'],
         ];
     }
 
     public function getStatus()
     {
-        $status = MolliePayments::getInstance()->transaction->getStatusForPayment($this->id);
-        if ($status == 'paid') {
-            return 'paid';
-        }
-
-        return 'pending';
+        return $this->paymentStatus;
     }
 
     /**
@@ -159,6 +154,7 @@ class Payment extends Element
     {
         return UrlHelper::cpUrl("mollie-payments/payments/" . $this->uid);
     }
+
     /**
      * @inheritdoc
      */
@@ -199,7 +195,7 @@ class Payment extends Element
                 ->insert(PaymentRecord::tableName(), [
                     'id' => $this->id,
                     'email' => $this->email,
-                    'status' => $this->status,
+                    'paymentStatus' => $this->paymentStatus,
                     'amount' => $this->amount,
                     'formId' => $this->formId,
                 ])
@@ -208,7 +204,7 @@ class Payment extends Element
             \Craft::$app->db->createCommand()
                 ->update(PaymentRecord::tableName(), [
                     'email' => $this->email,
-                    'status' => $this->status,
+                    'paymentStatus' => $this->paymentStatus,
                     'amount' => $this->amount,
                 ], ['id' => $this->id])
                 ->execute();
@@ -216,9 +212,6 @@ class Payment extends Element
 
         parent::afterSave($isNew);
     }
-
-    
-
 
 
 }

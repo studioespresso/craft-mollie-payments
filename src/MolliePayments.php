@@ -16,6 +16,7 @@ use studioespresso\molliepayments\elements\Payment;
 use studioespresso\molliepayments\services\Form;
 use studioespresso\molliepayments\services\Mollie;
 use studioespresso\molliepayments\services\Transaction;
+use studioespresso\molliepayments\services\Payment as PaymentServivce;
 use studioespresso\molliepayments\variables\MolliePaymentsVariable;
 use studioespresso\molliepayments\twigextensions\MolliePaymentsTwigExtension;
 use studioespresso\molliepayments\models\Settings;
@@ -42,6 +43,7 @@ use yii\base\Event;
  * @property Form $forms
  * @property Mollie $mollie
  * @property Transaction $transaction
+ * @property PaymentServivce $payment
  */
 class MolliePayments extends Plugin
 {
@@ -84,7 +86,8 @@ class MolliePayments extends Plugin
         $this->setComponents([
             'forms' => Form::class,
             'mollie' => Mollie::class,
-            'transaction' => Transaction::class
+            'transaction' => Transaction::class,
+            'payment' => PaymentServivce::class
         ]);
 
         Event::on(

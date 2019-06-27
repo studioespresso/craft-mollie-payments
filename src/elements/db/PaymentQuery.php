@@ -1,4 +1,5 @@
 <?php
+
 namespace studioespresso\molliepayments\elements\db;
 
 use craft\db\Query;
@@ -10,6 +11,14 @@ class PaymentQuery extends ElementQuery
 
     public $formId;
 
+    public $paymentStatus;
+
+    public function paymentStatus($value)
+    {
+        $this->paymentStatus = $value;
+        return $this;
+    }
+
     public function formId($value)
     {
         $this->formId = $value;
@@ -19,10 +28,12 @@ class PaymentQuery extends ElementQuery
     protected function statusCondition(string $status)
     {
         switch ($status) {
+            case 'pending':
+                return ['paymentStatus' => 'pending'];
             case 'paid':
-                return ['paid' => true];
+                return ['paymentStatus' => 'paid'];
             case 'expired':
-                return ['expired' => true];
+                return ['paymentStatus' => 'expired'];
             default:
                 return parent::statusCondition($status);
         }
@@ -36,8 +47,13 @@ class PaymentQuery extends ElementQuery
         // select the columns
         $this->query->select([
             'mollie_payments.email',
-            'mollie_payments.amount'
+            'mollie_payments.amount',
+            'mollie_payments.paymentStatus',
         ]);
+
+        if ($this->paymentStatus) {
+            $this->subQuery->andWhere(Db::parseParam('mollie_payments.paymentStatus', $this->status));
+        }
 
         return parent::beforePrepare();
     }

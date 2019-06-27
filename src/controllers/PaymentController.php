@@ -48,6 +48,7 @@ class PaymentController extends Controller
         $payment->email = $email;
         $payment->amount = $amount;
         $payment->formId = $form;
+        $payment->paymentStatus = 'pending';
         $payment->fieldLayoutId = $paymentForm->fieldLayout;
         $payment->setFieldValuesFromRequest('fields');
         Craft::$app->getElements()->saveElement($payment);
