@@ -25,6 +25,25 @@ class TransactionService extends Component
         return $transactionRecord->save();
     }
 
+    public function updateTransaction(PaymentTransactionRecord $transaction, $molliePayment)
+    {
+        $transaction->status = $molliePayment->status;
+        $transaction->method = $molliePayment->method;
+        if($molliePayment->status == 'method') {
+            $transaction->paidAt = $molliePayment->paidAt;
+        } elseif($molliePayment->status == 'failed') {
+            $transaction->failedAt = $molliePayment->failedAt;
+        } elseif($molliePayment->status == 'canceled') {
+            $transaction->canceledAt = $molliePayment->canceledAt;
+        } elseif($molliePayment->status == 'expired') {
+            $transaction->expiresAt = $molliePayment->expiresAt;
+        }
+
+        if($transaction->validate()) {
+            $transaction->save();
+        }
+    }
+
     public function getTransactionbyId($id)
     {
         $transactionRecord = PaymentTransactionRecord::findOne(['id' => $id]);

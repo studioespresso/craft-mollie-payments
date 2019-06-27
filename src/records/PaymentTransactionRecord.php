@@ -12,4 +12,9 @@ class PaymentTransactionRecord extends ActiveRecord
     {
         return '{{%mollie_transactions}}';
     }
+    
+    public static function primaryKey()
+    {
+        return ['id'];
+    }
 }

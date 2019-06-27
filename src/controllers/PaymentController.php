@@ -9,6 +9,7 @@ use studioespresso\molliepayments\elements\db\PaymentQuery;
 use studioespresso\molliepayments\elements\Payment;
 use studioespresso\molliepayments\MolliePayments;
 use yii\web\HttpException;
+use yii\web\NotFoundHttpException;
 
 class PaymentController extends Controller
 {
@@ -70,9 +71,13 @@ class PaymentController extends Controller
         $redirect = Craft::$app->getRequest()->getParam('redirect');
         $payment = Payment::findOne(['uid' => $uid]);
         $transaction = MolliePayments::getInstance()->transaction->getTransactionbyPayment($payment->id);
-        $molliePayment = MolliePayments::getInstance()->mollie->getStatus($transaction->id);
+        try {
+            $molliePayment = MolliePayments::getInstance()->mollie->getStatus($transaction->id);
+            $this->redirect(UrlHelper::url($redirect, ['payment' => $uid, 'status' => $molliePayment->status]));
+        } catch(\Exception $e) {
+            throw new NotFoundHttpException('Payment not found', '404');
+        }
 
-        $this->redirect(UrlHelper::url($redirect, ['payment' => $uid, 'status' => $molliePayment->status]));
     }
 
     public function actionWebhook()
@@ -80,7 +85,8 @@ class PaymentController extends Controller
         $id = Craft::$app->getRequest()->getRequiredParam('id');
         $transaction = MolliePayments::getInstance()->transaction->getTransactionbyId($id);
         $molliePayment = MolliePayments::getInstance()->mollie->getStatus($id);
-
+        MolliePayments::getInstance()->transaction->updateTransaction($transaction, $molliePayment);
+        return;
     }
 
 
