@@ -26,12 +26,15 @@ class PaymentController extends Controller
 
     public function actionPay()
     {
+        $email = Craft::$app->request->getRequiredBodyParam('email');
 
         $amount = Craft::$app->request->getRequiredBodyParam('amount');
-        $email = Craft::$app->request->getRequiredBodyParam('email');
         $form = Craft::$app->request->getRequiredBodyParam('form');
         $redirect = Craft::$app->request->getBodyParam('redirect');
+
+
         $amount = Craft::$app->security->validateData($amount);
+        $form = Craft::$app->security->validateData($form);
         $redirect = Craft::$app->security->validateData($redirect);
 
         if ($amount == false) {
@@ -40,7 +43,7 @@ class PaymentController extends Controller
 
         $paymentForm = MolliePayments::getInstance()->forms->getFormByid($form);
         if (!$paymentForm) {
-            throw new HttpException(404);
+            throw new NotFoundHttpException("Form not found", 404);
         }
 
         $payment = new Payment();
