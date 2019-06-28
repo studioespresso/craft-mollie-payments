@@ -30,7 +30,7 @@ class Transaction extends Component
     {
         $transaction->status = $molliePayment->status;
         $transaction->method = $molliePayment->method;
-        if ($molliePayment->status == 'method') {
+        if ($molliePayment->status == 'paid') {
             $transaction->paidAt = $molliePayment->paidAt;
         } elseif ($molliePayment->status == 'failed') {
             $transaction->failedAt = $molliePayment->failedAt;
