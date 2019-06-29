@@ -19,6 +19,7 @@ module.exports = {
         displayAllHeaders: true,
         sidebar: [
             ['/', 'Introduction'],
+            ['/general', 'Getting started'],
         ],
         nav: [
             {
