@@ -34,4 +34,19 @@ composer require studioespresso/craft-mollie-payments
 
 ## 4. Form template
 
+```html
+<form method="post">
+    {{ csrfInput() }}
+    {{ actionInput("mollie-payments/payment/pay") }}
+    {{ redirectInput("confirmation-page") }}
+    <input type="hidden" name="amount" value="{{ 20|hash }}">
+    <input type="hidden" name="form" value="{{ 1|hash }}">
+    
+    <input type="email" name="email">
+    <input type="text" name="fields[firstName]">
+    <input type="text" name="fields[lastName]">
+    <input type="submit" class="btn " value="Pay">
+</form>
+```
+
  
