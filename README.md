@@ -1,6 +1,6 @@
 # Mollie Payments plugin for Craft CMS 3.x
 
-Easily accept payment with Mollie Payments
+Easily accept payment with Mollie Payments. Note that this plugin does not work with or require Craft Commerce.
 
 ## Requirements
 
