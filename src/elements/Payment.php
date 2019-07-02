@@ -146,6 +146,11 @@ class Payment extends Element
         ];
     }
 
+    protected static function defineSearchableAttributes(): array
+    {
+        return ['email'];
+    }
+
 
 
     // Public Methods
