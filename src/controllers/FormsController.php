@@ -36,7 +36,7 @@ class FormsController extends Controller
         $fieldLayout->type = Payment::class;
         Craft::$app->getFields()->saveLayout($fieldLayout);
 
-        if(!isset($data['id'])) {
+        if(!$data['id']) {
             $paymentFormModel = new PaymentFormModel();
         } else {
             /** @var PaymentFormRecord $record */
@@ -50,8 +50,17 @@ class FormsController extends Controller
         $paymentFormModel->currency = $data['currency'];
         $paymentFormModel->fieldLayout = $fieldLayout->id;
 
-        $saved = MolliePayments::getInstance()->forms->save($paymentFormModel);
-        $this->redirectToPostedUrl();
+        if($paymentFormModel->validate()) {
+            $saved = MolliePayments::getInstance()->forms->save($paymentFormModel);
+            $this->redirectToPostedUrl();
+        } else {
+            $layout = Craft::$app->getFields()->getLayoutById($fieldLayout->id);
+            return $this->renderTemplate('mollie-payments/_forms/_edit',  [
+                'form' => $paymentFormModel,
+                'layout' => $layout,
+                'errors' => $paymentFormModel->getErrors()
+            ]);
+        }
     }
 
     public function actionDelete() {

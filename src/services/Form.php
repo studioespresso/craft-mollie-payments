@@ -41,6 +41,12 @@ class Form extends Component
         return $form;
     }
 
+    public function getFormByHandle($handle)
+    {
+        $form = PaymentFormRecord::findOne(['handle' => $handle]);
+        return $form;
+    }
+
     public function delete($id) {
         $paymentFormRecord = PaymentFormRecord::find(['id' => $id])->one();
         return $paymentFormRecord->delete();
