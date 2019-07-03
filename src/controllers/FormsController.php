@@ -19,6 +19,8 @@ class FormsController extends Controller
 
     public function actionEdit($formId = null)
     {
+        $currencies = MolliePayments::getInstance()->currency->getCurrencies();
+        dd($currencies);
         if (!$formId) {
             return $this->renderTemplate('mollie-payments/_forms/_edit');
         } else {
