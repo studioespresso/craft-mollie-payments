@@ -2,6 +2,7 @@
 
 Easily accept payment with Mollie Payments. Note that this plugin does not work with or require Craft Commerce.
 
+![Screenshot](https://www.studioespresso.co/resources/mollie/banner.png)
 ## Requirements
 
 This plugin requires Craft CMS 3.1.0 or later.
