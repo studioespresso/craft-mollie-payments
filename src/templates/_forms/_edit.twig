@@ -58,23 +58,23 @@
             </ul>
         {% endif %}
     </div>
-    <div class="field" id="name-field">
-        <div class="heading">
-            <label id="name-label" class="required" for="title">{{ 'Currency'|t('mollie-payments') }}</label>
-        </div>
-        <div class="input ltr {% if errors is defined and errors.currency is defined %}errors{% endif %}">
-            <input class="text fullwidth" type="text" id="title" name="data[currency]"
-                   {% if form is defined %}value="{{ form.currency }}"{% endif %} autofocus=""
-                   autocomplete="off" required="required">
-        </div>
-        {% if errors is defined and errors.currency is defined %}
-            <ul class="errors">
-                {% for error in errors.currency %}
-                    <li>{{ error }}</li>
-                {% endfor %}
-            </ul>
-        {% endif %}
-    </div>
+
+    {% set availableCurrencies = { '': '---'} %}
+    {% for id, currency in currencies %}
+        {% set availableCurrencies = availableCurrencies|merge([{
+            'label': id,
+            'value': currency.short
+        }]) %}
+    {% endfor %}
+    {{ forms.selectField({
+        label: "Currency"|t('mollie-payments'),
+        id: "currency",
+        name: "data[currency]",
+        required: true,
+        options: availableCurrencies,
+        value: form.currency ?? "",
+        errors: errors is defined and errors.currency is defined ? errors.currency
+    }) }}
     {% if form is not defined or not form.handle|length %}
         {% js %}
             new Craft.HandleGenerator('#title', '#handle');

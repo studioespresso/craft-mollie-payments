@@ -20,13 +20,12 @@ class FormsController extends Controller
     public function actionEdit($formId = null)
     {
         $currencies = MolliePayments::getInstance()->currency->getCurrencies();
-        dd($currencies);
         if (!$formId) {
-            return $this->renderTemplate('mollie-payments/_forms/_edit');
+            return $this->renderTemplate('mollie-payments/_forms/_edit', ['currencies' => $currencies]);
         } else {
             $form = MolliePayments::getInstance()->forms->getFormById($formId);
             $layout = Craft::$app->getFields()->getLayoutById($form->fieldLayout);
-            return $this->renderTemplate('mollie-payments/_forms/_edit', ['form' => $form, 'layout' => $layout]);
+            return $this->renderTemplate('mollie-payments/_forms/_edit', ['form' => $form, 'layout' => $layout, 'currencies' => $currencies]);
             
         }
     }
