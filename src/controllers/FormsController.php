@@ -36,8 +36,7 @@ class FormsController extends Controller
         $fieldLayout = Craft::$app->getFields()->assembleLayoutFromPost();
         $fieldLayout->type = Payment::class;
         Craft::$app->getFields()->saveLayout($fieldLayout);
-
-        if(!$data['id']) {
+        if(!isset($data['id']) or empty($data['id'])) {
             $paymentFormModel = new PaymentFormModel();
         } else {
             /** @var PaymentFormRecord $record */
@@ -59,7 +58,8 @@ class FormsController extends Controller
             return $this->renderTemplate('mollie-payments/_forms/_edit',  [
                 'form' => $paymentFormModel,
                 'layout' => $layout,
-                'errors' => $paymentFormModel->getErrors()
+                'errors' => $paymentFormModel->getErrors(),
+                'currencies' => MolliePayments::getInstance()->currency->getCurrencies()
             ]);
         }
     }
