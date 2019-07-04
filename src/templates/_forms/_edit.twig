@@ -62,8 +62,8 @@
     {% set availableCurrencies = { '': '---'} %}
     {% for id, currency in currencies %}
         {% set availableCurrencies = availableCurrencies|merge([{
-            'label': id,
-            'value': currency.short
+            'label': currency.short  ~ '('~currency.symbol~')',
+            'value': id
         }]) %}
     {% endfor %}
     {{ forms.selectField({
