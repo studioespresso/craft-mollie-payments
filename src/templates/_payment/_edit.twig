@@ -4,7 +4,7 @@
 {% set fullPageForm = true %}
 {% set saveShortcutRedirect = continueEditingUrl ?? "" %}
 
-{% set title = "blaa" %}
+{% set title = "Payment for "|t('mollie-payments') ~ form.title %}
 {% block header %}
     {{ block('pageTitle') }}
     {{ block('contextMenu') }}
