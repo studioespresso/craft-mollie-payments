@@ -22,6 +22,9 @@ To install the plugin, follow these instructions.
 3. In the Control Panel, go to Settings → Plugins and click the “Install” button for Mollie Payments.
 
 
-* Release it
+## Documentation
 
+Extensive documentation can be found [here](https://studioespresso.github.io/craft-mollie-payments/)
+
+---
 Brought to you by [Studio Espresso](https://studioespresso.co)
