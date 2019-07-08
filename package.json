@@ -1,0 +1,26 @@
+{
+    "name": "mollie-payments",
+    "version": "1.0.0",
+    "description": "Easily accept payments on your website through Mollie",
+    "private": true,
+    "scripts": {
+        "docs": "vuepress dev docs",
+        "docs:build": "vuepress build docs"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/studioespresso/craft-mollie-payments.git"
+    },
+    "author": "",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/studioespresso/craft-mollie-payments/issues"
+    },
+    "homepage": "https://github.com/studioespresso/craft-mollie-payments#readme",
+    "devDependencies": {
+        "@vuepress/plugin-google-analytics": "^1.0.0",
+        "vuepress": "^1.0.0",
+        "webpack": "^4.29.5",
+        "webpack-cli": "^3.2.3"
+    }
+}

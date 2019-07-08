@@ -1,0 +1,23 @@
+{# @var craft \craft\web\twig\variables\CraftVariable #}
+
+{% extends "_layouts/cp" %}
+{% import "_includes/forms" as forms %}
+{% set title = form.title is defined ? form.title : 'Mollie payment settings' %}
+
+{% set selectedSubnavItem = 'settings' %}
+{% set fullPageForm = true %}
+
+
+{# The content of the CP Section#}
+{% block content %}
+    {{ csrfInput() }}
+    {{ actionInput('mollie-payments/settings/save') }}
+    {{ redirectInput('mollie-payments/settings') }}
+
+    {{ forms.textField({
+        label: 'Mollie API key'|t('mollie-payments'),
+        id: 'apiKey',
+        name: 'settings[apiKey]',
+        value: settings['apiKey']})
+    }}
+{% endblock %}
