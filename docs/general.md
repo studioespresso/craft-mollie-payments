@@ -28,11 +28,15 @@ composer require studioespresso/craft-mollie-payments
 ./craft install/plugin mollie-payments
 ```
 
-## 2. Settings
+## 2. Create a payment form
 
-## 3. Create a payment form
+Payment forms are where you determine which currency the payment should be made in, and which fields are included on the payment element. 
+These fields can be saved from the frontend form by using the name like so: ``<input type="text" name="fields[body]">``
 
-## 4. Form template
+<img src="./images/paymentform.png">
+
+
+## 3. Form template
 
 ```html
 <form method="post">
