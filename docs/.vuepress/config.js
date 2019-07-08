@@ -21,6 +21,8 @@ module.exports = {
             ['/', 'Introduction'],
             ['/general', 'Getting started'],
             ['/settings', 'Plugin settings'],
+            ['/events', 'Events'],
+            ['/webhook', 'Webhook'],
             ['/element', 'Core concepts'],
         ],
         nav: [
