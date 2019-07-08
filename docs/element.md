@@ -20,6 +20,9 @@ __Note:__ the form ID has to passed using the [hash](https://docs.craftcms.com/v
 
 Once a payment is submitted to the ``mollie-payments/payment/pay`` controller and the Payment element is validated, a new Payment transaction will be created throught the Mollie api. 
 
-The ID, amount and status are saved with the transaction, as well as a relation to the Payment element. The list of transactions related to a Payment element is visible on a tab on the element: 
+The ID, amount and status are saved with the transaction, as well as a relation to the Payment element. The list of transactions related to a Payment element is visible on a tab on the element:
+
+<img src="./images/transaction.png">
+ 
  
  
