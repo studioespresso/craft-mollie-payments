@@ -20,6 +20,7 @@ module.exports = {
         sidebar: [
             ['/', 'Introduction'],
             ['/general', 'Getting started'],
+            ['/settings', 'Plugin settings'],
             ['/element', 'Core concepts'],
         ],
         nav: [
