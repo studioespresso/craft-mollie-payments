@@ -70,6 +70,12 @@ class Payment extends Element
         return true;
     }
 
+    public function getUiLabel(): string
+    {
+        return $this->email;
+    }
+
+
     public static function statuses(): array
     {
         return [
@@ -146,7 +152,6 @@ class Payment extends Element
     protected static function defineTableAttributes(): array
     {
         return [
-            'id' => Craft::t('mollie-payments', 'ID'),
             'email' => Craft::t('mollie-payments', 'Email'),
             'amount' => Craft::t('mollie-payments', 'Amount'),
             'status' => Craft::t('mollie-payments', 'Status'),
