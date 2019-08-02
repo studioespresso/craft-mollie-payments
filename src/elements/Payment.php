@@ -10,6 +10,7 @@
 
 namespace studioespresso\molliepayments\elements;
 
+use craft\elements\actions\Restore;
 use craft\helpers\UrlHelper;
 use studioespresso\molliepayments\actions\DeletePaymentAction;
 use studioespresso\molliepayments\elements\db\PaymentQuery;
@@ -137,7 +138,7 @@ class Payment extends Element
     protected static function defineActions(string $source = null): array
     {
         return [
-            DeletePaymentAction::class
+            DeletePaymentAction::class,
         ];
     }
     
@@ -228,6 +229,13 @@ class Payment extends Element
         }
 
         parent::afterSave($isNew);
+    }
+
+    public function afterDelete()
+    {
+        \Craft::$app->db->createCommand()
+            ->delete(PaymentRecord::tableName(), ['id' => $this->id])
+            ->execute();
     }
 
 
