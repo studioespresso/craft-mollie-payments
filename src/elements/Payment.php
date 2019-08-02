@@ -11,6 +11,7 @@
 namespace studioespresso\molliepayments\elements;
 
 use craft\helpers\UrlHelper;
+use studioespresso\molliepayments\actions\DeletePaymentAction;
 use studioespresso\molliepayments\elements\db\PaymentQuery;
 use studioespresso\molliepayments\MolliePayments;
 
@@ -117,7 +118,6 @@ class Payment extends Element
             $sources[] = [
                 'key' => 'form:' . $form['handle'],
                 'label' => $form['title'],
-//                'badgeCount' => count(Payment::findAll(['formId' => $form['id']])),
                 'criteria' => [
                     'formId' => $form['id'],
                 ],
@@ -128,6 +128,13 @@ class Payment extends Element
         return $sources;
     }
 
+    protected static function defineActions(string $source = null): array
+    {
+        return [
+            DeletePaymentAction::class
+        ];
+    }
+    
     protected static function defineSortOptions(): array
     {
         return [
