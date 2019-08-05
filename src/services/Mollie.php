@@ -18,7 +18,7 @@ class Mollie extends Component
     public function init()
     {
         $this->mollie = new \Mollie\Api\MollieApiClient();
-        $this->mollie->setApiKey(MolliePayments::getInstance()->getSettings()->apiKey);
+        $this->mollie->setApiKey(Craft::parseEnv(MolliePayments::getInstance()->getSettings()->apiKey));
     }
 
     public function generatePayment(Payment $payment, $redirect)

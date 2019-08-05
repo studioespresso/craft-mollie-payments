@@ -10,7 +10,9 @@
 
 namespace studioespresso\molliepayments\elements;
 
+use craft\elements\actions\Restore;
 use craft\helpers\UrlHelper;
+use studioespresso\molliepayments\actions\DeletePaymentAction;
 use studioespresso\molliepayments\elements\db\PaymentQuery;
 use studioespresso\molliepayments\MolliePayments;
 
@@ -69,6 +71,12 @@ class Payment extends Element
         return true;
     }
 
+    public function getUiLabel(): string
+    {
+        return $this->email;
+    }
+
+
     public static function statuses(): array
     {
         return [
@@ -117,7 +125,6 @@ class Payment extends Element
             $sources[] = [
                 'key' => 'form:' . $form['handle'],
                 'label' => $form['title'],
-//                'badgeCount' => count(Payment::findAll(['formId' => $form['id']])),
                 'criteria' => [
                     'formId' => $form['id'],
                 ],
@@ -128,6 +135,13 @@ class Payment extends Element
         return $sources;
     }
 
+    protected static function defineActions(string $source = null): array
+    {
+        return [
+            DeletePaymentAction::class,
+        ];
+    }
+    
     protected static function defineSortOptions(): array
     {
         return [
@@ -139,7 +153,6 @@ class Payment extends Element
     protected static function defineTableAttributes(): array
     {
         return [
-            'id' => Craft::t('mollie-payments', 'ID'),
             'email' => Craft::t('mollie-payments', 'Email'),
             'amount' => Craft::t('mollie-payments', 'Amount'),
             'status' => Craft::t('mollie-payments', 'Status'),
@@ -216,6 +229,13 @@ class Payment extends Element
         }
 
         parent::afterSave($isNew);
+    }
+
+    public function afterDelete()
+    {
+        \Craft::$app->db->createCommand()
+            ->delete(PaymentRecord::tableName(), ['id' => $this->id])
+            ->execute();
     }
 
 

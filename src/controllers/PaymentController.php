@@ -42,9 +42,6 @@ class PaymentController extends Controller
         }
 
         $paymentForm = MolliePayments::getInstance()->forms->getFormByid($form);
-        if (!$paymentForm) {
-            throw new NotFoundHttpException("Form not found", 404);
-        }
 
         $payment = new Payment();
 
@@ -54,8 +51,13 @@ class PaymentController extends Controller
         $payment->paymentStatus = 'pending';
         $payment->fieldLayoutId = $paymentForm->fieldLayout;
         $payment->setFieldValuesFromRequest('fields');
-        Craft::$app->getElements()->saveElement($payment);
 
+        if (!$paymentForm) {
+            throw new NotFoundHttpException("Form not found", 404);
+        }
+        
+        MolliePayments::getInstance()->payment->save($payment);
+        
         $url = MolliePayments::getInstance()->mollie->generatePayment($payment, UrlHelper::url($redirect));
         $this->redirect($url);
 
