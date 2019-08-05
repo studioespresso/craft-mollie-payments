@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ### Added
 - Payment elements can now be deleted from the overview
 - Email is now the main UI label for each element in the overview
+- `EVENT_BEFORE_PAYMENT_SAVE` event
 
 ### Fixed
 - Payment records are now deleted when the element is deleted

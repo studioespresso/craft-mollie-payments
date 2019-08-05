@@ -58,6 +58,11 @@ class MolliePayments extends Plugin
      */
     const EVENT_AFTER_TRANSACTION_UPDATE = 'afterTransactionUpdate';
 
+    /**
+     * @event beforePaymentSave The event that is triggered before saving a payment element for the first time.
+     */
+    const EVENT_BEFORE_PAYMENT_SAVE = 'beforePaymentSave';
+
 
     // Static Properties
     // =========================================================================
