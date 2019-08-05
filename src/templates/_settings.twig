@@ -14,10 +14,13 @@
     {{ actionInput('mollie-payments/settings/save') }}
     {{ redirectInput('mollie-payments/settings') }}
 
-    {{ forms.textField({
+    {{ forms.autosuggestField({
         label: 'Mollie API key'|t('mollie-payments'),
         id: 'apiKey',
         name: 'settings[apiKey]',
-        value: settings['apiKey']})
-    }}
+        value: settings['apiKey'],
+        errors: settings.getErrors('googleApiKey'),
+        suggestEnvVars: true,
+        suggestAliases: true,
+    }) }}
 {% endblock %}
