@@ -105,4 +105,11 @@ class PaymentController extends Controller
         return MolliePayments::getInstance()->export->run($payments);
     }
 
+    public function actionExportAll()
+    {
+        $payments = Payment::findAll();
+        return MolliePayments::getInstance()->export->run($payments);
+    }
+
+
 }

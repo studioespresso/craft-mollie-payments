@@ -13,6 +13,7 @@ namespace studioespresso\molliepayments\elements;
 use craft\elements\actions\Restore;
 use craft\helpers\UrlHelper;
 use studioespresso\molliepayments\actions\DeletePaymentAction;
+use studioespresso\molliepayments\actions\ExportAllPaymentsAction;
 use studioespresso\molliepayments\actions\ExportPaymentAction;
 use studioespresso\molliepayments\elements\db\PaymentQuery;
 use studioespresso\molliepayments\MolliePayments;
@@ -141,9 +142,10 @@ class Payment extends Element
         return [
             DeletePaymentAction::class,
             ExportPaymentAction::class,
+            ExportAllPaymentsAction::class
         ];
     }
-    
+
     protected static function defineSortOptions(): array
     {
         return [
