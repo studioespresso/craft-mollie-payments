@@ -5,7 +5,6 @@ namespace studioespresso\molliepayments\controllers;
 use Craft;
 use craft\helpers\UrlHelper;
 use craft\web\Controller;
-use studioespresso\molliepayments\elements\db\PaymentQuery;
 use studioespresso\molliepayments\elements\Payment;
 use studioespresso\molliepayments\MolliePayments;
 use yii\web\HttpException;
@@ -17,7 +16,7 @@ class PaymentController extends Controller
 
     public function beforeAction($action)
     {
-        if($action->id === 'webhook') {
+        if ($action->id === 'webhook') {
             $this->enableCsrfValidation = false;
         }
         return parent::beforeAction($action);
@@ -55,9 +54,9 @@ class PaymentController extends Controller
         if (!$paymentForm) {
             throw new NotFoundHttpException("Form not found", 404);
         }
-        
+
         MolliePayments::getInstance()->payment->save($payment);
-        
+
         $url = MolliePayments::getInstance()->mollie->generatePayment($payment, UrlHelper::url($redirect));
         $this->redirect($url);
 
@@ -84,7 +83,7 @@ class PaymentController extends Controller
         try {
             $molliePayment = MolliePayments::getInstance()->mollie->getStatus($transaction->id);
             $this->redirect(UrlHelper::url($redirect, ['payment' => $uid, 'status' => $molliePayment->status]));
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             throw new NotFoundHttpException('Payment not found', '404');
         }
 
@@ -99,5 +98,11 @@ class PaymentController extends Controller
         return;
     }
 
+    public function actionExport()
+    {
+        $ids = Craft::$app->request->post('ids');
+        $payments = Payment::findAll(['id' => explode(',', $ids)]);
+        return MolliePayments::getInstance()->export->run($payments);
+    }
 
 }

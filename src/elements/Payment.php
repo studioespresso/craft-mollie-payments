@@ -13,6 +13,7 @@ namespace studioespresso\molliepayments\elements;
 use craft\elements\actions\Restore;
 use craft\helpers\UrlHelper;
 use studioespresso\molliepayments\actions\DeletePaymentAction;
+use studioespresso\molliepayments\actions\ExportPaymentAction;
 use studioespresso\molliepayments\elements\db\PaymentQuery;
 use studioespresso\molliepayments\MolliePayments;
 
@@ -139,6 +140,7 @@ class Payment extends Element
     {
         return [
             DeletePaymentAction::class,
+            ExportPaymentAction::class,
         ];
     }
     
@@ -147,6 +149,11 @@ class Payment extends Element
         return [
             'dateCreated' => \Craft::t('app', 'Date created'),
         ];
+    }
+
+    public static function pluralDisplayName(): string
+    {
+        return Craft::t('mollie-payments', 'Payments');
     }
 
 

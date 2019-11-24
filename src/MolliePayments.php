@@ -14,6 +14,7 @@ use craft\helpers\UrlHelper;
 use studioespresso\molliepayments\behaviours\CraftVariableBehavior;
 use studioespresso\molliepayments\elements\Payment;
 use studioespresso\molliepayments\services\Currency;
+use studioespresso\molliepayments\services\Export;
 use studioespresso\molliepayments\services\Form;
 use studioespresso\molliepayments\services\Mollie;
 use studioespresso\molliepayments\services\Transaction;
@@ -46,6 +47,7 @@ use yii\base\Event;
  * @property Transaction $transaction
  * @property PaymentServivce $payment
  * @property Currency $currency
+ * @property Export $export
  */
 class MolliePayments extends Plugin
 {
@@ -95,7 +97,8 @@ class MolliePayments extends Plugin
             'mollie' => Mollie::class,
             'transaction' => Transaction::class,
             'payment' => PaymentServivce::class,
-            'currency' => Currency::class
+            'currency' => Currency::class,
+            'export' => Export::class
         ]);
 
         Event::on(
