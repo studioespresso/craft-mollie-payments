@@ -3,6 +3,7 @@
    {% set colors = {
        pending: 'orange',
        paid: 'green',
+       free: 'green',
        expired: 'red'
    } %}
     <tr class="infoRow" >
@@ -10,7 +11,7 @@
             <span class="status {{ attribute(colors, transaction.status) is defined ? attribute(colors, transaction.status) : '' }}"></span> {{ transaction.status|title }}
         </td>
         <td data-id="{{ 'Id'|t('mollie-payments') }}">
-            {{ transaction.id }} <a href="https://www.mollie.com/dashboard/payments/{{ transaction.id }}" rel="noopener" target="_blank" data-icon="world" title="View on mollie"></a>
+            {{ transaction.id }} {% if transaction.status != 'free' %}<a href="https://www.mollie.com/dashboard/payments/{{ transaction.id }}" rel="noopener" target="_blank" data-icon="world" title="View on mollie"></a>{% endif %}
         </td>
         <td data-title="{{ 'Amount'|t('mollie-payments') }}">{{ transaction.amount|currency(transaction.currency) }}
             <small class="light">({{ transaction.currency }})</small>

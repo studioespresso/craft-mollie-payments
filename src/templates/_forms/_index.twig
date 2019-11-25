@@ -22,7 +22,7 @@
 
 {# The content of the CP Section#}
 {% block content %}
-    {% if paymentForms|length %}
+    {% if forms|length %}
         <table id="forms" class="data fullwidth collapsible">
             <thead>
             <tr>
@@ -33,7 +33,7 @@
             </tr>
             </thead>
             <tbody>
-            {% for form in paymentForms %}
+            {% for form in forms %}
                 <tr data-id="{{ form.id }}" data-name="{{ form.title }}">
                     <td data-title="Id"><code>{{ form.id }}</code></td>
                     <th scope="row" data-title="Name"><a

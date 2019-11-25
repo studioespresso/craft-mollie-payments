@@ -28,6 +28,8 @@ class PaymentQuery extends ElementQuery
     protected function statusCondition(string $status)
     {
         switch ($status) {
+            case 'free':
+                return ['paymentStatus' => 'free'];
             case 'pending':
                 return ['paymentStatus' => 'pending'];
             case 'paid':

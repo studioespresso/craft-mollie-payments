@@ -83,6 +83,7 @@ class Payment extends Element
     {
         return [
             'pending' => ['label' => Craft::t('mollie-payments', 'Pending'), 'color' => 'orange'],
+            'free' => ['label' => Craft::t('mollie-payments', 'Free'), 'color' => 'green'],
             'paid' => ['label' => Craft::t('mollie-payments', 'Paid'), 'color' => 'green'],
             'expired' => ['label' => Craft::t('mollie-payments', 'Expired'), 'color' => 'red'],
         ];
