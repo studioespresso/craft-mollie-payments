@@ -11,7 +11,7 @@
         "mollie payments"
     ],
     "support": {
-        "docs": "https://github.com/studioespresso/craft-mollie-payments/blob/master/README.md",
+        "docs": "https://studioespresso.github.io/craft-mollie-payments/",
         "issues": "https://github.com/studioespresso/craft-mollie-payments/issues"
     },
     "license": "MIT",
