@@ -53,6 +53,9 @@ class PaymentQuery extends ElementQuery
             'mollie_payments.formId',
             'mollie_payments.paymentStatus',
         ]);
+        if($this->formId) {
+            $this->subQuery->andWhere(Db::parseParam('mollie_payments.formId', $this->formId));
+        }
 
         if ($this->paymentStatus) {
             $this->subQuery->andWhere(Db::parseParam('mollie_payments.paymentStatus', $this->status));
