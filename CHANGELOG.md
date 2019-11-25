@@ -5,11 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
 
-## 1.0.0
+## 1.1.0 - 2019-11-25
+### Added
+- Payments for a zero amount can now be handled within the same flow as regular payments
+
+### Fixed 
+- Fixed `formId` attribute  in Payments query, fixing overview per forms in the CP
+
+## 1.0.0 - 2019-11-24
 ### Added
 - Added action to export selected payments to csv
 - Added action to select all payments to csv
-
 
 ## 1.0.0-beta.2
 ### Added
