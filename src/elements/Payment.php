@@ -73,6 +73,19 @@ class Payment extends Element
         return true;
     }
 
+    /**
+     * Retuns the elements first attribute in the CP, for pre 3.2 installs
+     * See getUiLabel for > 3.2
+     * @return string
+     */
+    public function __toString()
+    {
+        if ($this->email) {
+            return (string)$this->email;
+        }
+        return (string)$this->id;
+    }
+
     public function getUiLabel(): string
     {
         return $this->email;
