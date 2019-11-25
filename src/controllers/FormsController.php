@@ -14,7 +14,7 @@ class FormsController extends Controller
     public function actionIndex()
     {
         $forms = MolliePayments::getInstance()->forms->getAllForms();
-        return $this->renderTemplate('mollie-payments/_forms/_index.twig', ['forms' => $forms]);
+        return $this->renderTemplate('mollie-payments/_forms/_index.twig', ['paymentForms' => $forms]);
     }
 
     public function actionEdit($formId = null)
