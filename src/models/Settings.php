@@ -14,5 +14,4 @@ class Settings extends Model
 {
     public $apiKey;
 
-
 }

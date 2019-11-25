@@ -46,14 +46,18 @@ class Transaction extends Component
             $payment->paymentStatus = $molliePayment->status;
 
             Craft::$app->getElements()->saveElement($payment);
-            $this->trigger(MolliePayments::EVENT_AFTER_TRANSACTION_UPDATE,
-                new TransactionUpdateEvent([
-                    'transaction' => $transaction,
-                    'payment' => $payment,
-                    'status' => $molliePayment->status
-                ])
-            );
+            $this->eventAfterTransactionUpdate($transaction, $payment, $molliePayment->status);
         }
+    }
+
+    public function fireEventAfterTransactionUpdate($transaction, $payment, $status) {
+        $this->trigger(MolliePayments::EVENT_AFTER_TRANSACTION_UPDATE,
+            new TransactionUpdateEvent([
+                'transaction' => $transaction,
+                'payment' => $payment,
+                'status' => $status
+            ])
+        );
     }
 
     public function getStatusForPayment($id)
