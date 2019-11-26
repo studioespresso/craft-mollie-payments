@@ -52,7 +52,7 @@ class Payment extends Component
 
         $payment->paymentStatus = 'free';
         MolliePayments::getInstance()->payment->save($payment);
-        MolliePayments::getInstance()->transaction->fireEventAfterTransactionUpdate($transaction, $payment, $status);
+        MolliePayments::getInstance()->transaction->fireEventAfterTransactionUpdate($transaction, $payment, "free");
 
         $redirect = UrlHelper::url($redirect, ['payment' => $payment->uid, 'status' => 'free']);
         return $redirect;
