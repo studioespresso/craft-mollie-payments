@@ -8,6 +8,14 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ### Fixed 
 - Fixed an issue with conflicting variable names in the forms index template
 
+## 1.1.2 - 2019-11-26
+
+### Fixed 
+- Fixed a missing variable when handling free payments
+
+
+## 1.1.1 - 2019-11-25
+>>>>>>> ca1961be5a69b314faa6e98df18b72a2a71674cf
 
 ## 1.1.1 - 2019-11-25
 ### Fixed 
