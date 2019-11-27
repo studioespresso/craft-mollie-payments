@@ -7,6 +7,11 @@
 {% set selectedSubnavItem = 'settings' %}
 {% set fullPageForm = true %}
 
+{% set crumbs = [
+    { label: "Payments", url: cpUrl('mollie-payments') },
+    { label: 'Settings', url: '#' },
+] %}
+
 
 {# The content of the CP Section#}
 {% block content %}
