@@ -4,7 +4,12 @@
 {% set fullPageForm = true %}
 {% set saveShortcutRedirect = continueEditingUrl ?? "" %}
 
-{% set title = "Payment for "|t('mollie-payments') ~ form.title %}
+{% set crumbs = [
+    { label: "Payments", url: cpUrl('mollie-payments') },
+    { label: 'Payment', url: '#' },
+] %}
+
+{% set title = "Payment for "|t('mollie-payments') ~ form.title ~' - '~ element.email %}
 {% block header %}
     {{ block('pageTitle') }}
     {{ block('contextMenu') }}

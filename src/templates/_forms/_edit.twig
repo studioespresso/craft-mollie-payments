@@ -9,7 +9,9 @@
 {% set selectedSubnavItem = 'forms' %}
 
 {% set crumbs = [
-    { label: "Mollie Payments", url: url('mollie-payments/forms') },
+    { label: "Payments", url: cpUrl('mollie-payments') },
+    { label: 'Forms', url: cpUrl('mollie-payments/forms') },
+    { label: 'Edit', url: '#'}
 ] %}
 
 {# The content of the CP Section#}
