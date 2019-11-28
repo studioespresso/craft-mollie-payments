@@ -36,7 +36,6 @@ class PaymentController extends Controller
         $form = Craft::$app->security->validateData($form);
         $redirect = Craft::$app->security->validateData($redirect);
 
-
         if ($amount === false) {
             throw new HttpException(400);
         }
@@ -56,13 +55,13 @@ class PaymentController extends Controller
             throw new NotFoundHttpException("Form not found", 404);
         }
 
-        MolliePayments::getInstance()->payment->save($payment);
-
-        if($amount === "0") {
-            $url = MolliePayments::getInstance()->payment->handleFreePayment($payment, $paymentForm, UrlHelper::url($redirect));
-            return $this->redirect($url);
-        }
-        $url = MolliePayments::getInstance()->mollie->generatePayment($payment, UrlHelper::url($redirect));
+        if (MolliePayments::getInstance()->payment->save($payment)) {
+            if ($amount === "0") {
+                $url = MolliePayments::getInstance()->payment->handleFreePayment($payment, $paymentForm, UrlHelper::url($redirect));
+                return $this->redirect($url);
+            }
+            $url = MolliePayments::getInstance()->mollie->generatePayment($payment, UrlHelper::url($redirect));
+        };
         $this->redirect($url);
 
     }

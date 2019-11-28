@@ -34,9 +34,11 @@ class Payment extends Component
             ])
         );
 
-        Craft::$app->getElements()->saveElement($payment);
-
-        return $payment;
+        if(Craft::$app->getElements()->saveElement($payment)) {
+            return $payment;
+        } else {
+            return false;
+        };
     }
 
 
