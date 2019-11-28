@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 1.1.4 - 2019-11-28
+### Fixed 
+- Payment amounts can now be decimals and not just numbers
+
+
 ## 1.1.3 - 2019-11-27
 ### Fixed 
 - Fixed an issue with conflicting variable names in the forms index template
