@@ -69,7 +69,7 @@ class Install extends Migration
             'id' => $this->integer()->notNull(),
             'email' => $this->string()->notNull(),
             'paymentStatus' => $this->string()->notNull(),
-            'amount' => $this->integer()->notNull(),
+            'amount' => $this->decimal("10,2")->notNull(),
             'formId' => $this->integer()->notNull(),
             'dateCreated' => $this->dateTime()->notNull(),
             'dateUpdated' => $this->dateTime()->notNull(),
@@ -80,7 +80,7 @@ class Install extends Migration
         $this->createTable(PaymentTransactionRecord::tableName(), [
             'id' => $this->string()->notNull(),
             'payment' => $this->integer()->notNull(),
-            'amount' => $this->integer()->notNull(),
+            'amount' => $this->decimal("10,2")->notNull(),
             'currency' => $this->string(3)->defaultValue('EUR'),
             'status' => $this->string()->notNull(),
             'method' => $this->string(),
