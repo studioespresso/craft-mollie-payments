@@ -203,7 +203,7 @@ class Payment extends Element
     {
         return [
             ['email', 'string'],
-            ['amount', 'integer'],
+            ['amount', 'number'],
         ];
     }
 
