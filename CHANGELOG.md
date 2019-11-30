@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+
+## 1.1.5 - 2019-11-30
+### Fixed 
+- Fixed a typo that caused the webhook post to crash
+
+
 ## 1.1.4 - 2019-11-28
 ### Fixed 
 - Payment amounts can now be decimals and not just numbers
