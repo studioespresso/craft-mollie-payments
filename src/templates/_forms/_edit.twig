@@ -81,7 +81,7 @@
     <div class="field" id="handle-field">
         <div class="heading">
             <label id="handle-label" for="handle">{{ 'Payment description'|t('mollie-payments') }}</label>
-            <div class="instructions"><p>{{ 'How these payments are called in Mollie. You can include tags that output entry properties, such as {myCustomField}. Defaults to "Order #entryid".'|t('mollie-payments') }}</p>
+            <div class="instructions"><p>{{ 'How these payments are called in Mollie. You can include tags that output entry properties, such as {myCustomField}. Defaults to "Order #payment.id".'|t('mollie-payments') }}</p>
             </div>
         </div>
         <div class="input ltr {% if errors is defined and errors.descriptionFormat is defined %}errors{% endif %}">
