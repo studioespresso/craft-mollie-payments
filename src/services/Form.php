@@ -25,6 +25,7 @@ class Form extends Component
         $paymentFormRecord->title = $paymentFormModel->title;
         $paymentFormRecord->handle = $paymentFormModel->handle;
         $paymentFormRecord->currency = $paymentFormModel->currency;
+        $paymentFormRecord->descriptionFormat = $paymentFormModel->descriptionFormat;
         $paymentFormRecord->fieldLayout = $paymentFormModel->fieldLayout;
         return $paymentFormRecord->save();
     }

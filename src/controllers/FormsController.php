@@ -48,6 +48,7 @@ class FormsController extends Controller
         $paymentFormModel->title = $data['title'];
         $paymentFormModel->handle = $data['handle'];
         $paymentFormModel->currency = $data['currency'];
+        $paymentFormModel->descriptionFormat = $data['descriptionFormat'];
         $paymentFormModel->fieldLayout = $fieldLayout->id;
 
         if($paymentFormModel->validate()) {
