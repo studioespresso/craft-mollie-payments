@@ -22,13 +22,15 @@ class PaymentFormModel extends Model
 
     public $currency;
 
+    public $descriptionFormat;
+
     public $fieldLayout;
 
     public function rules()
     {
         return [
             [['title', 'handle', 'currency'], 'required'],
-            [['title', 'handle', 'currency'], 'safe'],
+            [['title', 'handle', 'currency', 'descriptionFormat'], 'safe'],
             ['handle', 'validateHandle'],
         ];
     }

@@ -77,6 +77,29 @@
         value: form.currency ?? "",
         errors: errors is defined and errors.currency is defined ? errors.currency
     }) }}
+
+    <div class="field" id="handle-field">
+        <div class="heading">
+            <label id="handle-label" for="handle">{{ 'Payment description'|t('mollie-payments') }}</label>
+            <div class="instructions"><p>{{ 'How these payments are called in Mollie. You can include tags that output entry properties, such as {myCustomField}. Defaults to "Order #payment.id".'|t('mollie-payments') }}</p>
+            </div>
+        </div>
+        <div class="input ltr {% if errors is defined and errors.descriptionFormat is defined %}errors{% endif %}">
+            <input class="text code fullwidth" type="text" id="handle" name="data[descriptionFormat]"
+                   {% if form is defined %}value="{{ form.descriptionFormat }}"{% endif %}
+                   autocomplete="off">
+        </div>
+        {% if errors is defined and errors.descriptionFormat is defined %}
+            <ul class="errors">
+                {% for error in errors.descriptionFormat %}
+                    <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+
+
+
     {% if form is not defined or not form.handle|length %}
         {% js %}
             new Craft.HandleGenerator('#title', '#handle');

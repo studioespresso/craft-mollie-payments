@@ -7,6 +7,7 @@ use craft\helpers\UrlHelper;
 use craft\web\Controller;
 use studioespresso\molliepayments\elements\Payment;
 use studioespresso\molliepayments\MolliePayments;
+use yii\base\InvalidConfigException;
 use yii\web\HttpException;
 use yii\web\NotFoundHttpException;
 
@@ -18,6 +19,10 @@ class PaymentController extends Controller
     {
         if ($action->id === 'webhook') {
             $this->enableCsrfValidation = false;
+        }
+
+        if(!MolliePayments::$plugin->getSettings()->apiKey){
+            throw new InvalidConfigException("No Mollie API key set");
         }
         return parent::beforeAction($action);
     }
