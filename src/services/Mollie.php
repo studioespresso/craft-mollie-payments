@@ -25,13 +25,20 @@ class Mollie extends Component
     {
         $paymentForm = MolliePayments::getInstance()->forms->getFormByid($payment->formId);
         $baseUrl = Craft::$app->getSites()->getCurrentSite()->getBaseUrl();
-        
+
+
+        if($paymentForm->descriptionFormat) {
+           $description = Craft::$app->getView()->renderObjectTemplate($paymentForm->descriptionFormat, $payment);
+        } else {
+            $description = "Order #{$payment->id}";
+        }
+
         $authorization = $this->mollie->payments->create([
             "amount" => [
                 "currency" => $paymentForm->currency,
                 "value" => number_format($payment->amount, 2, '.', '') // You must send the correct number of decimals, thus we enforce the use of strings
             ],
-            "description" => "Order #{$payment->id}",
+            "description" => $description,
             "redirectUrl" => UrlHelper::url("{$baseUrl}mollie-payments/payment/redirect", [
                 "order_id" => $payment->uid,
                 "redirect" => $redirect
