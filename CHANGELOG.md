@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 1.2.0 - 2019-12-04
+### Added
+- The payment description visible in Mollie can now be set per payment form and  can include values from the custom fields that are assigned ot the form. 
 
 ## 1.1.5 - 2019-11-30
 ### Fixed 
