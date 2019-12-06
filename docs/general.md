@@ -37,6 +37,9 @@ These fields can be saved from the frontend form by using the name like so: ``<i
 
 
 ## 3. Form template
+This is an example of the form template needed to make a payment. Both the `amount` and `form` values need to use the [hash](https://docs.craftcms.com/v3/dev/filters.html#hash) filter or otherwise an error will be returned.
+
+Custom fields should be in the `fields` namespace (eg: `name="fields[firstName]"`), just like in frontend entry forms
 
 ```html
 <form method="post">
