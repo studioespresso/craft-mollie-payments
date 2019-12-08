@@ -2,7 +2,6 @@
 
 namespace studioespresso\molliepayments\elements\db;
 
-use craft\db\Query;
 use craft\elements\db\ElementQuery;
 use craft\helpers\Db;
 
@@ -12,6 +11,14 @@ class PaymentQuery extends ElementQuery
     public $formId;
 
     public $paymentStatus;
+
+    public $email;
+
+    public function email($value)
+    {
+        $this->email = $value;
+        return $this;
+    }
 
     public function paymentStatus($value)
     {
@@ -44,7 +51,6 @@ class PaymentQuery extends ElementQuery
 
     protected function beforePrepare(): bool
     {
-        // join in the products table
         $this->joinElementTable('mollie_payments');
         // select the columns
         $this->query->select([
@@ -53,7 +59,12 @@ class PaymentQuery extends ElementQuery
             'mollie_payments.formId',
             'mollie_payments.paymentStatus',
         ]);
-        if($this->formId) {
+
+        if ($this->email) {
+            $this->subQuery->andWhere(Db::parseParam('mollie_payments.email', $this->email));
+        }
+
+        if ($this->formId) {
             $this->subQuery->andWhere(Db::parseParam('mollie_payments.formId', $this->formId));
         }
 

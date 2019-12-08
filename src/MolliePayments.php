@@ -142,6 +142,14 @@ class MolliePayments extends Plugin
             }
         );
 
+        Event::on(CraftVariable::class, CraftVariable::EVENT_INIT, function(Event $e) {
+            /** @var CraftVariable $variable */
+            $variable = $e->sender;
+            $variable->attachBehaviors([
+                CraftVariableBehavior::class,
+            ]);
+        });
+
     }
 
     public function getCpNavItem()

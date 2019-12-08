@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 1.3.0 - 2019-12-08
+### Added
+- Added ``craft.payments``, making it easy to display data from the payment element on confirmation & profile pages. ([#6](https://github.com/studioespresso/craft-mollie-payments/issues/6)) 
+
+
 ## 1.2.0 - 2019-12-04
 ### Added
 - The payment description visible in Mollie can now be set per payment form and  can include values from the custom fields that are assigned ot the form. 

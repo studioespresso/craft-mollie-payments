@@ -15,8 +15,16 @@ In the CP, payments are grouped by form and can be search on email, amount or an
 
 ## Payment forms
 
-Payment forms are where you define the field layout for the your payment and the currency it should processed in.
-The form is passed through the payment form as follows
+Payment forms are where you define the field layout for the your payment, as well as the following properties:
+- the title & handle of the form, currently only visible in the CP
+- the currency the payment will be processes in
+- the description of the payment in Mollie. This field works like the dynamic title field on an Entrytype, so you can use custom fields in it as well. Will default to ``Order #number``.
+
+<img src="./images/paymentform.png">
+
+
+
+Which form the payment is for is determined by passing the following hidden field along in your payment form template:
 `````html
 <input type="hidden" name="form" value="{{ 3|hash }}">
 `````

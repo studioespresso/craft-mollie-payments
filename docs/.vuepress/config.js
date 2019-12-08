@@ -20,10 +20,11 @@ module.exports = {
         sidebar: [
             ['/', 'Introduction'],
             ['/general', 'Getting started'],
-            ['/settings', 'Plugin settings'],
+            ['/template', 'Templating'],
             ['/events', 'Events'],
             ['/webhook', 'Webhook'],
-            ['/element', 'Core concepts'],
+            ['/element', 'Elements & concepts'],
+            ['/settings', 'Plugin settings'],
         ],
         nav: [
             {
