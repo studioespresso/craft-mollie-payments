@@ -115,6 +115,10 @@ class Payment extends Element
         return false;
     }
 
+    public function getForm() {
+        return MolliePayments::getInstance()->forms->getFormByid($this->formId);
+    }
+
     /**
      *
      * @return ElementQueryInterface The newly created [[ElementQueryInterface]] instance.
