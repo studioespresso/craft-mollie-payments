@@ -20,6 +20,14 @@ class PaymentQuery extends ElementQuery
         return $this;
     }
 
+    public function status($value)
+    {
+        $this->paymentStatus = $value;
+        d($this->paymentStatus);
+        return $this;
+    }
+
+
     public function paymentStatus($value)
     {
         $this->paymentStatus = $value;
@@ -35,6 +43,8 @@ class PaymentQuery extends ElementQuery
     protected function statusCondition(string $status)
     {
         switch ($status) {
+            case 'cart':
+                return ['paymentStatus' => 'cart'];
             case 'free':
                 return ['paymentStatus' => 'free'];
             case 'pending':

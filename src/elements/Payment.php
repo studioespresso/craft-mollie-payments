@@ -95,8 +95,9 @@ class Payment extends Element
     public static function statuses(): array
     {
         return [
+            'cart' => ['label' => Craft::t('mollie-payments', 'In Cart'), 'color' => 'grey'],
             'pending' => ['label' => Craft::t('mollie-payments', 'Pending'), 'color' => 'orange'],
-            'free' => ['label' => Craft::t('mollie-payments', 'Free'), 'color' => 'green'],
+            'free' => ['label' => Craft::t('mollie-payments', 'Free'), 'color' => 'blue'],
             'paid' => ['label' => Craft::t('mollie-payments', 'Paid'), 'color' => 'green'],
             'expired' => ['label' => Craft::t('mollie-payments', 'Expired'), 'color' => 'red'],
         ];
