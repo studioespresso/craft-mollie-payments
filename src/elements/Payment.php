@@ -183,6 +183,7 @@ class Payment extends Element
             'email' => Craft::t('mollie-payments', 'Email'),
             'amount' => Craft::t('mollie-payments', 'Amount'),
             'status' => Craft::t('mollie-payments', 'Status'),
+            'dateCreated' => Craft::t('mollie-payments', 'Date Created'),
         ];
     }
 
