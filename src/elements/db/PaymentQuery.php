@@ -20,6 +20,13 @@ class PaymentQuery extends ElementQuery
         return $this;
     }
 
+    public function hash($value)
+    {
+        $uid = \Craft::$app->getSecurity()->validateData($value);
+        $this->uid = $uid;
+        return $this;
+    }
+
     public function status($value)
     {
         $this->paymentStatus = $value;
