@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 1.4.0 - 2020-03-01
+### Added
+- Date created is now shown on element overviews ([#7](https://github.com/studioespresso/craft-mollie-payments/issues/7))
+- Payments can now also be done in multi-step forms, using your own controller action. Docs can be found [here](https://studioespresso.github.io/craft-mollie-payments/template.html#multi-step-form)
+
+
 ## 1.3.0 - 2019-12-08
 ### Added
 - Added ``craft.payments``, making it easy to display data from the payment element on confirmation & profile pages. ([#6](https://github.com/studioespresso/craft-mollie-payments/issues/6)) 
