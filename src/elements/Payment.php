@@ -88,7 +88,7 @@ class Payment extends Element
 
     public function getUiLabel(): string
     {
-        return $this->email;
+        return $this->email ? $this->email : Craft::t("mollie-payments", 'Cart') . ' ' . $this->id;
     }
 
 
