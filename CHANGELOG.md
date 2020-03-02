@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 1.4.1 - 2020-03-02
+### Fixed
+- Payments with status "in cart" can now be viewed & clicked in the CP
+
+
+
 ## 1.4.0 - 2020-03-01
 ### Added
 - Date created is now shown on element overviews ([#7](https://github.com/studioespresso/craft-mollie-payments/issues/7))
