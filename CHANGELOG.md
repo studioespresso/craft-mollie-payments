@@ -4,10 +4,14 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 1.4.2 - 2020-03-04
+### Fixed
+- Fix an error where payment element wouldn't be assign an email address.
+
+
 ## 1.4.1 - 2020-03-02
 ### Fixed
 - Payments with status "in cart" can now be viewed & clicked in the CP
-
 
 
 ## 1.4.0 - 2020-03-01

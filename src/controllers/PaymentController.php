@@ -57,7 +57,7 @@ class PaymentController extends Controller
             $paymentForm = MolliePayments::getInstance()->forms->getFormByid($form);
             $payment = new Payment();
 
-            //$payment->email = $email;
+            $payment->email = $email;
             $payment->amount = $amount;
             $payment->formId = $form;
             $payment->fieldLayoutId = $paymentForm->fieldLayout;
