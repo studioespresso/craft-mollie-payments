@@ -43,7 +43,7 @@ class PaymentController extends Controller
         $redirect = Craft::$app->request->getBodyParam('redirect');
         $redirect = Craft::$app->security->validateData($redirect);
 
-        if (Craft::$app->getRequest()->getValidatedBodyParam('payment')) {
+        if (Craft::$app->getRequest()->getBodyParam('payment') &&  Craft::$app->getRequest()->getValidatedBodyParam('payment')) {
             $payment = Payment::findOne(['uid' => Craft::$app->getRequest()->getValidatedBodyParam('payment')]);
             if (!$payment) {
                 throw new NotFoundHttpException("Payment not found", 404);
