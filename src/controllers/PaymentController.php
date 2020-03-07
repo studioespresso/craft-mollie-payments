@@ -13,7 +13,7 @@ use yii\web\NotFoundHttpException;
 
 class PaymentController extends Controller
 {
-    protected $allowAnonymous = ['pay', 'redirect', 'webhook'];
+    protected $allowAnonymous = ['pay', 'donate', 'redirect', 'webhook'];
 
     public function beforeAction($action)
     {
@@ -48,6 +48,58 @@ class PaymentController extends Controller
             $form = Craft::$app->request->getRequiredBodyParam('form');
 
             $amount = Craft::$app->security->validateData($amount);
+            $form = Craft::$app->security->validateData($form);
+
+            if ($amount === false) {
+                throw new HttpException(400);
+            }
+
+            $paymentForm = MolliePayments::getInstance()->forms->getFormByid($form);
+            $payment = new Payment();
+
+            $payment->email = $email;
+            $payment->amount = $amount;
+            $payment->formId = $form;
+            $payment->fieldLayoutId = $paymentForm->fieldLayout;
+
+            if (!$paymentForm) {
+                throw new NotFoundHttpException("Form not found", 404);
+            }
+        }
+
+        $payment->paymentStatus = 'pending';
+        $payment->setFieldValuesFromRequest('fields');
+
+        if (MolliePayments::getInstance()->payment->save($payment)) {
+            if ($payment->amount === "0") {
+                $url = MolliePayments::getInstance()->payment->handleFreePayment($payment, $paymentForm, UrlHelper::url($redirect));
+                return $this->redirect($url);
+            }
+            $url = MolliePayments::getInstance()->mollie->generatePayment($payment, UrlHelper::url($redirect));
+        };
+        $this->redirect($url);
+
+    }
+
+    public function actionDonate()
+    {
+
+        $redirect = Craft::$app->request->getBodyParam('redirect');
+        $redirect = Craft::$app->security->validateData($redirect);
+
+        if (Craft::$app->getRequest()->getBodyParam('payment') &&  Craft::$app->getRequest()->getValidatedBodyParam('payment')) {
+            $payment = Payment::findOne(['uid' => Craft::$app->getRequest()->getValidatedBodyParam('payment')]);
+            if (!$payment) {
+                throw new NotFoundHttpException("Payment not found", 404);
+            }
+            if(Craft::$app->getRequest()->getBodyParam('email')) {
+                $payment->email = Craft::$app->getRequest()->getBodyParam('email');
+            }
+        } else {
+            $email = Craft::$app->request->getRequiredBodyParam('email');
+            $amount = Craft::$app->request->getRequiredBodyParam('amount');
+            $form = Craft::$app->request->getRequiredBodyParam('form');
+
             $form = Craft::$app->security->validateData($form);
 
             if ($amount === false) {
