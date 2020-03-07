@@ -4,26 +4,26 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 1.5.0 - 2020-03-07
+### Added
+- Added a `donate` action so you can have forms where the user can choose the price. An example form can be found [here](https://studioespresso.github.io/craft-mollie-payments/template.html#donation-form) 
+
 ## 1.4.2 - 2020-03-04
 ### Fixed
 - Fix an error where payment element wouldn't be assign an email address.
 
-
 ## 1.4.1 - 2020-03-02
 ### Fixed
 - Payments with status "in cart" can now be viewed & clicked in the CP
-
 
 ## 1.4.0 - 2020-03-01
 ### Added
 - Date created is now shown on element overviews ([#7](https://github.com/studioespresso/craft-mollie-payments/issues/7))
 - Payments can now also be done in multi-step forms, using your own controller action. Docs can be found [here](https://studioespresso.github.io/craft-mollie-payments/template.html#multi-step-form)
 
-
 ## 1.3.0 - 2019-12-08
 ### Added
 - Added ``craft.payments``, making it easy to display data from the payment element on confirmation & profile pages. ([#6](https://github.com/studioespresso/craft-mollie-payments/issues/6)) 
-
 
 ## 1.2.0 - 2019-12-04
 ### Added
@@ -33,22 +33,17 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ### Fixed 
 - Fixed a typo that caused the webhook post to crash
 
-
 ## 1.1.4 - 2019-11-28
 ### Fixed 
 - Payment amounts can now be decimals and not just numbers
-
 
 ## 1.1.3 - 2019-11-27
 ### Fixed 
 - Fixed an issue with conflicting variable names in the forms index template
 
 ## 1.1.2 - 2019-11-26
-
 ### Fixed 
 - Fixed a missing variable when handling free payments
-
-## 1.1.1 - 2019-11-25
 
 ## 1.1.1 - 2019-11-25
 ### Fixed 
