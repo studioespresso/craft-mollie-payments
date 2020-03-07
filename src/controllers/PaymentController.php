@@ -28,6 +28,15 @@ class PaymentController extends Controller
     }
 
 
+    /**
+     * @since 1.0.0
+     * @return \yii\web\Response
+     * @throws HttpException
+     * @throws InvalidConfigException
+     * @throws NotFoundHttpException
+     * @throws \yii\base\Exception
+     * @throws \yii\web\BadRequestHttpException
+     */
     public function actionPay()
     {
 
@@ -81,6 +90,15 @@ class PaymentController extends Controller
 
     }
 
+    /**
+     * @since 1.5.0
+     * @return \yii\web\Response
+     * @throws HttpException
+     * @throws InvalidConfigException
+     * @throws NotFoundHttpException
+     * @throws \yii\base\Exception
+     * @throws \yii\web\BadRequestHttpException
+     */
     public function actionDonate()
     {
 
@@ -133,6 +151,10 @@ class PaymentController extends Controller
 
     }
 
+    /**
+     * @since 1.0.0
+     * @param $uid
+     */
     public function actionEdit($uid)
     {
         $query = Payment::find();
@@ -160,6 +182,10 @@ class PaymentController extends Controller
 
     }
 
+    /**
+     * @since 1.0.0
+     * @throws \yii\web\BadRequestHttpException
+     */
     public function actionWebhook()
     {
         $id = Craft::$app->getRequest()->getRequiredParam('id');
@@ -169,6 +195,11 @@ class PaymentController extends Controller
         return;
     }
 
+    /**
+     * @since 1.0.0
+     * @return \craft\web\Response|\yii\console\Response
+     * @throws \yii\web\BadRequestHttpException
+     */
     public function actionExport()
     {
         $ids = Craft::$app->request->post('ids');
@@ -176,6 +207,11 @@ class PaymentController extends Controller
         return MolliePayments::getInstance()->export->run($payments);
     }
 
+    /**
+     * @since 1.0.0
+     * @return \craft\web\Response|\yii\console\Response
+     * @throws \yii\web\BadRequestHttpException
+     */
     public function actionExportAll()
     {
         $payments = Payment::findAll();
