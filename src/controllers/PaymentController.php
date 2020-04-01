@@ -29,13 +29,13 @@ class PaymentController extends Controller
 
 
     /**
-     * @since 1.0.0
      * @return \yii\web\Response
      * @throws HttpException
      * @throws InvalidConfigException
      * @throws NotFoundHttpException
      * @throws \yii\base\Exception
      * @throws \yii\web\BadRequestHttpException
+     * @since 1.0.0
      */
     public function actionPay()
     {
@@ -43,12 +43,12 @@ class PaymentController extends Controller
         $redirect = Craft::$app->request->getBodyParam('redirect');
         $redirect = Craft::$app->security->validateData($redirect);
 
-        if (Craft::$app->getRequest()->getBodyParam('payment') &&  Craft::$app->getRequest()->getValidatedBodyParam('payment')) {
+        if (Craft::$app->getRequest()->getBodyParam('payment') && Craft::$app->getRequest()->getValidatedBodyParam('payment')) {
             $payment = Payment::findOne(['uid' => Craft::$app->getRequest()->getValidatedBodyParam('payment')]);
             if (!$payment) {
                 throw new NotFoundHttpException("Payment not found", 404);
             }
-            if(Craft::$app->getRequest()->getBodyParam('email')) {
+            if (Craft::$app->getRequest()->getBodyParam('email')) {
                 $payment->email = Craft::$app->getRequest()->getBodyParam('email');
             }
         } else {
@@ -91,40 +91,41 @@ class PaymentController extends Controller
     }
 
     /**
-     * @since 1.5.0
      * @return \yii\web\Response
      * @throws HttpException
      * @throws InvalidConfigException
      * @throws NotFoundHttpException
      * @throws \yii\base\Exception
      * @throws \yii\web\BadRequestHttpException
+     * @since 1.5.0
      */
     public function actionDonate()
     {
-
         $redirect = Craft::$app->request->getBodyParam('redirect');
         $redirect = Craft::$app->security->validateData($redirect);
 
-        if (Craft::$app->getRequest()->getBodyParam('payment') &&  Craft::$app->getRequest()->getValidatedBodyParam('payment')) {
+        $form = Craft::$app->request->getValidatedBodyParam('form');
+        $paymentForm = MolliePayments::getInstance()->forms->getFormByid($form);
+        if (!$paymentForm) {
+            throw new NotFoundHttpException("Form not found", 404);
+        }
+
+        if (Craft::$app->getRequest()->getBodyParam('payment') && Craft::$app->getRequest()->getValidatedBodyParam('payment')) {
             $payment = Payment::findOne(['uid' => Craft::$app->getRequest()->getValidatedBodyParam('payment')]);
             if (!$payment) {
                 throw new NotFoundHttpException("Payment not found", 404);
             }
-            if(Craft::$app->getRequest()->getBodyParam('email')) {
+            if (Craft::$app->getRequest()->getBodyParam('email')) {
                 $payment->email = Craft::$app->getRequest()->getBodyParam('email');
             }
         } else {
             $email = Craft::$app->request->getRequiredBodyParam('email');
             $amount = Craft::$app->request->getRequiredBodyParam('amount');
-            $form = Craft::$app->request->getRequiredBodyParam('form');
-
-            $form = Craft::$app->security->validateData($form);
 
             if ($amount === false) {
                 throw new HttpException(400);
             }
 
-            $paymentForm = MolliePayments::getInstance()->forms->getFormByid($form);
             $payment = new Payment();
 
             $payment->email = $email;
@@ -132,16 +133,13 @@ class PaymentController extends Controller
             $payment->formId = $form;
             $payment->fieldLayoutId = $paymentForm->fieldLayout;
 
-            if (!$paymentForm) {
-                throw new NotFoundHttpException("Form not found", 404);
-            }
         }
 
         $payment->paymentStatus = 'pending';
         $payment->setFieldValuesFromRequest('fields');
 
         if (MolliePayments::getInstance()->payment->save($payment)) {
-            if ($payment->amount === "0") {
+            if ($payment->amount == "0") {
                 $url = MolliePayments::getInstance()->payment->handleFreePayment($payment, $paymentForm, UrlHelper::url($redirect));
                 return $this->redirect($url);
             }
@@ -152,8 +150,8 @@ class PaymentController extends Controller
     }
 
     /**
-     * @since 1.0.0
      * @param $uid
+     * @since 1.0.0
      */
     public function actionEdit($uid)
     {
@@ -183,8 +181,8 @@ class PaymentController extends Controller
     }
 
     /**
-     * @since 1.0.0
      * @throws \yii\web\BadRequestHttpException
+     * @since 1.0.0
      */
     public function actionWebhook()
     {
@@ -196,9 +194,9 @@ class PaymentController extends Controller
     }
 
     /**
-     * @since 1.0.0
      * @return \craft\web\Response|\yii\console\Response
      * @throws \yii\web\BadRequestHttpException
+     * @since 1.0.0
      */
     public function actionExport()
     {
@@ -208,9 +206,9 @@ class PaymentController extends Controller
     }
 
     /**
-     * @since 1.0.0
      * @return \craft\web\Response|\yii\console\Response
      * @throws \yii\web\BadRequestHttpException
+     * @since 1.0.0
      */
     public function actionExportAll()
     {

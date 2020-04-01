@@ -32,13 +32,10 @@ module.exports = {
                 link: 'https://plugins.craftcms.com/mollie-payments',
             },
             {
-                text: 'Issues?',
+                text: 'Questions or issues?',
                 link: 'https://github.com/studioespresso/craft-mollie-payments/issues'
             },
-            {
-                text: 'Questions? Get in touch!',
-                link: 'https://www.studioespresso.co/en/contact',
-            }
+
         ]
     }
 }
