@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 1.5.1 - 2020-04-01
+### Fixed
+- Fixed an the donate action when using a multi-step form 
+
 ## 1.5.0 - 2020-03-07
 ### Added
 - Added a `donate` action so you can have forms where the user can choose the price. An example form can be found [here](https://studioespresso.github.io/craft-mollie-payments/template.html#donation-form) 
