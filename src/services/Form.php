@@ -48,8 +48,9 @@ class Form extends Component
         return $form;
     }
 
-    public function delete($id) {
-        $paymentFormRecord = PaymentFormRecord::find(['id' => $id])->one();
+    public function delete($id)
+    {
+        $paymentFormRecord = PaymentFormRecord::findOne(['id' => $id]);
         return $paymentFormRecord->delete();
     }
 }
