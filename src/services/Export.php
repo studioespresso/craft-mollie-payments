@@ -19,7 +19,7 @@ class Export extends Component
     {
 
         $results = [];
-        $header = ['form', 'email', 'amount', 'currency'];
+        $header = ['form', 'email', 'amount', 'currency', 'status'];
         $customFields = [];
 
         foreach ($query as $payment) {
@@ -37,6 +37,7 @@ class Export extends Component
                 'email' => $payment->email,
                 'amount' => $payment->amount,
                 'currency' => $this->forms[$payment->formId]->currency,
+                'status' => $payment->status,
             ]);
             $values = $payment->getFieldValues();
             foreach ($customFields as $field) {
