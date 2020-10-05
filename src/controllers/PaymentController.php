@@ -3,6 +3,7 @@
 namespace studioespresso\molliepayments\controllers;
 
 use Craft;
+use craft\helpers\ConfigHelper;
 use craft\helpers\UrlHelper;
 use craft\web\Controller;
 use studioespresso\molliepayments\elements\Payment;
@@ -21,7 +22,7 @@ class PaymentController extends Controller
             $this->enableCsrfValidation = false;
         }
 
-        if (!MolliePayments::$plugin->getSettings()->apiKey) {
+        if (!ConfigHelper::localizedValue(MolliePayments::$plugin->getSettings()->apiKey)) {
             throw new InvalidConfigException("No Mollie API key set");
         }
         return parent::beforeAction($action);
