@@ -4,6 +4,7 @@ namespace studioespresso\molliepayments\services;
 
 use Craft;
 use craft\base\Component;
+use craft\helpers\ConfigHelper;
 use craft\helpers\UrlHelper;
 use studioespresso\molliepayments\elements\Payment;
 use studioespresso\molliepayments\models\PaymentFormModel;
@@ -18,7 +19,7 @@ class Mollie extends Component
     public function init()
     {
         $this->mollie = new \Mollie\Api\MollieApiClient();
-        $this->mollie->setApiKey(Craft::parseEnv(MolliePayments::getInstance()->getSettings()->apiKey));
+        $this->mollie->setApiKey(Craft::parseEnv(ConfigHelper::localizedValue(MolliePayments::$plugin->getSettings()->apiKey)));
     }
 
     public function generatePayment(Payment $payment, $redirect)
