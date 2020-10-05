@@ -15,3 +15,16 @@ return [
     'apiKey' => 'test_api_key'
 ];
 ```
+
+These settings can also be set per site, but this can only be done through the configuration file.
+
+```php
+<?php
+
+return [
+    'apiKey' => [
+        'siteHandleA' => 'test_key_a',
+        'siteHandleB' => 'test_key_b',
+    ]   
+];
+```
