@@ -163,7 +163,7 @@ class MolliePayments extends Plugin
             'url' => 'mollie-payments',
         ];
 
-        if (Craft::$app->getUser()->getIsAdmin() && Craft::$app->getConfig()->getGeneral()->allowAdminChanges) {
+        if (Craft::$app->getUser()->getIsAdmin()) {
             $subNavs['forms'] = [
                 'label' => 'Forms',
                 'url' => 'mollie-payments/forms',
