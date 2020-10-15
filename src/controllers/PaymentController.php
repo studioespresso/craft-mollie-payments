@@ -80,6 +80,14 @@ class PaymentController extends Controller
         $payment->paymentStatus = 'pending';
         $payment->setFieldValuesFromRequest('fields');
 
+        if (!$payment->validate()) {
+            // Send the payment back to the template
+            Craft::$app->getUrlManager()->setRouteParams([
+                'payment' => $payment,
+            ]);
+            return null;
+        }
+
         if (MolliePayments::getInstance()->payment->save($payment)) {
             if ($payment->amount === "0") {
                 $url = MolliePayments::getInstance()->payment->handleFreePayment($payment, $paymentForm, UrlHelper::url($redirect));
