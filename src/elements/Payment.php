@@ -210,6 +210,7 @@ class Payment extends Element
         return [
             ['email', 'string'],
             ['amount', 'number'],
+            [['email', 'amount'], 'required'],
         ];
     }
 
