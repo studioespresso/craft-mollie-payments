@@ -207,11 +207,11 @@ class Payment extends Element
      */
     public function rules()
     {
-        return [
-            ['email', 'string'],
-            ['amount', 'number'],
-            [['email', 'amount'], 'required'],
-        ];
+        $rules   = parent::rules();
+        $rules[] = [['email'], 'string'];
+        $rules[] = [['amount'], 'string'];
+        $rules[] = [['email', 'amount'], 'required'];
+        return $rules;
     }
 
     /**
