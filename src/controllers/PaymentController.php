@@ -3,6 +3,8 @@
 namespace studioespresso\molliepayments\controllers;
 
 use Craft;
+use craft\base\Element;
+use craft\base\Model;
 use craft\helpers\ConfigHelper;
 use craft\helpers\UrlHelper;
 use craft\web\Controller;
@@ -54,14 +56,11 @@ class PaymentController extends Controller
             }
         } else {
             $email = Craft::$app->request->getRequiredBodyParam('email');
-            $amount = Craft::$app->request->getRequiredBodyParam('amount');
-            $form = Craft::$app->request->getRequiredBodyParam('form');
+            $amount = Craft::$app->request->getValidatedBodyParam('amount');
+            $form = Craft::$app->request->getValidatedBodyParam('form');
 
-            $amount = Craft::$app->security->validateData($amount);
-            $form = Craft::$app->security->validateData($form);
-
-            if ($amount === false) {
-                throw new HttpException(400);
+            if ($amount === false || $form === false) {
+                throw new HttpException(400, "Incorrent payment submitted");
             }
 
             $paymentForm = MolliePayments::getInstance()->forms->getFormByid($form);
@@ -78,8 +77,11 @@ class PaymentController extends Controller
         }
 
         $payment->paymentStatus = 'pending';
-        $payment->setFieldValuesFromRequest('fields');
 
+        $fieldsLocation = Craft::$app->getRequest()->getParam('fieldsLocation', 'fields');
+        $payment->setFieldValuesFromRequest($fieldsLocation);
+
+        $payment->setScenario(Element::SCENARIO_LIVE);
         if (!$payment->validate()) {
             // Send the payment back to the template
             Craft::$app->getUrlManager()->setRouteParams([

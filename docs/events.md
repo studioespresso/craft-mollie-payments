@@ -11,6 +11,11 @@ next: false
 Before the payment element gets saved, you can listen this event:
 
 ```php
+use studioespresso\molliepayments\events\PaymentUpdateEvent;
+use studioespresso\molliepayments\MolliePayments;
+use studioespresso\molliepayments\services\Payment;
+use yii\base\Event;
+
 Event::on(
     Payment::class,
     MolliePayments::EVENT_BEFORE_PAYMENT_SAVE,
@@ -28,6 +33,11 @@ The event contains the following:
 When Mollie send back a post request to the plugin's webhook to update the status, the following event is fired:
 
 ```php
+use studioespresso\molliepayments\events\TransactionUpdateEvent;
+use studioespresso\molliepayments\MolliePayments;
+use studioespresso\molliepayments\services\Transaction;
+use yii\base\Event;
+
 Event::on(
     Transaction::class,
     MolliePayments::EVENT_AFTER_TRANSACTION_UPDATE,

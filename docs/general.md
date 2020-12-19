@@ -48,11 +48,21 @@ Custom fields should be in the `fields` namespace (eg: `name="fields[firstName]"
     {{ redirectInput("confirmation-page") }}
     <input type="hidden" name="amount" value="{{ 20|hash }}">
     <input type="hidden" name="form" value="{{ 1|hash }}">
-    
-    <input type="email" name="email">
-    <input type="text" name="fields[firstName]">
-    <input type="text" name="fields[lastName]">
-    <input type="submit" class="btn " value="Pay">
+
+    <div>
+        <label for="email">{{ "E-mail"|t }}</label>
+        <input type="email" id="email" name="email">
+    </div>
+    <div>
+        <label for="firstName">{{ "First name"|t }}</label>
+        <input type="text" id="firstName" name="fields[firstName]">
+    </div>
+    <div>
+        <label for="lastName">{{ "Last name"|t }}</label>
+        <input type="text" id="lastName" name="fields[lastName]">
+    </div>
+
+    <input type="submit" class="btn " value="{{ "Pay"|t }}">
 </form>
 ```
 
