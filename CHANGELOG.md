@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 1.6.3 - 2021-02-15
+### Fixed
+- Fixed support for PostgreSQL (Thanks @boboldehampsink [#21](https://github.com/studioespresso/craft-mollie-payments/pull/21))
+
+
 ## 1.6.2 - 2020-12-19
 ### Fixed
 - Fixed validation for custom fields
