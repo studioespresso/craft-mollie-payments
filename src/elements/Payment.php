@@ -138,7 +138,6 @@ class Payment extends Element
         $sources[] = [
             'key' => '*',
             'label' => 'All',
-            'criteria' => ['id' => '*'],
         ];
         $forms = MolliePayments::getInstance()->forms->getAllForms();
 

@@ -96,8 +96,8 @@ class PaymentController extends Controller
                 return $this->redirect($url);
             }
             $url = MolliePayments::getInstance()->mollie->generatePayment($payment, UrlHelper::url($redirect));
+            $this->redirect($url);
         };
-        $this->redirect($url);
 
     }
 
