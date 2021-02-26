@@ -39,7 +39,7 @@ class PaymentFormModel extends Model
 
         $validator = new HandleValidator();
         $validator->validateAttribute($this, 'handle');
-        $data = MolliePayments::getInstance()->forms->getFormByHandle($this->handle);
+        $data = MolliePayments::getInstance()->forms->validateFormHandle($this->handle);
         if($data && $data->id != $this->id) {
             $this->addError('handle', Craft::t('mollie-payments', 'Handle "{handle}" is already in use', ['handle' => $this->handle]));
 

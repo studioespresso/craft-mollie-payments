@@ -63,7 +63,7 @@ class PaymentController extends Controller
                 throw new HttpException(400, "Incorrent payment submitted");
             }
 
-            $paymentForm = MolliePayments::getInstance()->forms->getFormByid($form);
+            $paymentForm = MolliePayments::getInstance()->forms->getFormByHandle($form);
             $payment = new Payment();
 
             $payment->email = $email;

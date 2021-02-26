@@ -8,6 +8,7 @@ use craft\events\ConfigEvent;
 use craft\helpers\StringHelper;
 use studioespresso\molliepayments\models\PaymentFormModel;
 use studioespresso\molliepayments\records\PaymentFormRecord;
+use yii\base\InvalidConfigException;
 
 class Form extends Component
 {
@@ -75,12 +76,29 @@ class Form extends Component
     public function getFormByid($id)
     {
         $form = PaymentFormRecord::findOne(['id' => $id]);
+        if (!$form) {
+            throw new InvalidConfigException("Form not found");
+        };
+        return $form;
+    }
+
+    public function validateFormHandle($handle) {
+        $form = PaymentFormRecord::findOne(['handle' => $handle]);
         return $form;
     }
 
     public function getFormByHandle($handle)
     {
         $form = PaymentFormRecord::findOne(['handle' => $handle]);
+        if (!$form) {
+
+            $form = $this->getFormByid($handle);
+            if ($form) {
+                Craft::$app->deprecator->log('molliepayments.forms.handle',
+                    'The form parameter now needs a hashed handle instead of a hashed id', __FILE__, 93);
+                return $form;
+            }
+        }
         return $form;
     }
 
@@ -111,7 +129,7 @@ class Form extends Component
     {
         $forms = PaymentFormRecord::find();
         $data = [];
-        foreach($forms->all() as $form) {
+        foreach ($forms->all() as $form) {
             $data[$form->uid] = [
                 'title' => $form->title,
                 'handle' => $form->handle,
