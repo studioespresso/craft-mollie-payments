@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 1.6.4 - 2021-02-26
+### Fixed
+- Fixed an issue with querring payments by status ([#23](https://github.com/studioespresso/craft-mollie-payments/issues/23))
+
 ## 1.6.3 - 2021-02-15
 ### Fixed
 - Fixed support for PostgreSQL (Thanks @boboldehampsink [#21](https://github.com/studioespresso/craft-mollie-payments/pull/21))
