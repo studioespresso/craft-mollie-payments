@@ -37,7 +37,7 @@ class Form extends Component
             return false;
         }
 
-        $path = "molliepayments.forms.{$record->uid}";
+        $path = "molliePayments.forms.{$record->uid}";
         Craft::$app->projectConfig->set($path, [
             'title' => $record->title,
             'handle' => $record->handle,
@@ -82,7 +82,8 @@ class Form extends Component
         return $form;
     }
 
-    public function validateFormHandle($handle) {
+    public function validateFormHandle($handle)
+    {
         $form = PaymentFormRecord::findOne(['handle' => $handle]);
         return $form;
     }
@@ -94,7 +95,7 @@ class Form extends Component
 
             $form = $this->getFormByid($handle);
             if ($form) {
-                Craft::$app->deprecator->log('molliepayments.forms.handle',
+                Craft::$app->deprecator->log('molliePayments.forms.handle',
                     'The form parameter now needs a hashed handle instead of a hashed id', __FILE__, 93);
                 return $form;
             }
@@ -106,7 +107,7 @@ class Form extends Component
     {
         $paymentFormRecord = PaymentFormRecord::findOne(['id' => $id]);
         if ($paymentFormRecord) {
-            Craft::$app->projectConfig->remove("molliepayments.forms.{$paymentFormRecord->uid}");
+            Craft::$app->projectConfig->remove("molliePayments.forms.{$paymentFormRecord->uid}");
         }
         return true;
     }
