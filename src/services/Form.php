@@ -26,7 +26,6 @@ class Form extends Component
             $record->uid = StringHelper::UUID();
         }
 
-
         $record->title = $paymentFormModel->title;
         $record->handle = $paymentFormModel->handle;
         $record->currency = $paymentFormModel->currency;
@@ -92,11 +91,10 @@ class Form extends Component
     {
         $form = PaymentFormRecord::findOne(['handle' => $handle]);
         if (!$form) {
-
             $form = $this->getFormByid($handle);
             if ($form) {
                 Craft::$app->deprecator->log('molliePayments.forms.handle',
-                    'The form parameter now needs a hashed handle instead of a hashed id', __FILE__, 93);
+                    'The form parameter now needs to be a hashed handle instead of a hashed id', __FILE__, 93);
                 return $form;
             }
         }

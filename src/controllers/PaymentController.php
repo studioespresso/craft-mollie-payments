@@ -58,7 +58,6 @@ class PaymentController extends Controller
             $email = Craft::$app->request->getRequiredBodyParam('email');
             $amount = Craft::$app->request->getValidatedBodyParam('amount');
             $form = Craft::$app->request->getValidatedBodyParam('form');
-
             if ($amount === false || $form === false) {
                 throw new HttpException(400, "Incorrent payment submitted");
             }
