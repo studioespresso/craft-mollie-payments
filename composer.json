@@ -2,7 +2,7 @@
     "name": "studioespresso/craft-mollie-payments",
     "description": "Easily accept payments with Mollie Payments",
     "type": "craft-plugin",
-    "version": "1.6.4",
+    "version": "2.0.0",
     "keywords": [
         "craft",
         "cms",
@@ -18,11 +18,11 @@
     "authors": [
         {
             "name": "Studio Espresso",
-            "homepage": "https://studioespresso.co"
+            "homepage": "https://studioespresso.dev"
         }
     ],
     "require": {
-        "craftcms/cms": "^3.1.0",
+        "craftcms/cms": "^3.5.0",
         "mollie/mollie-api-php": "^2.0"
     },
     "autoload": {

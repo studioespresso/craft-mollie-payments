@@ -23,6 +23,8 @@
 
 {% set tabs = tabData %}
 
+{% hook 'cp.payments.edit' %}
+
 {% block content %}
     {% set tabs = element.getFieldLayout().getTabs() %}
     {% for tab in tabs %}
@@ -36,7 +38,7 @@
     <div id="tab-transactions" class="{% if tabs|length %}hidden{% endif %}">
         {% include 'mollie-payments/_payment/_transactions.twig' with {transactions : transactions } only %}
     </div>
-
+    {% hook 'cp.payments.edit.content' %}
 {% endblock %}
 
 {% block details %}
@@ -66,4 +68,6 @@
             </div>
         </div>
     </div>
+
+    {% hook 'cp.payments.edit.details' %}
 {% endblock %}

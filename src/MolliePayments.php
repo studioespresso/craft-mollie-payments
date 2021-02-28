@@ -10,7 +10,9 @@
 
 namespace studioespresso\molliepayments;
 
+use craft\events\RebuildConfigEvent;
 use craft\helpers\UrlHelper;
+use craft\services\ProjectConfig;
 use studioespresso\molliepayments\behaviours\CraftVariableBehavior;
 use studioespresso\molliepayments\elements\Payment;
 use studioespresso\molliepayments\services\Currency;
@@ -92,6 +94,7 @@ class MolliePayments extends Plugin
         parent::init();
         self::$plugin = $this;
 
+
         $this->setComponents([
             'forms' => Form::class,
             'mollie' => Mollie::class,
@@ -100,6 +103,16 @@ class MolliePayments extends Plugin
             'currency' => Currency::class,
             'export' => Export::class
         ]);
+
+        Craft::$app->projectConfig
+            ->onAdd('molliePayments.forms.{uid}', [$this->forms, 'handleAddForm'])
+            ->onUpdate('molliePayments.forms.{uid}', [$this->forms, 'handleAddForm'])
+            ->onRemove('molliePayments.forms.{uid}', [$this->forms, 'handleDeleteForm']);
+
+        Event::on(ProjectConfig::class, ProjectConfig::EVENT_REBUILD, function (RebuildConfigEvent $event) {
+            $event->config['molliePayments'] = $this->forms->rebuildProjectConfig();
+        });
+
 
         Event::on(
             UrlManager::class,

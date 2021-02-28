@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 2.0.0 - 2021-02-28
+### Added
+- The plugin now supports Craft's Project Config
+- E-mail address has been added to the meta data sent to Mollie
+- Requires Craft 3.5.0 or higher
+
 ## 1.6.4 - 2021-02-26
 ### Fixed
 - Fixed an issue with querring payments by status ([#23](https://github.com/studioespresso/craft-mollie-payments/issues/23))
