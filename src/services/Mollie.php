@@ -48,6 +48,7 @@ class Mollie extends Component
             "metadata" => [
                 "redirectUrl" => $redirect,
                 "element" => $payment->uid,
+                "e-mail" => $payment->email,
                 "description" => $payment->title
             ],
         ]);
