@@ -15,7 +15,7 @@ This is a basic example that contains all required input & actions to create a p
     {{ actionInput("mollie-payments/payment/pay") }}
     {{ redirectInput("confirmation-page") }}
     <input type="hidden" name="amount" value="{{ 9.95|hash }}">
-    <input type="hidden" name="form" value="{{ 1|hash }}">
+    <input type="hidden" name="form" value="{{ 'formHandle'|hash }}">
     
     <input type="email" name="email">
     <input type="text" name="fields[firstName]">
@@ -33,7 +33,7 @@ This form uses a different action then the payment form and does not require the
     {{ actionInput("mollie-payments/payment/donate") }}
     {{ redirectInput("confirmation-page") }}
     <input type="text" name="amount" value="" placeholder="Select the amount you want tot donate">
-    <input type="hidden" name="form" value="{{ 1|hash }}">
+    <input type="hidden" name="form" value="{{ 'formHandle'|hash }}">
     
     <input type="email" name="email">
     <input type="text" name="fields[firstName]">
@@ -52,7 +52,7 @@ Since version 1.4.0, you can have multi-step forms with your own prices logic & 
     <!-- Post the form to your own controller, see step 2 --> 
     {{ actionInput("module/default/index") }}
     {{ redirectInput("/step2") }}
-    <input type="hidden" name="form" value="{{ 1|hash }}">
+    <input type="hidden" name="form" value="{{ 'formHandle'|hash }}">
 
     <!-- Add your own cart/product and pricing logic here --> 
     {% for productEntry in craft.entries.section('products').orderBy('title ASC').all() %}
@@ -128,7 +128,7 @@ On the page to which the user gets redirected after payment, the url has the sta
 If you want to show an overview of a user's payments, on a profiel page for example, you can search the payments by email.
 
 ```twig
-{% for payment in craft.payments.email(currentUser.email).all() %}
+{% for payment in craft.payments.email(currentUser.email).status('paid').all() %}
     {{ payment.amount %}
     {{ payment.firstName }} {# or any other custom field by handle #}
     {{ payment.getForm().currency }}

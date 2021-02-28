@@ -47,7 +47,7 @@ Custom fields should be in the `fields` namespace (eg: `name="fields[firstName]"
     {{ actionInput("mollie-payments/payment/pay") }}
     {{ redirectInput("confirmation-page") }}
     <input type="hidden" name="amount" value="{{ 20|hash }}">
-    <input type="hidden" name="form" value="{{ 1|hash }}">
+    <input type="hidden" name="form" value="{{ 'formHandle'|hash }}">
 
     <div>
         <label for="email">{{ "E-mail"|t }}</label>
