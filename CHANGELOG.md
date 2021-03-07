@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## 2.0.0 - 2021-02-28
+## 2.0.0 - 2021-03-07
 ### Added
 - The plugin now supports Craft's Project Config
 - E-mail address has been added to the meta data sent to Mollie
