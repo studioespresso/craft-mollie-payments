@@ -4,7 +4,6 @@ namespace studioespresso\molliepayments\controllers;
 
 use Craft;
 use craft\base\Element;
-use craft\base\Model;
 use craft\helpers\ConfigHelper;
 use craft\helpers\UrlHelper;
 use craft\web\Controller;
@@ -65,14 +64,13 @@ class PaymentController extends Controller
             $paymentForm = MolliePayments::getInstance()->forms->getFormByHandle($form);
             $payment = new Payment();
 
-            $payment->email = $email;
-            $payment->amount = $amount;
-            $payment->formId = $form;
-            $payment->fieldLayoutId = $paymentForm->fieldLayout;
-
             if (!$paymentForm) {
                 throw new NotFoundHttpException("Form not found", 404);
             }
+
+            $payment->email = $email;
+            $payment->amount = $amount;
+            $payment->formId = $paymentForm->id;
         }
 
         $payment->paymentStatus = 'pending';
