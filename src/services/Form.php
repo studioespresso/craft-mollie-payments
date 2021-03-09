@@ -7,6 +7,7 @@ use craft\base\Component;
 use craft\events\ConfigEvent;
 use craft\helpers\StringHelper;
 use craft\models\FieldLayout;
+use studioespresso\molliepayments\elements\Payment;
 use studioespresso\molliepayments\models\PaymentFormModel;
 use studioespresso\molliepayments\records\PaymentFormRecord;
 use yii\base\InvalidConfigException;
@@ -130,15 +131,14 @@ class Form extends Component
         $forms = PaymentFormRecord::find();
         $data = [];
         foreach ($forms->all() as $form) {
-            $data[$form->uid] = [
-                'title' => $form->title,
-                'handle' => $form->handle,
-                'currency' => $form->currency,
-                'descriptionFormat' => $form->descriptionFormat,
-                'fieldLayout' => $form->fieldLayout,
-            ];
+            $model = new PaymentFormModel();
+            $model->setAttributes($form->getAttributes());
+            $fieldLayout = Craft::$app->getFields()->getLayoutById($form->fieldLayout);
+            $fieldLayout->type = Payment::class;
+            $model->setFieldLayout($fieldLayout);
+            $data[$form->uid] = $model->getConfig();
         }
-        return ['forms' => $data];
+        return $data;
     }
 
     private function getFormRecord(string $uid)
