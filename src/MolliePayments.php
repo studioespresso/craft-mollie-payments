@@ -105,9 +105,9 @@ class MolliePayments extends Plugin
         ]);
 
         Craft::$app->projectConfig
-            ->onAdd('molliePayments.forms.{uid}', [$this->forms, 'handleAddForm'])
-            ->onUpdate('molliePayments.forms.{uid}', [$this->forms, 'handleAddForm'])
-            ->onRemove('molliePayments.forms.{uid}', [$this->forms, 'handleDeleteForm']);
+            ->onAdd('molliePayments.{uid}', [$this->forms, 'handleAddForm'])
+            ->onUpdate('molliePayments.{uid}', [$this->forms, 'handleAddForm'])
+            ->onRemove('molliePayments.{uid}', [$this->forms, 'handleDeleteForm']);
 
         Event::on(ProjectConfig::class, ProjectConfig::EVENT_REBUILD, function (RebuildConfigEvent $event) {
             $event->config['molliePayments'] = $this->forms->rebuildProjectConfig();
