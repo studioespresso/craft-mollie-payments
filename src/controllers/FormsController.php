@@ -26,30 +26,33 @@ class FormsController extends Controller
             $form = MolliePayments::getInstance()->forms->getFormById($formId);
             $layout = Craft::$app->getFields()->getLayoutById($form->fieldLayout);
             return $this->renderTemplate('mollie-payments/_forms/_edit', ['form' => $form, 'layout' => $layout, 'currencies' => $currencies]);
-            
+
         }
     }
 
     public function actionSave()
     {
         $data = Craft::$app->getRequest()->getBodyParam('data');
-        $fieldLayout = Craft::$app->getFields()->assembleLayoutFromPost();
-        $fieldLayout->type = Payment::class;
-        Craft::$app->getFields()->saveLayout($fieldLayout);
+
         if(!isset($data['id']) or empty($data['id'])) {
             $paymentFormModel = new PaymentFormModel();
         } else {
             /** @var PaymentFormRecord $record */
             $record = MolliePayments::getInstance()->forms->getFormById($data['id']);
             $paymentFormModel = new PaymentFormModel();
-            $paymentFormModel->id = $record->id ;
+            $paymentFormModel->setAttributes($record->getAttributes());
+            $paymentFormModel->id = $record->id;
+            $paymentFormModel->uid = $record->uid;
         }
 
         $paymentFormModel->title = $data['title'];
         $paymentFormModel->handle = $data['handle'];
         $paymentFormModel->currency = $data['currency'];
         $paymentFormModel->descriptionFormat = $data['descriptionFormat'];
-        $paymentFormModel->fieldLayout = $fieldLayout->id;
+
+        $fieldLayout = Craft::$app->getFields()->assembleLayoutFromPost();
+        $fieldLayout->type = Payment::class;
+        $paymentFormModel->setFieldLayout($fieldLayout);
 
         if($paymentFormModel->validate()) {
             $saved = MolliePayments::getInstance()->forms->save($paymentFormModel);

@@ -6,64 +6,66 @@ use Craft;
 use craft\base\Component;
 use craft\events\ConfigEvent;
 use craft\helpers\StringHelper;
+use craft\models\FieldLayout;
+use studioespresso\molliepayments\elements\Payment;
 use studioespresso\molliepayments\models\PaymentFormModel;
 use studioespresso\molliepayments\records\PaymentFormRecord;
 use yii\base\InvalidConfigException;
 
 class Form extends Component
 {
-    public function save(PaymentFormModel $paymentFormModel)
+
+    const CONFIG_FORMS_PATH = 'molliePayments';
+
+    public function save(PaymentFormModel $form)
     {
-        $record = false;
-        if (isset($paymentFormModel->id)) {
-            $record = PaymentFormRecord::findOne([
-                'id' => $paymentFormModel->id
-            ]);
+        $isNewForm = !$form->id;
+        if ($isNewForm) {
+            $form->uid = StringHelper::UUID();
         }
 
-        if (!$record) {
-            $record = new PaymentFormRecord();
-            $record->uid = StringHelper::UUID();
-        }
-
-        $record->title = $paymentFormModel->title;
-        $record->handle = $paymentFormModel->handle;
-        $record->currency = $paymentFormModel->currency;
-        $record->descriptionFormat = $paymentFormModel->descriptionFormat;
-        $record->fieldLayout = $paymentFormModel->fieldLayout;
-
-        if (!$record->validate()) {
-            return false;
-        }
-
-        $path = "molliePayments.forms.{$record->uid}";
-        Craft::$app->projectConfig->set($path, [
-            'title' => $record->title,
-            'handle' => $record->handle,
-            'currency' => $record->currency,
-            'descriptionFormat' => $record->descriptionFormat,
-            'fieldLayout' => $record->fieldLayout,
-        ]);
+        $configPath = self::CONFIG_FORMS_PATH . '.' . $form->uid;
+        $configData = $form->getConfig();
+        Craft::$app->projectConfig->set($configPath, $configData);
         return true;
     }
 
     public function handleAddForm(ConfigEvent $event)
     {
-        $record = false;
-        $record = PaymentFormRecord::findOne([
-            'uid' => $event->tokenMatches[0]
-        ]);
-        if (!$record) {
-            $record = new PaymentFormRecord();
+        $formUid = $event->tokenMatches[0];
+        $data = $event->newValue;
+
+        $formRecord = $this->getFormRecord($formUid);
+        if (!$formRecord) {
+            return false;
         }
 
-        $record->uid = $event->tokenMatches[0];
-        $record->title = $event->newValue['title'];
-        $record->handle = $event->newValue['handle'];
-        $record->currency = $event->newValue['currency'];
-        $record->descriptionFormat = $event->newValue['descriptionFormat'];
-        $record->fieldLayout = $event->newValue['fieldLayout'];
-        return $record->save();
+        $transaction = Craft::$app->getDb()->beginTransaction();
+        $formRecord->uid = $formUid;
+        $formRecord->title = $data['title'];
+        $formRecord->handle = $data['handle'];
+        $formRecord->currency = $data['currency'];
+        $formRecord->descriptionFormat = $data['descriptionFormat'];
+
+
+        if (!empty($data['fieldLayouts'])) {
+            // Save the field layout
+            $layout = FieldLayout::createFromConfig(reset($data['fieldLayouts']));
+            $layout->id = $formRecord->fieldLayout;
+            $layout->type = \studioespresso\molliepayments\elements\Payment::class;
+            $layout->uid = key($data['fieldLayouts']);
+            Craft::$app->getFields()->saveLayout($layout);
+            $formRecord->fieldLayout = $layout->id;
+        } else if ($formRecord->fieldLayout) {
+            // Delete the field layout
+            Craft::$app->getFields()->deleteLayoutById($formRecord->fieldLayout);
+            $formRecord->fieldLayout = null;
+        }
+
+
+        $formRecord->save();
+        $transaction->commit();
+
     }
 
     public function getAllForms()
@@ -129,14 +131,20 @@ class Form extends Component
         $forms = PaymentFormRecord::find();
         $data = [];
         foreach ($forms->all() as $form) {
-            $data[$form->uid] = [
-                'title' => $form->title,
-                'handle' => $form->handle,
-                'currency' => $form->currency,
-                'descriptionFormat' => $form->descriptionFormat,
-                'fieldLayout' => $form->fieldLayout,
-            ];
+            $model = new PaymentFormModel();
+            $model->setAttributes($form->getAttributes());
+            $fieldLayout = Craft::$app->getFields()->getLayoutById($form->fieldLayout);
+            $fieldLayout->type = Payment::class;
+            $model->setFieldLayout($fieldLayout);
+            $data[$form->uid] = $model->getConfig();
         }
-        return ['forms' => $data];
+        return $data;
+    }
+
+    private function getFormRecord(string $uid)
+    {
+        $query = PaymentFormRecord::find();
+        $query->andWhere(['uid' => $uid]);
+        return $query->one() ?? new PaymentFormRecord();
     }
 }
