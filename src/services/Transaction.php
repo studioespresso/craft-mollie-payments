@@ -52,26 +52,12 @@ class Transaction extends Component
             $payment->paymentStatus = $transaction->status;
             Craft::$app->getElements()->saveElement($payment);
             $this->fireEventAfterTransactionUpdate($transaction, $payment, $molliePayment->status);
-            if($transaction->status === 'expired') {
-                $this->fireEventAfterRefund($transaction, $payment, $transaction->status);
-            }
         }
     }
 
     public function fireEventAfterTransactionUpdate($transaction, $payment, $status)
     {
         $this->trigger(MolliePayments::EVENT_AFTER_TRANSACTION_UPDATE,
-            new TransactionUpdateEvent([
-                'transaction' => $transaction,
-                'payment' => $payment,
-                'status' => $status
-            ])
-        );
-    }
-
-    public function fireEventAfterRefund($transaction, $payment, $status)
-    {
-        $this->trigger(MolliePayments::EVENT_AFTER_TRANSACTION_REFUND,
             new TransactionUpdateEvent([
                 'transaction' => $transaction,
                 'payment' => $payment,

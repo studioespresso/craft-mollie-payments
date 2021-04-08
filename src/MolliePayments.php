@@ -63,10 +63,6 @@ class MolliePayments extends Plugin
     const EVENT_AFTER_TRANSACTION_UPDATE = 'afterTransactionUpdate';
 
     /**
-     * @event TransactionUpdateEvent The event that is triggered after a payment transaction is refunded.
-     */
-    const EVENT_AFTER_TRANSACTION_REFUND = 'afterTransactionRefund';
-    /**
      * @event beforePaymentSave The event that is triggered before saving a payment element for the first time.
      */
     const EVENT_BEFORE_PAYMENT_SAVE = 'beforePaymentSave';
@@ -131,7 +127,7 @@ class MolliePayments extends Plugin
                 $event->rules['mollie-payments/settings'] = 'mollie-payments/settings/index';
             }
         );
-        
+
         Event::on(
             UrlManager::class,
             UrlManager::EVENT_REGISTER_SITE_URL_RULES,
@@ -141,7 +137,7 @@ class MolliePayments extends Plugin
             }
         );
 
-        Event::on(CraftVariable::class, CraftVariable::EVENT_INIT, function(Event $e) {
+        Event::on(CraftVariable::class, CraftVariable::EVENT_INIT, function (Event $e) {
             /** @var CraftVariable $variable */
             $variable = $e->sender;
 
@@ -150,7 +146,7 @@ class MolliePayments extends Plugin
                 CraftVariableBehavior::class,
             ]);
         });
-        
+
         Event::on(
             Elements::class,
             Elements::EVENT_REGISTER_ELEMENT_TYPES,
@@ -159,7 +155,7 @@ class MolliePayments extends Plugin
             }
         );
 
-        Event::on(CraftVariable::class, CraftVariable::EVENT_INIT, function(Event $e) {
+        Event::on(CraftVariable::class, CraftVariable::EVENT_INIT, function (Event $e) {
             /** @var CraftVariable $variable */
             $variable = $e->sender;
             $variable->attachBehaviors([
