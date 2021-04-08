@@ -58,6 +58,7 @@ class FormsController extends Controller
             $saved = MolliePayments::getInstance()->forms->save($paymentFormModel);
             $this->redirectToPostedUrl();
         } else {
+            dd($paymentFormModel->getErrors());
             $layout = Craft::$app->getFields()->getLayoutById($fieldLayout->id);
             return $this->renderTemplate('mollie-payments/_forms/_edit',  [
                 'form' => $paymentFormModel,
