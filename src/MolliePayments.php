@@ -127,7 +127,7 @@ class MolliePayments extends Plugin
                 $event->rules['mollie-payments/settings'] = 'mollie-payments/settings/index';
             }
         );
-        
+
         Event::on(
             UrlManager::class,
             UrlManager::EVENT_REGISTER_SITE_URL_RULES,
@@ -137,7 +137,7 @@ class MolliePayments extends Plugin
             }
         );
 
-        Event::on(CraftVariable::class, CraftVariable::EVENT_INIT, function(Event $e) {
+        Event::on(CraftVariable::class, CraftVariable::EVENT_INIT, function (Event $e) {
             /** @var CraftVariable $variable */
             $variable = $e->sender;
 
@@ -146,7 +146,7 @@ class MolliePayments extends Plugin
                 CraftVariableBehavior::class,
             ]);
         });
-        
+
         Event::on(
             Elements::class,
             Elements::EVENT_REGISTER_ELEMENT_TYPES,
@@ -155,7 +155,7 @@ class MolliePayments extends Plugin
             }
         );
 
-        Event::on(CraftVariable::class, CraftVariable::EVENT_INIT, function(Event $e) {
+        Event::on(CraftVariable::class, CraftVariable::EVENT_INIT, function (Event $e) {
             /** @var CraftVariable $variable */
             $variable = $e->sender;
             $variable->attachBehaviors([

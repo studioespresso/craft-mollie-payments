@@ -6,11 +6,10 @@ use Craft;
 use craft\base\Component;
 use studioespresso\molliepayments\elements\Payment;
 use studioespresso\molliepayments\events\TransactionUpdateEvent;
-use studioespresso\molliepayments\models\PaymentFormModel;
 use studioespresso\molliepayments\models\PaymentTransactionModel;
 use studioespresso\molliepayments\MolliePayments;
-use studioespresso\molliepayments\records\PaymentFormRecord;
 use studioespresso\molliepayments\records\PaymentTransactionRecord;
+use yii\base\BaseObject;
 
 class Transaction extends Component
 {
@@ -26,10 +25,17 @@ class Transaction extends Component
         return $transactionRecord->save();
     }
 
-    public function updateTransaction(PaymentTransactionRecord $transaction, $molliePayment)
+    public function updateTransaction(PaymentTransactionRecord $transaction, \Mollie\Api\Resources\Payment $molliePayment)
     {
+
         $transaction->status = $molliePayment->status;
         $transaction->method = $molliePayment->method;
+
+        if ($molliePayment->refunds()) {
+            if ($molliePayment->getAmountRefunded() === $molliePayment->getSettlementAmount()) {
+                $transaction->status = "refunded";
+            }
+        }
         if ($molliePayment->status == 'paid') {
             $transaction->paidAt = $molliePayment->paidAt;
         } elseif ($molliePayment->status == 'failed') {
@@ -43,14 +49,14 @@ class Transaction extends Component
         if ($transaction->validate() && $transaction->save()) {
 
             $payment = Payment::findOne(['id' => $transaction->payment]);
-            $payment->paymentStatus = $molliePayment->status;
-
+            $payment->paymentStatus = $transaction->status;
             Craft::$app->getElements()->saveElement($payment);
             $this->fireEventAfterTransactionUpdate($transaction, $payment, $molliePayment->status);
         }
     }
 
-    public function fireEventAfterTransactionUpdate($transaction, $payment, $status) {
+    public function fireEventAfterTransactionUpdate($transaction, $payment, $status)
+    {
         $this->trigger(MolliePayments::EVENT_AFTER_TRANSACTION_UPDATE,
             new TransactionUpdateEvent([
                 'transaction' => $transaction,

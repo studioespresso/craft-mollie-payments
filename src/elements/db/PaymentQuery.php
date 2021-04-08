@@ -59,6 +59,8 @@ class PaymentQuery extends ElementQuery
                 return ['paymentStatus' => 'paid'];
             case 'expired':
                 return ['paymentStatus' => 'expired'];
+            case 'refunded':
+                return ['paymentStatus' => 'refunded'];
             default:
                 return parent::statusCondition($status);
         }

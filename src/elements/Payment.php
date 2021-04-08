@@ -100,6 +100,7 @@ class Payment extends Element
             'free' => ['label' => Craft::t('mollie-payments', 'Free'), 'color' => 'blue'],
             'paid' => ['label' => Craft::t('mollie-payments', 'Paid'), 'color' => 'green'],
             'expired' => ['label' => Craft::t('mollie-payments', 'Expired'), 'color' => 'red'],
+            'refunded' => ['label' => Craft::t('mollie-payments', 'Refunded'), 'color' => 'grey'],
         ];
     }
 
