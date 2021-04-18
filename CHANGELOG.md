@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+
+## 2.1.1 - 2021-04-18
+### Fixed
+- Fixed an error where expired payments would in labelled as refundend.
+
+
 ## 2.1.0 - 2021-04-08
 ### Added
 - Added better support for full refunds, payments and transactions now report the correcty status when a paymeny is refunded in Mollie
