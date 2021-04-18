@@ -31,7 +31,7 @@ class Transaction extends Component
         $transaction->status = $molliePayment->status;
         $transaction->method = $molliePayment->method;
 
-        if ($molliePayment->refunds()) {
+        if ($molliePayment->refunds()->count > 0) {
             if ($molliePayment->getAmountRefunded() === $molliePayment->getSettlementAmount()) {
                 $transaction->status = "refunded";
             }
