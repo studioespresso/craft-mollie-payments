@@ -114,7 +114,7 @@ class PaymentController extends Controller
         $redirect = Craft::$app->security->validateData($redirect);
 
         $form = Craft::$app->request->getValidatedBodyParam('form');
-        $paymentForm = MolliePayments::getInstance()->forms->getFormByid($form);
+        $paymentForm = MolliePayments::getInstance()->forms->getFormByHandle($form);
         if (!$paymentForm) {
             throw new NotFoundHttpException("Form not found", 404);
         }
