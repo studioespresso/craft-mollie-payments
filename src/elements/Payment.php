@@ -209,8 +209,9 @@ class Payment extends Element
     {
         $rules   = parent::rules();
         $rules[] = [['email'], 'string'];
-        $rules[] = [['amount'], 'string'];
-        $rules[] = [['email', 'amount'], 'required'];
+        if($this->getScenario() != Element::SCENARIO_ESSENTIALS) {
+            $rules[] = [['email', 'amount'], 'required'];
+        }
         return $rules;
     }
 

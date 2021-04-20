@@ -85,6 +85,9 @@ public function actionIndex()
     $payment->paymentStatus = 'cart';
     $payment->fieldLayoutId = $paymentForm->fieldLayout;
     $payment->setFieldValuesFromRequest('fields');
+    
+    // Set this if the e-mailaddress is empty on this step 
+    $payment->setScenario(Element::SCENARIO_ESSENTIALS);
 
     if(MolliePayments::getInstance()->payment->save($payment)) {
         $redirect = Craft::$app->request->getValidatedBodyParam('redirect');
