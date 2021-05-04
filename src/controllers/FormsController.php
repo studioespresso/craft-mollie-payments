@@ -24,8 +24,10 @@ class FormsController extends Controller
             return $this->renderTemplate('mollie-payments/_forms/_edit', ['currencies' => $currencies]);
         } else {
             $form = MolliePayments::getInstance()->forms->getFormById($formId);
-            $layout = Craft::$app->getFields()->getLayoutById($form->fieldLayout);
-            return $this->renderTemplate('mollie-payments/_forms/_edit', ['form' => $form, 'layout' => $layout, 'currencies' => $currencies]);
+            if($form->fieldLayout) {
+                $layout = Craft::$app->getFields()->getLayoutById($form->fieldLayout);
+            }
+            return $this->renderTemplate('mollie-payments/_forms/_edit', ['form' => $form, 'layout' => $layout ?? null, 'currencies' => $currencies]);
 
         }
     }
@@ -58,7 +60,6 @@ class FormsController extends Controller
             $saved = MolliePayments::getInstance()->forms->save($paymentFormModel);
             $this->redirectToPostedUrl();
         } else {
-            dd($paymentFormModel->getErrors());
             $layout = Craft::$app->getFields()->getLayoutById($fieldLayout->id);
             return $this->renderTemplate('mollie-payments/_forms/_edit',  [
                 'form' => $paymentFormModel,
