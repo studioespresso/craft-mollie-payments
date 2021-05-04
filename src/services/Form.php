@@ -107,7 +107,7 @@ class Form extends Component
     {
         $paymentFormRecord = PaymentFormRecord::findOne(['id' => $id]);
         if ($paymentFormRecord) {
-            Craft::$app->projectConfig->remove("molliePayments.forms.{$paymentFormRecord->uid}");
+            Craft::$app->projectConfig->remove(self::CONFIG_FORMS_PATH . '.' . $paymentFormRecord->uid, "Removing form '{$paymentFormRecord->formName()}'");
         }
         return true;
     }
