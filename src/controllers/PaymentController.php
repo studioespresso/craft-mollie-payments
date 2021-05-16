@@ -139,7 +139,7 @@ class PaymentController extends Controller
 
             $payment->email = $email;
             $payment->amount = $amount;
-            $payment->formId = $form;
+            $payment->formId = $paymentForm->id;
             $payment->fieldLayoutId = $paymentForm->fieldLayout;
 
         }
