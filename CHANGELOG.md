@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 2.1.4 - 2021-05-16
+### Fixed
+
+- Fixed an issue with donation form submits ([#31](https://github.com/studioespresso/craft-mollie-payments/issues/31))
+
+
+
 ## 2.1.3 - 2021-05-04
 ### Fixed
 - Forms can now be save without fields ([#30](https://github.com/studioespresso/craft-mollie-payments/issues/30))
