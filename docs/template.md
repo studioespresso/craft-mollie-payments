@@ -72,7 +72,7 @@ public function actionIndex()
     // Payment form is a required parameter here
     $form = Craft::$app->request->getRequiredBodyParam('form');
     $form = Craft::$app->getSecurity()->validateData($form);
-    $paymentForm = MolliePayments::getInstance()->forms->getFormByid($form);
+    $paymentForm = MolliePayments::getInstance()->forms->getFormByHandle($form);
 
     // Your own pricing calculation & validation here
     $amount = $this->yourFunction();
@@ -81,7 +81,7 @@ public function actionIndex()
     $payment = new Payment();
     $payment->email = '';
     $payment->amount = $amount;
-    $payment->formId = $form;
+    $payment->formId = $paymentForm->id;
     $payment->paymentStatus = 'cart';
     $payment->fieldLayoutId = $paymentForm->fieldLayout;
     $payment->setFieldValuesFromRequest('fields');
