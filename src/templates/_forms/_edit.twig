@@ -105,14 +105,15 @@
             new Craft.HandleGenerator('#title', '#handle');
         {% endjs %}
     {% endif %}
-    {% if form is defined %}
-        {% include "_includes/fieldlayoutdesigner" with {
-            fieldLayout: layout
-        } only %}
-    {% else %}
-        {% include "_includes/fieldlayoutdesigner" with {
-            fieldLayout: craft.app.fields.getLayoutByType('ns\\prefix\\elements\\Product')
-        } only %}
-    {% endif %}
+
+    {% from '_includes/forms' import fieldLayoutDesignerField %}
+
+    {{ fieldLayoutDesignerField({
+        instructions: instructions ?? null,
+        customizableTabs: customizableTabs ?? true,
+        customizableUi: true,
+        pretendTabName: pretendTabName ?? 'Content'|t('app'),
+        fieldLayout: (layout ?? false) ?: null,
+    }) }}
 
 {% endblock %}

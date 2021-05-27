@@ -34,15 +34,14 @@
 {% hook 'cp.payments.edit' %}
 
 {% block content %}
-    {% set tabs = element.getFieldLayout().getTabs() %}
-    {% for tab in tabs %}
-        <div id="{{ tab.getHtmlId() }}" {% if not loop.first %} class="hidden"{% endif %}>
-            {% include "_includes/fields" with {
-                fields:  tab.getFields(),
-                element: element
-            } only %}
-        </div>
-    {% endfor %}
+
+    {% set form = element.getFieldLayout().createForm(element) %}
+    <div id="fields">
+        {{ form.render()|raw }}
+    </div>
+
+
+
     <div id="tab-transactions" class="{% if tabs|length %}hidden{% endif %}">
         {% include 'mollie-payments/_payment/_transactions.twig' with {transactions : transactions } only %}
     </div>
