@@ -59,6 +59,7 @@ class Mollie extends Component
         $transaction->payment = $payment->id;
         $transaction->currency = $paymentForm->currency;
         $transaction->amount = $payment->amount;
+        $transaction->redirect = $redirect;
         $transaction->status = $authorization->status;
 
         MolliePayments::getInstance()->transaction->save($transaction);
