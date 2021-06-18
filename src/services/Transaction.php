@@ -20,6 +20,7 @@ class Transaction extends Component
         $transactionRecord->id = $transactionModel->id;
         $transactionRecord->payment = $transactionModel->payment;
         $transactionRecord->amount = $transactionModel->amount;
+        $transactionRecord->redirect = $transactionModel->redirect;
         $transactionRecord->currency = $transactionModel->currency;
         $transactionRecord->status = $transactionModel->status;
         return $transactionRecord->save();

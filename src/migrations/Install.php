@@ -84,6 +84,7 @@ class Install extends Migration
             'amount' => $this->decimal("10,2")->notNull(),
             'currency' => $this->string(3)->defaultValue('EUR'),
             'status' => $this->string()->notNull(),
+            'redirect' => $this->string(255)->notNull(),
             'method' => $this->string(),
             'paidAt' => $this->dateTime(),
             'canceledAt' => $this->dateTime(),

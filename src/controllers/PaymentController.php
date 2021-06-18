@@ -9,6 +9,7 @@ use craft\helpers\UrlHelper;
 use craft\web\Controller;
 use studioespresso\molliepayments\elements\Payment;
 use studioespresso\molliepayments\MolliePayments;
+use yii\base\InvalidArgumentException;
 use yii\base\InvalidConfigException;
 use yii\web\HttpException;
 use yii\web\NotFoundHttpException;
@@ -174,17 +175,17 @@ class PaymentController extends Controller
         $this->renderTemplate('mollie-payments/_payment/_edit', ['element' => $payment, 'transactions' => $transactions, 'form' => $paymentForm]);
     }
 
-    public function actionRefund()
-    {
-            dd('hier');
-    }
-
     public function actionRedirect()
     {
         $uid = Craft::$app->getRequest()->getRequiredParam('order_id');
         $redirect = Craft::$app->getRequest()->getParam('redirect');
+
         $payment = Payment::findOne(['uid' => $uid]);
         $transaction = MolliePayments::getInstance()->transaction->getTransactionbyPayment($payment->id);
+        if($redirect != $transaction->redirect) {
+            throw new InvalidArgumentException("Invalid redirect");
+        }
+
         try {
             $molliePayment = MolliePayments::getInstance()->mollie->getStatus($transaction->id);
             $this->redirect(UrlHelper::url($redirect, ['payment' => $uid, 'status' => $molliePayment->status]));

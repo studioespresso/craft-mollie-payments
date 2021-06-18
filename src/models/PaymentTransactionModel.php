@@ -20,6 +20,8 @@ class PaymentTransactionModel extends Model
 
     public $amount;
 
+    public $redirect;
+
     public $currency;
 
     public $data;
