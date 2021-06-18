@@ -175,11 +175,6 @@ class PaymentController extends Controller
         $this->renderTemplate('mollie-payments/_payment/_edit', ['element' => $payment, 'transactions' => $transactions, 'form' => $paymentForm]);
     }
 
-    public function actionRefund()
-    {
-            dd('hier');
-    }
-
     public function actionRedirect()
     {
         $uid = Craft::$app->getRequest()->getRequiredParam('order_id');

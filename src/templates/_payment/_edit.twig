@@ -16,12 +16,6 @@
     {{ block('actionButton') }}
 {% endblock %}
 
-{% block actionButton %}
-        <div class="btngroup">
-            <a href="" class="btn secondary">{{ "Refund payment"|t('mollie-payments') }}</a>
-        </div>
-{% endblock %}
-
 {% set tabData = [] %}
 {% for tab in element.getFieldLayout().getTabs() %}
     {% set data = { label: tab.name, url: '#' ~ tab.getHtmlId()} %}
