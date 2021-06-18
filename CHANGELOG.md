@@ -4,10 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## 2.2.0 - Unreleased
+## 2.2.0 - 2021-06-18
 ### Added
 - Added support for Craft's new(ish) UI element in the forms field layout editor
-
+- Redirects after payment are now verified for better security
 
 ## 2.1.4 - 2021-05-16
 ### Fixed
