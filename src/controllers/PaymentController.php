@@ -146,7 +146,18 @@ class PaymentController extends Controller
         }
 
         $payment->paymentStatus = 'pending';
-        $payment->setFieldValuesFromRequest('fields');
+
+        $fieldsLocation = Craft::$app->getRequest()->getParam('fieldsLocation', 'fields');
+        $payment->setFieldValuesFromRequest($fieldsLocation);
+
+        $payment->setScenario(Element::SCENARIO_LIVE);
+        if (!$payment->validate()) {
+            // Send the payment back to the template
+            Craft::$app->getUrlManager()->setRouteParams([
+                'payment' => $payment,
+            ]);
+            return null;
+        }
 
         if (MolliePayments::getInstance()->payment->save($payment)) {
             if ($payment->amount == "0") {
@@ -154,9 +165,8 @@ class PaymentController extends Controller
                 return $this->redirect($url);
             }
             $url = MolliePayments::getInstance()->mollie->generatePayment($payment, UrlHelper::url($redirect));
+            $this->redirect($url);
         };
-        $this->redirect($url);
-
     }
 
     /**
