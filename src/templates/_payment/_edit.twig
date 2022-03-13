@@ -17,10 +17,12 @@
 {% endblock %}
 
 {% set tabData = [] %}
-{% for tab in element.getFieldLayout().getTabs() %}
-    {% set data = { label: tab.name, url: '#' ~ tab.getHtmlId()} %}
-    {% set tabData = tabData|merge({ (tab.id) : data}) %}
-{% endfor %}
+{% if element.getFieldLayout() %}
+    {% for tab in element.getFieldLayout().getTabs() %}
+        {% set data = { label: tab.name, url: '#' ~ tab.getHtmlId()} %}
+        {% set tabData = tabData|merge({ (tab.id) : data}) %}
+    {% endfor %}
+{% endif %}
 {% set tabData = tabData|merge( {translactions: { label: "Transactions", url : "#tab-transactions"} }) %}
 
 {% set tabs = tabData %}
@@ -29,10 +31,13 @@
 
 {% block content %}
 
-    {% set form = element.getFieldLayout().createForm(element) %}
-    <div id="fields">
-        {{ form.render()|raw }}
-    </div>
+    {% if element.getFieldLayout() %}
+
+        {% set form = element.getFieldLayout().createForm(element) %}
+        <div id="fields">
+            {{ form.render()|raw }}
+        </div>
+    {% endif %}
 
 
 
@@ -49,7 +54,8 @@
                 <label id="slug-label" for="slug">{{ "Form"|t("mollie-payments") }}</label>
             </div>
             <div class="input ltr">
-                <input class="text fullwidth" disabled type="text" value="{{ form.title }}" autocomplete="off" autocorrect="off" autocapitalize="off" placeholder="Enter slug">
+                <input class="text fullwidth" disabled type="text" value="{{ form.title }}" autocomplete="off"
+                       autocorrect="off" autocapitalize="off" placeholder="Enter slug">
             </div>
         </div>
         <div class="field" id="email-field">
@@ -57,7 +63,8 @@
                 <label id="slug-label" for="slug">{{ "Email"|t("mollie-payments") }}</label>
             </div>
             <div class="input ltr">
-                <input class="text fullwidth" disabled type="text" value="{{ element.email }}" autocomplete="off" autocorrect="off" autocapitalize="off" placeholder="Enter slug">
+                <input class="text fullwidth" disabled type="text" value="{{ element.email }}" autocomplete="off"
+                       autocorrect="off" autocapitalize="off" placeholder="Enter slug">
             </div>
         </div>
         <div class="field" id="amount-field">
@@ -65,7 +72,8 @@
                 <label id="slug-label" for="slug">{{ "Amount"|t("mollie-payments") }}</label>
             </div>
             <div class="input ltr">
-                <input class="text fullwidth" disabled type="text" value="{{ element.amount }} {{ form.currency }}" autocomplete="off" autocorrect="off" autocapitalize="off" placeholder="Enter slug">
+                <input class="text fullwidth" disabled type="text" value="{{ element.amount }} {{ form.currency }}"
+                       autocomplete="off" autocorrect="off" autocapitalize="off" placeholder="Enter slug">
             </div>
         </div>
     </div>
