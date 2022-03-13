@@ -117,8 +117,14 @@ class Payment extends Element
         return false;
     }
 
-    public function getForm() {
+    public function getForm()
+    {
         return MolliePayments::getInstance()->forms->getFormByid($this->formId);
+    }
+
+    public function getTransaction()
+    {
+        return MolliePayments::getInstance()->transaction->getTransactionbyPayment($this->id);
     }
 
     /**
@@ -207,9 +213,9 @@ class Payment extends Element
      */
     public function rules()
     {
-        $rules   = parent::rules();
+        $rules = parent::rules();
         $rules[] = [['email'], 'string'];
-        if($this->getScenario() != Element::SCENARIO_ESSENTIALS) {
+        if ($this->getScenario() != Element::SCENARIO_ESSENTIALS) {
             $rules[] = [['email', 'amount'], 'required'];
         }
         return $rules;
