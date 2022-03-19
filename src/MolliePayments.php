@@ -10,6 +10,7 @@
 
 namespace studioespresso\molliepayments;
 
+use craft\base\Model;
 use craft\events\RebuildConfigEvent;
 use craft\helpers\UrlHelper;
 use craft\services\ProjectConfig;
@@ -81,7 +82,7 @@ class MolliePayments extends Plugin
     /**
      * @var string
      */
-    public $schemaVersion = '1.4.0';
+    public string $schemaVersion = '1.4.0';
 
     // Public Methods
     // =========================================================================
@@ -89,7 +90,7 @@ class MolliePayments extends Plugin
     /**
      * @inheritdoc
      */
-    public function init()
+    public function init(): void
     {
         parent::init();
         self::$plugin = $this;
@@ -165,7 +166,7 @@ class MolliePayments extends Plugin
 
     }
 
-    public function getCpNavItem()
+    public function getCpNavItem(): array
     {
         $subNavs = [];
         $navItem = parent::getCpNavItem();
@@ -196,14 +197,14 @@ class MolliePayments extends Plugin
         return $navItem;
     }
 
-    public function getSettingsResponse()
+    public function getSettingsResponse(): mixed
     {
         return Craft::$app->getResponse()->redirect(UrlHelper::cpUrl('mollie-payments/settings'));
     }
 
     // Protected Methods
     // =========================================================================
-    protected function createSettingsModel()
+    protected function createSettingsModel(): Model
     {
         return new Settings();
     }
