@@ -35,7 +35,7 @@ class PaymentFormModel extends Model
 
     public $uid;
 
-    public function behaviors()
+    public function behaviors(): array
     {
         $behaviors = parent::behaviors();
         $behaviors['fieldLayout'] = [
@@ -45,7 +45,7 @@ class PaymentFormModel extends Model
         return $behaviors;
     }
 
-    public function rules()
+    public function rules(): array
     {
         return [
             [['title', 'handle', 'currency'], 'required'],

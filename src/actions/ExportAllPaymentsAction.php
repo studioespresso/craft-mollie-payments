@@ -28,7 +28,7 @@ class ExportAllPaymentsAction extends ElementAction
         return Craft::t('app', 'Export all to csv');
     }
 
-    public function getTriggerHtml()
+    public function getTriggerHtml(): ?string
     {
         $type = Json::encode(static::class);
 
@@ -72,6 +72,7 @@ EOT;
         );
 
         \Craft::$app->view->registerJs($js);
+        return null;
     }
 
     public static function isDestructive(): bool

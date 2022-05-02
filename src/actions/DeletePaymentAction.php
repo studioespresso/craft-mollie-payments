@@ -30,7 +30,7 @@ class DeletePaymentAction extends ElementAction
         return true;
     }
 
-    public function getConfirmationMessage()
+    public function getConfirmationMessage(): ?string
     {
         return "Are you sure you want to remove these items?";
     }

@@ -16,9 +16,9 @@ use yii\web\NotFoundHttpException;
 
 class PaymentController extends Controller
 {
-    protected $allowAnonymous = ['pay', 'donate', 'redirect', 'webhook'];
+    protected array|int|bool $allowAnonymous = ['pay', 'donate', 'redirect', 'webhook'];
 
-    public function beforeAction($action)
+    public function beforeAction($action): bool
     {
         if ($action->id === 'webhook') {
             $this->enableCsrfValidation = false;
