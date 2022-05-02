@@ -104,7 +104,7 @@ class Payment extends Element
         ];
     }
 
-    public function getStatus()
+    public function getStatus(): ?string
     {
         return $this->paymentStatus;
     }
@@ -203,7 +203,7 @@ class Payment extends Element
 
     // Public Methods
     // =========================================================================
-    public function getCpEditUrl()
+    public function getCpEditUrl(): ?string
     {
         return UrlHelper::cpUrl("mollie-payments/payments/" . $this->uid);
     }
@@ -211,7 +211,7 @@ class Payment extends Element
     /**
      * @inheritdoc
      */
-    public function rules()
+    public function rules(): array
     {
         $rules = parent::rules();
         $rules[] = [['email'], 'string'];
@@ -243,7 +243,7 @@ class Payment extends Element
     /**
      * @inheritdoc
      */
-    public function afterSave(bool $isNew)
+    public function afterSave(bool $isNew): void
     {
         if ($isNew) {
             \Craft::$app->db->createCommand()
@@ -268,7 +268,7 @@ class Payment extends Element
         parent::afterSave($isNew);
     }
 
-    public function afterDelete()
+    public function afterDelete(): void
     {
         \Craft::$app->db->createCommand()
             ->delete(PaymentRecord::tableName(), ['id' => $this->id])

@@ -16,7 +16,7 @@ class Mollie extends Component
 {
     private $mollie;
 
-    public function init()
+    public function init(): void
     {
         $this->mollie = new \Mollie\Api\MollieApiClient();
         $this->mollie->setApiKey(Craft::parseEnv(ConfigHelper::localizedValue(MolliePayments::$plugin->getSettings()->apiKey)));

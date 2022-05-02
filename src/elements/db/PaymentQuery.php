@@ -14,39 +14,39 @@ class PaymentQuery extends ElementQuery
 
     public $email;
 
-    public function email($value)
+    public function email($value): self
     {
         $this->email = $value;
         return $this;
     }
 
-    public function hash($value)
+    public function hash($value): self
     {
         $uid = \Craft::$app->getSecurity()->validateData($value);
         $this->uid = $uid;
         return $this;
     }
 
-    public function status($value)
+    public function status($value): self
     {
         $this->paymentStatus = $value;
         return $this;
     }
 
 
-    public function paymentStatus($value)
+    public function paymentStatus($value): self
     {
         $this->paymentStatus = $value;
         return $this;
     }
 
-    public function formId($value)
+    public function formId($value): self
     {
         $this->formId = $value;
         return $this;
     }
 
-    protected function statusCondition(string $status)
+    protected function statusCondition(string $status): mixed
     {
         switch ($status) {
             case 'cart':
