@@ -44,7 +44,9 @@ class Mollie extends Component
                 "order_id" => $payment->uid,
                 "redirect" => $redirect
             ]),
-            "webhookUrl" => "{$baseUrl}mollie-payments/payment/webhook",
+            "webhookUrl" => UrlHelper::url("{$baseUrl}mollie-payments/payment/webhook", [
+                "id" => $payment->id,
+            ]),
             "metadata" => [
                 "redirectUrl" => $redirect,
                 "element" => $payment->uid,
