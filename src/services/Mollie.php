@@ -22,19 +22,37 @@ class Mollie extends Component
         $this->mollie->setApiKey(Craft::parseEnv(ConfigHelper::localizedValue(MolliePayments::$plugin->getSettings()->apiKey)));
     }
 
-    public function generatePayment(Payment $payment, $redirect)
+    public function generatePayment(Payment $payment, $redirect, $extraMeta = [])
     {
         $paymentForm = MolliePayments::getInstance()->forms->getFormByid($payment->formId);
         $baseUrl = Craft::$app->getSites()->getCurrentSite()->getBaseUrl();
 
 
-        if($paymentForm->descriptionFormat) {
-           $description = Craft::$app->getView()->renderObjectTemplate($paymentForm->descriptionFormat, $payment);
+        if ($paymentForm->descriptionFormat) {
+            $description = Craft::$app->getView()->renderObjectTemplate($paymentForm->descriptionFormat, $payment);
         } else {
             $description = "Order #{$payment->id}";
         }
 
         $currentSite = Craft::$app->getSites()->getCurrentSite();
+        $metaData = [
+            "redirectUrl" => $redirect,
+            "element" => $payment->uid,
+            "e-mail" => $payment->email,
+            "description" => $description,
+            'currentSite' => $currentSite->handle,
+        ];
+
+        if ($extraMeta) {
+            foreach (array_keys($metaData) as $key) {
+                if (isset($extraMeta[$key])) {
+                    unset($extraMeta[$key]);
+                }
+            }
+        }
+
+        $metaData = array_merge($metaData, $extraMeta);
+
         $authorization = $this->mollie->payments->create([
             "amount" => [
                 "currency" => $paymentForm->currency,
@@ -46,14 +64,7 @@ class Mollie extends Component
                 "redirect" => $redirect
             ]),
             "webhookUrl" => "{$baseUrl}mollie-payments/payment/webhook",
-            "metadata" => [
-                "redirectUrl" => $redirect,
-                "element" => $payment->uid,
-                "e-mail" => $payment->email,
-                "description" => $payment->title,
-                'currentSite' => $currentSite->handle,
-
-            ],
+            "metadata" => $metaData,
         ]);
 
 
