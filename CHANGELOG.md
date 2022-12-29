@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 3.1.0 - 2022-12-29
+### Added
+- We now pass a ``currentSite`` parameter in the metadata of all payments [#59](https://github.com/studioespresso/craft-mollie-payments/issues/59)
+- Basic support for added custom metadata when creating your own payments
+
+
 ## 3.0.0 - 2022-05-02
 ### Added
 - Craft 4 🚀
