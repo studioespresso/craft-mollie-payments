@@ -34,6 +34,7 @@ class Mollie extends Component
             $description = "Order #{$payment->id}";
         }
 
+        $currentSite = Craft::$app->getSites()->getCurrentSite();
         $authorization = $this->mollie->payments->create([
             "amount" => [
                 "currency" => $paymentForm->currency,
@@ -49,7 +50,9 @@ class Mollie extends Component
                 "redirectUrl" => $redirect,
                 "element" => $payment->uid,
                 "e-mail" => $payment->email,
-                "description" => $payment->title
+                "description" => $payment->title,
+                'currentSite' => $currentSite->handle,
+
             ],
         ]);
 
