@@ -10,18 +10,15 @@
 
 namespace studioespresso\molliepayments\elements;
 
-use craft\elements\actions\Restore;
+use Craft;
+use craft\base\Element;
+use craft\elements\db\ElementQueryInterface;
 use craft\helpers\UrlHelper;
 use studioespresso\molliepayments\actions\DeletePaymentAction;
 use studioespresso\molliepayments\actions\ExportAllPaymentsAction;
 use studioespresso\molliepayments\actions\ExportPaymentAction;
 use studioespresso\molliepayments\elements\db\PaymentQuery;
 use studioespresso\molliepayments\MolliePayments;
-
-use Craft;
-use craft\base\Element;
-use craft\elements\db\ElementQuery;
-use craft\elements\db\ElementQueryInterface;
 use studioespresso\molliepayments\records\PaymentRecord;
 
 /**
@@ -41,8 +38,6 @@ class Payment extends Element
     public $amount = 0;
     public $formId;
     public $paymentStatus;
-    // Static Methods
-    // =========================================================================
 
     /**
      * @inheritdoc
@@ -50,6 +45,30 @@ class Payment extends Element
     public static function displayName(): string
     {
         return Craft::t('mollie-payments', 'Payment');
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public static function pluralDisplayName(): string
+    {
+        return Craft::t('mollie-payments', 'Payments');
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public static function lowerDisplayName(): string
+    {
+        return Craft::t('mollie-payments', 'payment');
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public static function pluralLowerDisplayName(): string
+    {
+        return Craft::t('mollie-payments', 'payments');
     }
 
     /**
@@ -78,7 +97,7 @@ class Payment extends Element
      * See getUiLabel for > 3.2
      * @return string
      */
-    public function __toString()
+    public function __toString(): string
     {
         if ($this->email) {
             return (string)$this->email;
@@ -88,7 +107,7 @@ class Payment extends Element
 
     public function getUiLabel(): string
     {
-        return $this->email ? $this->email : Craft::t("mollie-payments", 'Cart') . ' ' . $this->id;
+        return $this->email ?: Craft::t("mollie-payments", 'Cart') . ' ' . $this->id;
     }
 
 
