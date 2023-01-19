@@ -13,6 +13,7 @@ namespace studioespresso\molliepayments\elements;
 use Craft;
 use craft\base\Element;
 use craft\elements\db\ElementQueryInterface;
+use craft\elements\User;
 use craft\helpers\UrlHelper;
 use studioespresso\molliepayments\actions\DeletePaymentAction;
 use studioespresso\molliepayments\actions\ExportAllPaymentsAction;
@@ -197,12 +198,6 @@ class Payment extends Element
         ];
     }
 
-    public static function pluralDisplayName(): string
-    {
-        return Craft::t('mollie-payments', 'Payments');
-    }
-
-
     protected static function defineTableAttributes(): array
     {
         return [
@@ -226,6 +221,18 @@ class Payment extends Element
     {
         return UrlHelper::cpUrl("mollie-payments/payments/" . $this->uid);
     }
+
+    /**
+     * @inheritDoc
+     */
+    public function canView(User $user): bool
+    {
+        if($user->can("accessPlugin-mollie-payments")) {
+            return true;
+        }
+        return false;
+    }
+
 
     /**
      * @inheritdoc
