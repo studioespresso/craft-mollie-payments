@@ -5,7 +5,7 @@ next: false
 ---
 # Core concepts
 ## Payment elements
-Each payment is a full Craft element, which means you can add custom fields to it (which you do through the [form](/craft-mollie-payments/general.html#_2-create-a-payment-form) it's linked to).
+Each payment is a full Craft element, which means you can add custom fields to it (which you do through the [form](/general.html#_2-create-a-payment-form) it's linked to).
 Apart from those custom fields, each payment has the following required properties
 - email
 - amount (the amount to me payed. This has to be passed on a hidden field with the [hash](https://docs.craftcms.com/v3/dev/filters.html#hash) filter)

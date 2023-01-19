@@ -6,7 +6,7 @@
 
 {% set crumbs = [
     { label: "Payments", url: cpUrl('mollie-payments') },
-    { label: 'Payment', url: '#' },
+    { label: form.title, url: cpUrl('mollie-payments?&source=form:' ~ form.handle) },
 ] %}
 
 {% set title = "Payment for "|t('mollie-payments') ~ form.title ~' - '~ element.email %}

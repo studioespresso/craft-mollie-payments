@@ -121,7 +121,6 @@ class MolliePayments extends Plugin
             function (RegisterUrlRulesEvent $event) {
                 $event->rules['mollie-payments'] = 'mollie-payments/default/index';
                 $event->rules['mollie-payments/payments/<uid:{uid}>'] = 'mollie-payments/payment/edit';
-                $event->rules['mollie-payments/payments/<uid:{uid}>'] = 'mollie-payments/payment/edit';
                 $event->rules['mollie-payments/forms'] = 'mollie-payments/forms/index';
                 $event->rules['mollie-payments/forms/add'] = 'mollie-payments/forms/edit';
                 $event->rules['mollie-payments/forms/<formId:\d+>'] = 'mollie-payments/forms/edit';
