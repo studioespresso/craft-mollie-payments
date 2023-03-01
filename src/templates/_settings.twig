@@ -23,7 +23,7 @@
         label: 'Mollie API key'|t('mollie-payments'),
         id: 'apiKey',
         name: 'settings[apiKey]',
-        value: settings['apiKey'],
+        value: settings['apiKey'] is iterable  ? settings['apiKey']|json_encode : settings['apiKey'] ,
         errors: settings.getErrors('apiKey'),
         suggestEnvVars: true,
         suggestAliases: true,
