@@ -6,6 +6,7 @@ use Craft;
 use craft\base\Component;
 use craft\helpers\ConfigHelper;
 use craft\helpers\UrlHelper;
+use Mollie\Api\MollieApiClient;
 use studioespresso\molliepayments\elements\Payment;
 use studioespresso\molliepayments\models\PaymentFormModel;
 use studioespresso\molliepayments\models\PaymentTransactionModel;
@@ -14,12 +15,12 @@ use studioespresso\molliepayments\records\PaymentFormRecord;
 
 class Mollie extends Component
 {
-    private $mollie;
+    private MollieApiClient $mollie;
 
     public function init(): void
     {
         $this->mollie = new \Mollie\Api\MollieApiClient();
-        $this->mollie->setApiKey(Craft::parseEnv(ConfigHelper::localizedValue(MolliePayments::$plugin->getSettings()->apiKey)));
+        $this->mollie->setApiKey(App::parseEnv()(ConfigHelper::localizedValue(MolliePayments::$plugin->getSettings()->apiKey)));
     }
 
     public function generatePayment(Payment $payment, $redirect, $extraMeta = [])
