@@ -7,7 +7,6 @@ use craft\db\Migration;
 use studioespresso\molliepayments\records\PaymentFormRecord;
 use studioespresso\molliepayments\records\PaymentRecord;
 use studioespresso\molliepayments\records\PaymentTransactionRecord;
-use studioespresso\navigate\records\NodeRecord;
 
 /***
  * @author    Studio Espresso
