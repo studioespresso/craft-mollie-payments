@@ -19,7 +19,7 @@
     },
     "homepage": "https://github.com/studioespresso/craft-mollie-payments#readme",
     "devDependencies": {
-        "vitepress": "^1.0.0-alpha.31",
+        "vitepress": "^v1.0.0-beta.5",
         "vue": "^3.2.40"
     }
 }
