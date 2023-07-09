@@ -37,18 +37,17 @@ class Transaction extends Component
                 $transaction->status = "refunded";
             }
         }
-        if ($molliePayment->status == 'paid') {
+        if ($molliePayment->isPaid()) {
             $transaction->paidAt = $molliePayment->paidAt;
-        } elseif ($molliePayment->status == 'failed') {
+        } elseif ($molliePayment->isFailed()) {
             $transaction->failedAt = $molliePayment->failedAt;
-        } elseif ($molliePayment->status == 'canceled') {
+        } elseif ($molliePayment->isCancelable) {
             $transaction->canceledAt = $molliePayment->canceledAt;
-        } elseif ($molliePayment->status == 'expired') {
-            $transaction->expiresAt = $molliePayment->expiresAt;
+        } elseif ($molliePayment->isExpired()) {
+            $transaction->expiresAt = $molliePayment->expiredAt;
         }
 
         if ($transaction->validate() && $transaction->save()) {
-
             $payment = Payment::findOne(['id' => $transaction->payment]);
             $payment->paymentStatus = $transaction->status;
             Craft::$app->getElements()->saveElement($payment);
