@@ -22,8 +22,8 @@ To install the plugin, follow these instructions.
 
 
 
-| 📑 [More information & documentation is available here](https://studioespresso.github.io/craft-seo-fields/) |
-| --- |
+| 📑 [More information & documentation is available here](https://studioespresso.github.io/craft-mollie-payments/) |
+|------------------------------------------------------------------------------------------------------------------|
 
 
 ---
