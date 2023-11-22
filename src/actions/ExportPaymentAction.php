@@ -78,14 +78,4 @@ EOT;
         return false;
     }
 
-
-    /**
-     * @inheritdoc
-     */
-    public function performAction(ElementQueryInterface $query): bool
-    {
-//        MolliePayments::getInstance()->export->run($query);
-        d('hier dan toch?');
-        return true;
-    }
 }
