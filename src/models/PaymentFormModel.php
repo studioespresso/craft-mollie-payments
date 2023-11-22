@@ -8,6 +8,7 @@ use craft\behaviors\FieldLayoutBehavior;
 use craft\db\Table;
 use craft\helpers\Db;
 use craft\helpers\StringHelper;
+use craft\models\FieldLayout;
 use craft\validators\HandleValidator;
 use studioespresso\molliepayments\elements\Payment;
 use studioespresso\molliepayments\MolliePayments;
@@ -58,6 +59,14 @@ class PaymentFormModel extends Model
             $this->addError('handle', Craft::t('mollie-payments', 'Handle "{handle}" is already in use', ['handle' => $this->handle]));
         }
     }
+
+//    public function getFieldLayout(): null|FieldLayout
+//    {
+//        if($this->fieldLayoutId) {
+//            return Craft::$app->getFields()->getLayoutById($this->fieldLayoutId);
+//        }
+//        return null;
+//    }
 
     public function getConfig()
     {

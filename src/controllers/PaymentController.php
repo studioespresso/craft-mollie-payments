@@ -32,7 +32,6 @@ class PaymentController extends Controller
 
 
     /**
-     * @return \yii\web\Response
      * @throws HttpException
      * @throws InvalidConfigException
      * @throws NotFoundHttpException
@@ -53,6 +52,13 @@ class PaymentController extends Controller
             if (Craft::$app->getRequest()->getBodyParam('email')) {
                 $payment->email = Craft::$app->getRequest()->getBodyParam('email');
             }
+            $form = $payment->formId;
+
+            $paymentForm = MolliePayments::getInstance()->forms->getFormByHandle($form);
+
+            if (!$paymentForm) {
+                throw new NotFoundHttpException("Form not found", 404);
+            }
         } else {
             $email = Craft::$app->request->getRequiredBodyParam('email');
             $amount = Craft::$app->request->getValidatedBodyParam('amount');
@@ -61,9 +67,9 @@ class PaymentController extends Controller
                 throw new HttpException(400, "Incorrent payment submitted");
             }
 
-            $paymentForm = MolliePayments::getInstance()->forms->getFormByHandle($form);
             $payment = new Payment();
 
+            $paymentForm = MolliePayments::getInstance()->forms->getFormByHandle($form);
             if (!$paymentForm) {
                 throw new NotFoundHttpException("Form not found", 404);
             }
@@ -73,6 +79,7 @@ class PaymentController extends Controller
             $payment->formId = $paymentForm->id;
             $payment->fieldLayoutId = $paymentForm->fieldLayout;
         }
+
 
         $payment->paymentStatus = 'pending';
 
@@ -95,11 +102,10 @@ class PaymentController extends Controller
             }
             $url = MolliePayments::getInstance()->mollie->generatePayment($payment, UrlHelper::url($redirect));
             $this->redirect($url);
-        };
+        }
     }
 
     /**
-     * @return \yii\web\Response
      * @throws HttpException
      * @throws InvalidConfigException
      * @throws NotFoundHttpException

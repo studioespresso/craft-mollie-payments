@@ -2,6 +2,7 @@
 
 namespace studioespresso\molliepayments\behaviors;
 
+use Craft;
 use craft\elements\db\EntryQuery;
 use studioespresso\molliepayments\elements\db\PaymentQuery;
 use studioespresso\molliepayments\elements\Payment;
