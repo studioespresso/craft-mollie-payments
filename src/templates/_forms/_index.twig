@@ -11,6 +11,9 @@
     { label: 'Forms', url: '#' }
 ] %}
 
+{% do view.registerAssetBundle('craft\\web\\assets\\admintable\\AdminTableAsset') -%}
+
+
 {% block actionButton %}
     {% if (not currentUser.admin and settings.anyoneCanAdd) or currentUser.admin %}
         <div id="button-container">
@@ -25,43 +28,37 @@
 
 {# The content of the CP Section#}
 {% block content %}
-    {% if forms|length %}
-        <table id="forms" class="data fullwidth collapsible">
-            <thead>
-            <tr>
-                <th scope="col">{{ 'ID'|t('mollie-payments') }}</th>
-                <th scope="col">{{ 'Name'|t('mollie-payments') }}</th>
-                <th scope="col">{{ 'Handle'|t('mollie-payments') }}</th>
-                <th scope="col">{{ 'Remove'|t('mollie-payments') }}</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for form in forms %}
-                <tr data-id="{{ form.id }}" data-name="{{ form.title }}">
-                    <td data-title="Id"><code>{{ form.id }}</code></td>
-                    <th scope="row" data-title="Name"><a
-                                href="{{ url('mollie-payments/forms/'~form.id) }}">{{ form.title }}</a></th>
-                    <td data-title="Handle"><code>{{ form.handle }}</code></td>
-                    <td class="thin">
-                        <a class="delete icon" title="Delete" role="button"></a>
-                    </td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-
-    {% else %}
-        <div id="noforms">
-            {{ 'No forms found, click "Create new form" in the top right corner to get started'|t('mollie-payments') }}
-        </div>
-    {% endif %}
+    <div id="mollie-vue-admin-table"></div>
 {% endblock %}
 
+{% set tableData = [] %}
+{% for form in forms %}
+    {% set tableData = tableData|merge([{
+        id: form.id,
+        title: form.title|t('app'),
+        url: url('mollie-payments/forms/' ~ form.id),
+        handle: form.handle,
+    }]) %}
+{% endfor %}
+{% set actions = [] %}
+{% set columns = [
+    { name: '__slot:title', title: "Name" },
+    { name: '__slot:handle', title: "Handle" },
+    { name: 'id', title: "Id" },
+] %}
+
+
 {% js %}
-    var adminTable = new Craft.AdminTable({
-    tableSelector: '#forms',
-    noItemsSelector: '#noforms',
+    new Craft.VueAdminTable({
+    container: '#mollie-vue-admin-table',
+    columns: {{ columns|json_encode|raw }},
+    tableData: {{ tableData|json_encode|raw }},
     deleteAction: 'mollie-payments/forms/delete',
-    confirmDeleteMessage: '{{ "Are you sure you want to delete “{name}”?"|t('mollie-payments') }}',
+    deleteConfirmationMessage: "{{ 'Are you sure you want to delete “{name}”?'|t('mollie-payments') }}",
+    deleteSuccessMessage: "{{ '{name} deleted.'|t('mollie-payments') }}",
+    emptyMessage: "{{ 'No forms exist yet.'|t }}",
+    checkboxes: {{ craft.app.config.general.allowAdminChanges ? 0 : 0 }},
+    allowMultipleSelections: false,
+    actions: {{ actions|json_encode|raw }},
     });
 {% endjs %}
