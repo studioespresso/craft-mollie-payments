@@ -42,7 +42,6 @@ class PaymentController extends Controller
      */
     public function actionPay()
     {
-
         $redirect = Craft::$app->request->getBodyParam('redirect');
         $redirect = Craft::$app->security->validateData($redirect);
 
@@ -97,7 +96,6 @@ class PaymentController extends Controller
             $url = MolliePayments::getInstance()->mollie->generatePayment($payment, UrlHelper::url($redirect));
             $this->redirect($url);
         };
-
     }
 
     /**
@@ -142,7 +140,6 @@ class PaymentController extends Controller
             $payment->amount = $amount;
             $payment->formId = $paymentForm->id;
             $payment->fieldLayoutId = $paymentForm->fieldLayout;
-
         }
 
         $payment->paymentStatus = 'pending';
@@ -192,7 +189,7 @@ class PaymentController extends Controller
 
         $payment = Payment::findOne(['uid' => $uid]);
         $transaction = MolliePayments::getInstance()->transaction->getTransactionbyPayment($payment->id);
-        if($redirect != $transaction->redirect) {
+        if ($redirect != $transaction->redirect) {
             throw new InvalidArgumentException("Invalid redirect");
         }
 
@@ -202,7 +199,6 @@ class PaymentController extends Controller
         } catch (\Exception $e) {
             throw new NotFoundHttpException('Payment not found', '404');
         }
-
     }
 
     /**
@@ -240,6 +236,4 @@ class PaymentController extends Controller
         $payments = Payment::findAll();
         return MolliePayments::getInstance()->export->run($payments);
     }
-
-
 }

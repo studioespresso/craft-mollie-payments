@@ -29,6 +29,7 @@
 !.vscode/launch.json
 !.vscode/extensions.json
 config.codekit3
+composer.lock
 prepros-6.config
 /docs/.vitepress/dist
 /docs/.vitepress/cache

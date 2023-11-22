@@ -56,8 +56,4 @@ class DeletePaymentAction extends ElementAction
 
         return true;
     }
-
-
-
-
 }

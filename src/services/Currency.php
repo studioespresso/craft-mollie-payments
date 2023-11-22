@@ -3,13 +3,10 @@
 namespace studioespresso\molliepayments\services;
 
 use craft\base\Component;
-use studioespresso\molliepayments\models\PaymentFormModel;
-use studioespresso\molliepayments\records\PaymentFormRecord;
-use studioespresso\molliepayments\elements\Payment as PaymentElement;
 
 class Currency extends Component
 {
-    const defaultCurrencies = [
+    public const defaultCurrencies = [
         "USD" => ["name" => "United States dollar", "short" => "USD", "symbol" => "$"],
         "EUR" => ["name" => "Euro", "short" => "EUR", "symbol" => "€"],
         "GBP" => ["name" => "Pound sterling", "short" => "GBP", "symbol" => "£"],
@@ -32,7 +29,8 @@ class Currency extends Component
         "ZAR" => ["name" => "South African rand", "short" => "ZAR", "symbol" => "R"],
     ];
 
-    public function getCurrencies() {
+    public function getCurrencies()
+    {
         return self::defaultCurrencies;
     }
 }

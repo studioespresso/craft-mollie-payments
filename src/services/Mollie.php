@@ -9,10 +9,8 @@ use craft\helpers\ConfigHelper;
 use craft\helpers\UrlHelper;
 use Mollie\Api\MollieApiClient;
 use studioespresso\molliepayments\elements\Payment;
-use studioespresso\molliepayments\models\PaymentFormModel;
 use studioespresso\molliepayments\models\PaymentTransactionModel;
 use studioespresso\molliepayments\MolliePayments;
-use studioespresso\molliepayments\records\PaymentFormRecord;
 
 class Mollie extends Component
 {
@@ -58,12 +56,12 @@ class Mollie extends Component
         $authorization = $this->mollie->payments->create([
             "amount" => [
                 "currency" => $paymentForm->currency,
-                "value" => number_format($payment->amount, 2, '.', '') // You must send the correct number of decimals, thus we enforce the use of strings
+                "value" => number_format($payment->amount, 2, '.', ''), // You must send the correct number of decimals, thus we enforce the use of strings
             ],
             "description" => $description,
             "redirectUrl" => UrlHelper::url("{$baseUrl}mollie-payments/payment/redirect", [
                 "order_id" => $payment->uid,
-                "redirect" => $redirect
+                "redirect" => $redirect,
             ]),
             "webhookUrl" => "{$baseUrl}mollie-payments/payment/webhook",
             "metadata" => $metaData,
@@ -88,5 +86,4 @@ class Mollie extends Component
     {
         return $this->mollie->payments->get($orderId);
     }
-
 }

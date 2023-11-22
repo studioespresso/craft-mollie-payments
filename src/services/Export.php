@@ -4,8 +4,6 @@ namespace studioespresso\molliepayments\services;
 
 use Craft;
 use craft\base\Component;
-use craft\controllers\ExportController;
-use craft\elements\db\ElementQueryInterface;
 use craft\helpers\FileHelper;
 use studioespresso\molliepayments\MolliePayments;
 use yii\web\BadRequestHttpException;
@@ -17,7 +15,6 @@ class Export extends Component
 
     public function run($query, $format = 'csv')
     {
-
         $results = [];
         $header = ['form', 'email', 'amount', 'currency', 'status'];
         $customFields = [];
@@ -47,7 +44,6 @@ class Export extends Component
                     $results[$payment->id][$field] = '';
                 }
             }
-
         }
         $header = array_merge($header, $customFields);
         array_unshift($results, $header);
@@ -76,5 +72,4 @@ class Export extends Component
         $response->setDownloadHeaders($filename, $mimeType);
         return $response;
     }
-
 }

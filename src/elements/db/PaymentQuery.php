@@ -7,7 +7,6 @@ use craft\helpers\Db;
 
 class PaymentQuery extends ElementQuery
 {
-
     public $formId;
 
     public $paymentStatus;
@@ -27,7 +26,7 @@ class PaymentQuery extends ElementQuery
         return $this;
     }
 
-    public function status($value): self
+    public function status(array|string|null $value): static
     {
         $this->paymentStatus = $value;
         return $this;

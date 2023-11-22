@@ -187,7 +187,7 @@ class Payment extends Element
         return [
             DeletePaymentAction::class,
             ExportPaymentAction::class,
-            ExportAllPaymentsAction::class
+            ExportAllPaymentsAction::class,
         ];
     }
 
@@ -227,7 +227,7 @@ class Payment extends Element
      */
     public function canView(User $user): bool
     {
-        if($user->can("accessPlugin-mollie-payments")) {
+        if ($user->can("accessPlugin-mollie-payments")) {
             return true;
         }
         return false;
@@ -300,6 +300,4 @@ class Payment extends Element
             ->delete(PaymentRecord::tableName(), ['id' => $this->id])
             ->execute();
     }
-
-
 }

@@ -5,17 +5,12 @@ namespace studioespresso\molliepayments\models;
 use Craft;
 use craft\base\Model;
 use craft\behaviors\FieldLayoutBehavior;
-use craft\db\Query;
 use craft\db\Table;
-use craft\elements\Asset;
 use craft\helpers\Db;
 use craft\helpers\StringHelper;
-use craft\helpers\UrlHelper;
-use craft\models\AssetTransform;
 use craft\validators\HandleValidator;
 use studioespresso\molliepayments\elements\Payment;
 use studioespresso\molliepayments\MolliePayments;
-use studioespresso\seofields\SeoFields;
 
 class PaymentFormModel extends Model
 {
@@ -61,9 +56,7 @@ class PaymentFormModel extends Model
         $data = MolliePayments::getInstance()->forms->validateFormHandle($this->handle);
         if ($data && $data->id != $this->id) {
             $this->addError('handle', Craft::t('mollie-payments', 'Handle "{handle}" is already in use', ['handle' => $this->handle]));
-
         }
-
     }
 
     public function getConfig()
@@ -88,6 +81,4 @@ class PaymentFormModel extends Model
 
         return $config;
     }
-
-
 }

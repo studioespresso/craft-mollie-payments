@@ -11,9 +11,7 @@ use Craft;
 use craft\base\ElementAction;
 use craft\elements\db\ElementQueryInterface;
 use craft\helpers\Json;
-use craft\helpers\UrlHelper;
 use studioespresso\molliepayments\MolliePayments;
-use yii\base\Exception;
 
 class ExportPaymentAction extends ElementAction
 {
@@ -66,7 +64,7 @@ EOT;
             [
                 Craft::$app->config->general->csrfTokenName,
                 Craft::$app->request->getCsrfToken(),
-                'mollie-payments/payment/export'
+                'mollie-payments/payment/export',
             ],
             $js
         );
@@ -90,6 +88,4 @@ EOT;
         d('hier dan toch?');
         return true;
     }
-
-
 }

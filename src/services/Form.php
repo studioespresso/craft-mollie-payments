@@ -14,8 +14,7 @@ use yii\base\InvalidConfigException;
 
 class Form extends Component
 {
-
-    const CONFIG_FORMS_PATH = 'molliePayments';
+    public const CONFIG_FORMS_PATH = 'molliePayments';
 
     public function save(PaymentFormModel $form)
     {
@@ -56,7 +55,7 @@ class Form extends Component
             $layout->uid = key($data['fieldLayouts']);
             Craft::$app->getFields()->saveLayout($layout);
             $formRecord->fieldLayout = $layout->id;
-        } else if ($formRecord->fieldLayout) {
+        } elseif ($formRecord->fieldLayout) {
             // Delete the field layout
             Craft::$app->getFields()->deleteLayoutById($formRecord->fieldLayout);
             $formRecord->fieldLayout = null;
@@ -65,7 +64,6 @@ class Form extends Component
 
         $formRecord->save();
         $transaction->commit();
-
     }
 
     public function getAllForms()
@@ -115,7 +113,7 @@ class Form extends Component
     public function handleDeleteForm(ConfigEvent $event)
     {
         $record = PaymentFormRecord::findOne([
-            'uid' => $event->tokenMatches[0]
+            'uid' => $event->tokenMatches[0],
         ]);
         if (!$record) {
             return false;

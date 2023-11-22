@@ -9,11 +9,9 @@ use studioespresso\molliepayments\events\TransactionUpdateEvent;
 use studioespresso\molliepayments\models\PaymentTransactionModel;
 use studioespresso\molliepayments\MolliePayments;
 use studioespresso\molliepayments\records\PaymentTransactionRecord;
-use yii\base\BaseObject;
 
 class Transaction extends Component
 {
-
     public function save(PaymentTransactionModel $transactionModel)
     {
         $transactionRecord = new PaymentTransactionRecord();
@@ -28,7 +26,6 @@ class Transaction extends Component
 
     public function updateTransaction(PaymentTransactionRecord $transaction, \Mollie\Api\Resources\Payment $molliePayment)
     {
-
         $transaction->status = $molliePayment->status;
         $transaction->method = $molliePayment->method;
 
@@ -61,7 +58,7 @@ class Transaction extends Component
             new TransactionUpdateEvent([
                 'transaction' => $transaction,
                 'payment' => $payment,
-                'status' => $status
+                'status' => $status,
             ])
         );
     }
@@ -93,5 +90,4 @@ class Transaction extends Component
         $transactionRecord = PaymentTransactionRecord::findOne(['payment' => $id]);
         return $transactionRecord;
     }
-
 }

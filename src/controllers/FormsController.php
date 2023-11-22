@@ -24,11 +24,10 @@ class FormsController extends Controller
             return $this->renderTemplate('mollie-payments/_forms/_edit', ['currencies' => $currencies]);
         } else {
             $form = MolliePayments::getInstance()->forms->getFormById($formId);
-            if($form->fieldLayout) {
+            if ($form->fieldLayout) {
                 $layout = Craft::$app->getFields()->getLayoutById($form->fieldLayout);
             }
             return $this->renderTemplate('mollie-payments/_forms/_edit', ['form' => $form, 'layout' => $layout ?? null, 'currencies' => $currencies]);
-
         }
     }
 
@@ -36,7 +35,7 @@ class FormsController extends Controller
     {
         $data = Craft::$app->getRequest()->getBodyParam('data');
 
-        if(!isset($data['id']) or empty($data['id'])) {
+        if (!isset($data['id']) or empty($data['id'])) {
             $paymentFormModel = new PaymentFormModel();
         } else {
             /** @var PaymentFormRecord $record */
@@ -56,7 +55,7 @@ class FormsController extends Controller
         $fieldLayout->type = Payment::class;
         $paymentFormModel->setFieldLayout($fieldLayout);
 
-        if($paymentFormModel->validate()) {
+        if ($paymentFormModel->validate()) {
             $saved = MolliePayments::getInstance()->forms->save($paymentFormModel);
             $this->redirectToPostedUrl();
         } else {
@@ -65,14 +64,15 @@ class FormsController extends Controller
                 'form' => $paymentFormModel,
                 'layout' => $layout,
                 'errors' => $paymentFormModel->getErrors(),
-                'currencies' => MolliePayments::getInstance()->currency->getCurrencies()
+                'currencies' => MolliePayments::getInstance()->currency->getCurrencies(),
             ]);
         }
     }
 
-    public function actionDelete() {
+    public function actionDelete()
+    {
         $id = Craft::$app->getRequest()->getRequiredBodyParam('id');
-        if(MolliePayments::getInstance()->forms->delete($id)) {
+        if (MolliePayments::getInstance()->forms->delete($id)) {
             $returnData['success'] = true;
             return $this->asJson($returnData);
         };

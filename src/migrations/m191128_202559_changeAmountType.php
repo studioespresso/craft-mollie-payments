@@ -2,7 +2,6 @@
 
 namespace studioespresso\molliepayments\migrations;
 
-use Craft;
 use craft\db\Migration;
 use studioespresso\molliepayments\records\PaymentRecord;
 use studioespresso\molliepayments\records\PaymentTransactionRecord;

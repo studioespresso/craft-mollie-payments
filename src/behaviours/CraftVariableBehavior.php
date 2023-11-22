@@ -1,4 +1,5 @@
 <?php
+
 namespace studioespresso\molliepayments\behaviours;
 
 use Craft;

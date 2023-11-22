@@ -14,7 +14,6 @@ use yii\base\Behavior;
  */
 class CraftVariableBehavior extends Behavior
 {
-
     public function payments($criteria = null): PaymentQuery
     {
         $query = Payment::find();

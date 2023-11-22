@@ -10,31 +10,27 @@
 
 namespace studioespresso\molliepayments;
 
+use Craft;
 use craft\base\Model;
+use craft\base\Plugin;
 use craft\events\RebuildConfigEvent;
+use craft\events\RegisterComponentTypesEvent;
+use craft\events\RegisterUrlRulesEvent;
 use craft\helpers\UrlHelper;
+use craft\services\Elements;
 use craft\services\ProjectConfig;
+use craft\web\twig\variables\CraftVariable;
+use craft\web\UrlManager;
 use studioespresso\molliepayments\behaviours\CraftVariableBehavior;
 use studioespresso\molliepayments\elements\Payment;
+
+use studioespresso\molliepayments\models\Settings;
 use studioespresso\molliepayments\services\Currency;
 use studioespresso\molliepayments\services\Export;
 use studioespresso\molliepayments\services\Form;
 use studioespresso\molliepayments\services\Mollie;
-use studioespresso\molliepayments\services\Transaction;
 use studioespresso\molliepayments\services\Payment as PaymentServivce;
-use studioespresso\molliepayments\variables\MolliePaymentsVariable;
-use studioespresso\molliepayments\twigextensions\MolliePaymentsTwigExtension;
-use studioespresso\molliepayments\models\Settings;
-
-use Craft;
-use craft\base\Plugin;
-use craft\services\Plugins;
-use craft\events\PluginEvent;
-use craft\web\UrlManager;
-use craft\services\Elements;
-use craft\web\twig\variables\CraftVariable;
-use craft\events\RegisterComponentTypesEvent;
-use craft\events\RegisterUrlRulesEvent;
+use studioespresso\molliepayments\services\Transaction;
 
 use yii\base\Event;
 
@@ -54,19 +50,18 @@ use yii\base\Event;
  */
 class MolliePayments extends Plugin
 {
-
     // Constants
     // =========================================================================
 
     /**
      * @event TransactionUpdateEvent The event that is triggered after a payment transaction is updates.
      */
-    const EVENT_AFTER_TRANSACTION_UPDATE = 'afterTransactionUpdate';
+    public const EVENT_AFTER_TRANSACTION_UPDATE = 'afterTransactionUpdate';
 
     /**
      * @event beforePaymentSave The event that is triggered before saving a payment element for the first time.
      */
-    const EVENT_BEFORE_PAYMENT_SAVE = 'beforePaymentSave';
+    public const EVENT_BEFORE_PAYMENT_SAVE = 'beforePaymentSave';
 
 
     // Static Properties
@@ -102,7 +97,7 @@ class MolliePayments extends Plugin
             'transaction' => Transaction::class,
             'payment' => PaymentServivce::class,
             'currency' => Currency::class,
-            'export' => Export::class
+            'export' => Export::class,
         ]);
 
         Craft::$app->projectConfig
@@ -110,7 +105,7 @@ class MolliePayments extends Plugin
             ->onUpdate('molliePayments.{uid}', [$this->forms, 'handleAddForm'])
             ->onRemove('molliePayments.{uid}', [$this->forms, 'handleDeleteForm']);
 
-        Event::on(ProjectConfig::class, ProjectConfig::EVENT_REBUILD, function (RebuildConfigEvent $event) {
+        Event::on(ProjectConfig::class, ProjectConfig::EVENT_REBUILD, function(RebuildConfigEvent $event) {
             $event->config['molliePayments'] = $this->forms->rebuildProjectConfig();
         });
 
@@ -118,7 +113,7 @@ class MolliePayments extends Plugin
         Event::on(
             UrlManager::class,
             UrlManager::EVENT_REGISTER_CP_URL_RULES,
-            function (RegisterUrlRulesEvent $event) {
+            function(RegisterUrlRulesEvent $event) {
                 $event->rules['mollie-payments'] = 'mollie-payments/default/index';
                 $event->rules['mollie-payments/payments/<uid:{uid}>'] = 'mollie-payments/payment/edit';
                 $event->rules['mollie-payments/forms'] = 'mollie-payments/forms/index';
@@ -131,13 +126,13 @@ class MolliePayments extends Plugin
         Event::on(
             UrlManager::class,
             UrlManager::EVENT_REGISTER_SITE_URL_RULES,
-            function (RegisterUrlRulesEvent $event) {
+            function(RegisterUrlRulesEvent $event) {
                 $event->rules['mollie-payments/payment/redirect'] = 'mollie-payments/payment/redirect';
                 $event->rules['mollie-payments/payment/webhook'] = 'mollie-payments/payment/webhook';
             }
         );
 
-        Event::on(CraftVariable::class, CraftVariable::EVENT_INIT, function (Event $e) {
+        Event::on(CraftVariable::class, CraftVariable::EVENT_INIT, function(Event $e) {
             /** @var CraftVariable $variable */
             $variable = $e->sender;
 
@@ -150,19 +145,18 @@ class MolliePayments extends Plugin
         Event::on(
             Elements::class,
             Elements::EVENT_REGISTER_ELEMENT_TYPES,
-            function (RegisterComponentTypesEvent $event) {
+            function(RegisterComponentTypesEvent $event) {
                 $event->types[] = Payment::class;
             }
         );
 
-        Event::on(CraftVariable::class, CraftVariable::EVENT_INIT, function (Event $e) {
+        Event::on(CraftVariable::class, CraftVariable::EVENT_INIT, function(Event $e) {
             /** @var CraftVariable $variable */
             $variable = $e->sender;
             $variable->attachBehaviors([
                 CraftVariableBehavior::class,
             ]);
         });
-
     }
 
     public function getCpNavItem(): array

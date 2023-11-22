@@ -5,17 +5,14 @@ namespace studioespresso\molliepayments\services;
 use Craft;
 use craft\base\Component;
 use craft\helpers\UrlHelper;
+use studioespresso\molliepayments\elements\Payment as PaymentElement;
 use studioespresso\molliepayments\events\PaymentUpdateEvent;
-use studioespresso\molliepayments\events\TransactionUpdateEvent;
-use studioespresso\molliepayments\models\PaymentFormModel;
 use studioespresso\molliepayments\models\PaymentTransactionModel;
 use studioespresso\molliepayments\MolliePayments;
 use studioespresso\molliepayments\records\PaymentFormRecord;
-use studioespresso\molliepayments\elements\Payment as PaymentElement;
 
 class Payment extends Component
 {
-
     public function getStatus($id)
     {
         $element = PaymentElement::findOne(['id' => $id]);
@@ -26,15 +23,14 @@ class Payment extends Component
 
     public function save($payment)
     {
-
         $this->trigger(MolliePayments::EVENT_BEFORE_PAYMENT_SAVE,
             new PaymentUpdateEvent([
                 'payment' => $payment,
-                'isNew' => true
+                'isNew' => true,
             ])
         );
 
-        if(Craft::$app->getElements()->saveElement($payment)) {
+        if (Craft::$app->getElements()->saveElement($payment)) {
             return $payment;
         } else {
             return false;
@@ -58,6 +54,5 @@ class Payment extends Component
 
         $redirect = UrlHelper::url($redirect, ['payment' => $payment->uid, 'status' => 'free']);
         return $redirect;
-
     }
 }

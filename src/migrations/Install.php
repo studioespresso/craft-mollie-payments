@@ -107,7 +107,7 @@ class Install extends Migration
             PaymentFormRecord::tableName(),
             'id',
             'CASCADE',
-            NULL
+            null
         );
 
         $this->addForeignKey(
@@ -117,9 +117,8 @@ class Install extends Migration
             "{{%mollie_payments}}",
             'id',
             'CASCADE',
-            NULL
+            null
         );
-
     }
 
     protected function removeTables()

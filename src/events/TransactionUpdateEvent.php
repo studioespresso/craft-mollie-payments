@@ -10,12 +10,9 @@
 
 namespace studioespresso\molliepayments\events;
 
-
-use Craft;
 use studioespresso\molliepayments\elements\Payment;
 use studioespresso\molliepayments\models\PaymentTransactionModel;
 use yii\base\Event;
-
 
 /**
  * @author    Studio Espresso
