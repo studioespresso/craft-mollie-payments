@@ -185,7 +185,6 @@ class Payment extends Element
     protected static function defineActions(string $source = null): array
     {
         return [
-            DeletePaymentAction::class,
             ExportPaymentAction::class,
             ExportAllPaymentsAction::class,
         ];
@@ -226,6 +225,14 @@ class Payment extends Element
      * @inheritDoc
      */
     public function canView(User $user): bool
+    {
+        if ($user->can("accessPlugin-mollie-payments")) {
+            return true;
+        }
+        return false;
+    }
+
+    public function canDelete(User $user): bool
     {
         if ($user->can("accessPlugin-mollie-payments")) {
             return true;
