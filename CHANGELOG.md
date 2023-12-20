@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 5.0.0-alpha.1 - 2023-12-17
+### Added
+- Initial Craft 5 support
+
 ## 3.1.3 - 2023-03-10
 ### Fixed
 - Fixed a missing namespace
