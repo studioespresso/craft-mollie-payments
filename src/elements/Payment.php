@@ -15,7 +15,6 @@ use craft\base\Element;
 use craft\elements\db\ElementQueryInterface;
 use craft\elements\User;
 use craft\helpers\UrlHelper;
-use studioespresso\molliepayments\actions\DeletePaymentAction;
 use studioespresso\molliepayments\actions\ExportAllPaymentsAction;
 use studioespresso\molliepayments\actions\ExportPaymentAction;
 use studioespresso\molliepayments\elements\db\PaymentQuery;

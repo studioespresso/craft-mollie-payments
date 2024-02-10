@@ -2,24 +2,32 @@
 
 Easily accept payment with Mollie Payments. Note that this plugin does not work with or require Craft Commerce.
 
+![Mollie Payments](https://www.studioespresso.co/assets/Mollie-Payments-Github-Banner.png)
+
 ## Requirements
 
-This plugin requires Craft CMS 3.1.0 or later.
+This plugin works with Craft CMS 3.1.0 or later, 4 and 5.
 
 ## Installation
 
-To install the plugin, follow these instructions.
+#### From the Plugin Store
 
-1. Open your terminal and go to your Craft project:
+Go to the Plugin Store in your project’s Control Panel and search for “Mollie Payments”. Then click on the “Install” button in its modal window.
 
-        cd /path/to/project
+#### With Composer
 
-2. Then tell Composer to load the plugin:
+Open your terminal and run the following commands:
 
-        composer require studioespresso/craft-mollie-payments
+```bash
+# go to the project directory
+cd /path/to/my-project.test
 
-3. In the Control Panel, go to Settings → Plugins and click the “Install” button for Mollie Payments.
+# tell Composer to load the plugin
+composer require studioespresso/craft-mollie-payments
 
+# tell Craft to install the plugin
+./craft plugin/install mollie-payments
+```
 
 
 | 📑 [More information & documentation is available here](https://studioespresso.github.io/craft-mollie-payments/) |

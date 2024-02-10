@@ -9,9 +9,7 @@ namespace studioespresso\molliepayments\actions;
 
 use Craft;
 use craft\base\ElementAction;
-use craft\elements\db\ElementQueryInterface;
 use craft\helpers\Json;
-use studioespresso\molliepayments\MolliePayments;
 
 class ExportPaymentAction extends ElementAction
 {
@@ -77,5 +75,4 @@ EOT;
     {
         return false;
     }
-
 }
