@@ -1,22 +1,39 @@
 module.exports = {
-    title: 'Mollie Payments for Craft',
+    title: 'Mollie Payments',
     base: '/craft-mollie-payments',
+    head: [
+        ['meta', {content: 'https://github.com/studioespresso', property: 'og:see_also',}],
+        [
+            'script',
+            {
+                defer: '',
+                'data-domain': 'studioespresso.github.io',
+                src: 'https://stats.studioespresso.co/js/script.tagged-events.outbound-links.js'
+            }
+        ],
+    ],
     themeConfig: {
-
-        // logo: {light: '/icon-vuepress.svg', dark: '/icon-vuepress-light.svg'},
+        logo: '/img/plugin-logo.svg',
         sidebar: [
             {
-                items: [
-                    {text: 'Introduction', link: '/index'},
-                    {text: 'Getting started', link: '/general'},
-                    {text: 'Templating', link: '/template'},
-                    {text: 'Events', link: '/events'},
-                    {text: 'Webhook', link: '/webhook'},
-                    {text: 'Element', link: '/element'},
-                    {text: 'Settings', link: '/settings'},
-                ]
-            },
+                text: 'General',
+                items:
+                    [
+                        {text: 'Getting started', link: '/general'},
+                        {text: 'Templating', link: '/template'},
+                        {text: 'Settings', link: '/settings'},
 
+                    ]
+            },
+            {
+                text: 'Customization',
+                items:
+                    [
+                        {text: 'Payments elements', link: '/element'},
+                        {text: 'Events', link: '/events'},
+                        {text: 'Webhook', link: '/webhook'},
+                    ]
+            }
 
         ],
         nav: [

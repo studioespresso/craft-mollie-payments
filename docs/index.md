@@ -3,6 +3,8 @@ title: Mollie Payments
 ---
 # Mollie Payments for Craft CMS
 
+![Banner](./images/banner.png)
+
 Mollie Payments gives developers an easy way to accept payments on your website.
 
 The plugin doesn't handle products, taxes or price calculation, giving you the freedom to use it in any way you need to.
