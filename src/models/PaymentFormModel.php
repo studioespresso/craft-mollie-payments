@@ -8,7 +8,6 @@ use craft\behaviors\FieldLayoutBehavior;
 use craft\db\Table;
 use craft\helpers\Db;
 use craft\helpers\StringHelper;
-use craft\models\FieldLayout;
 use craft\validators\HandleValidator;
 use studioespresso\molliepayments\elements\Payment;
 use studioespresso\molliepayments\MolliePayments;
@@ -60,14 +59,6 @@ class PaymentFormModel extends Model
         }
     }
 
-//    public function getFieldLayout(): null|FieldLayout
-//    {
-//        if($this->fieldLayoutId) {
-//            return Craft::$app->getFields()->getLayoutById($this->fieldLayoutId);
-//        }
-//        return null;
-//    }
-
     public function getConfig()
     {
         $config = [
@@ -77,6 +68,7 @@ class PaymentFormModel extends Model
             'descriptionFormat' => $this->descriptionFormat,
         ];
 
+        /** @phpstan-ignore-next-line */
         $fieldLayout = $this->getFieldLayout();
 
         if ($fieldLayoutConfig = $fieldLayout->getConfig()) {
