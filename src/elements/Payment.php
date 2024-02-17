@@ -163,7 +163,7 @@ class Payment extends Element
     {
         $sources[] = [
             'key' => '*',
-            'label' => 'All',
+            'label' => Craft::t('app', 'All'),
         ];
         $forms = MolliePayments::getInstance()->forms->getAllForms();
 

@@ -18,6 +18,8 @@ class SettingsController extends Controller
             ])
             ->selectedSubnavItem('settings')
             ->title(Craft::t('mollie-payments', 'Settings'))
+            ->action('mollie-payments/settings/save')
+            ->redirectUrl('mollie-payments/settings')
             ->contentTemplate('mollie-payments/_settings.twig', [
                 'settings' => MolliePayments::getInstance()->getSettings(),
             ]);

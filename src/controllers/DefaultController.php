@@ -8,9 +8,6 @@ class DefaultController extends Controller
 {
     public function actionIndex()
     {
-        return $this->asCpScreen()
-            ->selectedSubnavItem('payments')
-            ->crumbs([['label' => 'Payments']])
-            ->contentTemplate('mollie-payments/_payment/_index.twig');
+        return  $this->renderTemplate('mollie-payments/_payment/_index.twig');
     }
 }
