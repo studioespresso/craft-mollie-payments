@@ -27,6 +27,5 @@ return [
     'Transactions' => 'Transacties',
     'Date' => 'Datum',
     'Method' => 'Betalingsmethode',
-    'Payment for ' => 'Betaling voor '
+    'Payment for ' => 'Betaling voor ',
 ];
-
