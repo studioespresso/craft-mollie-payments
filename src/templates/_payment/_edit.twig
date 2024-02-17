@@ -22,7 +22,7 @@
         {% set tabData = tabData|merge({ (tab.id) : data}) %}
     {% endfor %}
 {% endif %}
-{% set tabData = tabData|merge( {translactions: { label: "Transactions", url : "#tab-transactions"} }) %}
+{% set tabData = tabData|merge( {translactions: { label: 'Transactions'|t('mollie-payments'), url : "#tab-transactions"} }) %}
 
 {% set tabs = tabData %}
 
@@ -53,8 +53,7 @@
                 <label id="slug-label" for="slug">{{ "Form"|t("mollie-payments") }}</label>
             </div>
             <div class="input ltr">
-                <input class="text fullwidth" disabled type="text" value="{{ form.title }}" autocomplete="off"
-                       autocorrect="off" autocapitalize="off" placeholder="Enter slug">
+                <input class="text fullwidth" disabled type="text" value="{{ form.title }}" disabled>
             </div>
         </div>
         <div class="field" id="email-field">
@@ -62,8 +61,7 @@
                 <label id="slug-label" for="slug">{{ "Email"|t("mollie-payments") }}</label>
             </div>
             <div class="input ltr">
-                <input class="text fullwidth" disabled type="text" value="{{ element.email }}" autocomplete="off"
-                       autocorrect="off" autocapitalize="off" placeholder="Enter slug">
+                <input class="text fullwidth" disabled type="text" value="{{ element.email }}" disabled>
             </div>
         </div>
         <div class="field" id="amount-field">
