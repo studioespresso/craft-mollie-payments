@@ -15,5 +15,5 @@ return [
     'Date Created' => 'Datum aangemaakt',
     'Currency' => 'Munteenheid',
     'Payment description' => 'Beschrijving van de betaling',
-    'How these payments are called in Mollie. You can include tags that output entry properties, such as {myCustomField}. Defaults to "Order #payment.id".' => 'Referenties van de betaling bij Mollie. Je kan velden van de betaling gebruiken, op deze manier: {myCustomField}. Standaard waarde is "Order #payment.id".'
+    'How these payments are called in Mollie. You can include tags that output entry properties, such as {myCustomField}. Defaults to "Order #payment.id".' => 'Referenties van de betaling bij Mollie. Je kan velden van de betaling gebruiken, op deze manier: {myCustomField}. Standaard waarde is "Order #payment.id".',
 ];

@@ -25,15 +25,14 @@ class FormsController extends Controller
             ->selectedSubnavItem('forms')
             ->additionalButtonsTemplate('mollie-payments/_forms/_actions')
             ->contentTemplate('mollie-payments/_forms/_index', [
-                'forms' => MolliePayments::getInstance()->forms->getAllForms()
-            ] );
+                'forms' => MolliePayments::getInstance()->forms->getAllForms(),
+            ]);
     }
 
     public function actionEdit($formId = null)
     {
-
         $data = [
-            'currencies' => MolliePayments::getInstance()->currency->getCurrencies()
+            'currencies' => MolliePayments::getInstance()->currency->getCurrencies(),
         ];
 
         if ($formId) {
@@ -55,7 +54,6 @@ class FormsController extends Controller
             ])
             ->action('mollie-payments/forms/save')
             ->contentTemplate('mollie-payments/_forms/_edit', $data);
-
     }
 
     public function actionSave()
