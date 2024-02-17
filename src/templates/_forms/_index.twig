@@ -1,41 +1,27 @@
 {# @var craft \craft\web\twig\variables\CraftVariable #}
-{% extends "_layouts/cp" %}
-
-{# The title of this CP section #}
-{% set title = "Forms" %}
-{% set createUrl = url('mollie-payments/forms/add') %}
-{% set selectedSubnavItem = 'forms' %}
-
-{% set crumbs = [
-    { label: "Payments", url: url('mollie-payments') },
-    { label: 'Forms', url: '#' }
-] %}
-
-{% do view.registerAssetBundle('craft\\web\\assets\\admintable\\AdminTableAsset') -%}
+{#{% set createUrl = url('mollie-payments/forms/add') %}#}
 
 
-{% block actionButton %}
-    {% if (not currentUser.admin and settings.anyoneCanAdd) or currentUser.admin %}
-        <div id="button-container">
-            <div class="btngroup submit">
-                <a class="btn submit add icon" href="{{ createUrl }}">
-                    {{ 'Create new form'|t('mollie-payment') }}
-                </a>
-            </div>
-        </div>
-    {% endif %}
-{% endblock %}
+{#{% block actionButton %}#}
+{#    {% if (not currentUser.admin and settings.anyoneCanAdd) or currentUser.admin %}#}
+{#        <div id="button-container">#}
+{#            <div class="btngroup submit">#}
+{#                <a class="btn submit add icon" href="{{ createUrl }}">#}
+{#                    {{ 'Create new form'|t('mollie-payment') }}#}
+{#                </a>#}
+{#            </div>#}
+{#        </div>#}
+{#    {% endif %}#}
+{#{% endblock %}#}
 
 {# The content of the CP Section#}
-{% block content %}
     <div id="mollie-vue-admin-table"></div>
-{% endblock %}
 
 {% set tableData = [] %}
 {% for form in forms %}
     {% set tableData = tableData|merge([{
         id: form.id,
-        title: form.title|t('app'),
+        title: form.title,
         url: url('mollie-payments/forms/' ~ form.id),
         handle: form.handle,
     }]) %}
@@ -56,7 +42,7 @@
     deleteAction: 'mollie-payments/forms/delete',
     deleteConfirmationMessage: "{{ 'Are you sure you want to delete “{name}”?'|t('mollie-payments') }}",
     deleteSuccessMessage: "{{ '{name} deleted.'|t('mollie-payments') }}",
-    emptyMessage: "{{ 'No forms exist yet.'|t }}",
+    emptyMessage: "{{ 'No forms exist yet.'|t('mollie-payments') }}",
     checkboxes: {{ craft.app.config.general.allowAdminChanges ? 0 : 0 }},
     allowMultipleSelections: false,
     actions: {{ actions|json_encode|raw }},

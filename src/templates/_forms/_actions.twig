@@ -1,0 +1,10 @@
+{% if currentUser.admin %}
+    <div id="button-container">
+        <div class="btngroup submit">
+            <a class="btn submit add icon" href="{{ url('mollie-payments/forms/add') }}">
+                {{ 'Create new form'|t('mollie-payments') }}
+            </a>
+        </div>
+    </div>
+{% endif %}
+

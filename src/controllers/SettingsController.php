@@ -3,6 +3,7 @@
 namespace studioespresso\molliepayments\controllers;
 
 use Craft;
+use craft\helpers\UrlHelper;
 use craft\web\Controller;
 use studioespresso\molliepayments\MolliePayments;
 
@@ -10,8 +11,16 @@ class SettingsController extends Controller
 {
     public function actionIndex()
     {
-        $settings = MolliePayments::getInstance()->getSettings();
-        return $this->renderTemplate('mollie-payments/_settings.twig', ['settings' => $settings]);
+        return $this->asCpScreen()
+            ->crumbs([
+                ['label' => Craft::t('mollie-payments', 'Payments'), 'url' => UrlHelper::cpUrl('mollie-payments')],
+                ['label' => Craft::t("mollie-payments", 'Settings')],
+            ])
+            ->selectedSubnavItem('settings')
+            ->title(Craft::t('mollie-payments', 'Settings'))
+            ->contentTemplate('mollie-payments/_settings.twig', [
+                'settings' => MolliePayments::getInstance()->getSettings(),
+            ]);
     }
 
     public function actionSave()

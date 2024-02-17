@@ -3,6 +3,8 @@
 namespace studioespresso\molliepayments\controllers;
 
 use Craft;
+use craft\helpers\UrlHelper;
+use craft\web\assets\admintable\AdminTableAsset;
 use craft\web\Controller;
 use studioespresso\molliepayments\elements\Payment;
 use studioespresso\molliepayments\models\PaymentFormModel;
@@ -13,22 +15,47 @@ class FormsController extends Controller
 {
     public function actionIndex()
     {
-        $forms = MolliePayments::getInstance()->forms->getAllForms();
-        return $this->renderTemplate('mollie-payments/_forms/_index.twig', ['forms' => $forms]);
+        Craft::$app->getView()->registerAssetBundle(AdminTableAsset::class);
+        return $this->asCpScreen()
+            ->crumbs([
+                ['label' => Craft::t('mollie-payments', 'Payments'), 'url' => UrlHelper::cpUrl('mollie-payments')],
+                ['label' => Craft::t("mollie-payments", 'Forms')],
+            ])
+            ->title(Craft::t('mollie-payments', 'Forms'))
+            ->selectedSubnavItem('forms')
+            ->additionalButtonsTemplate('mollie-payments/_forms/_actions')
+            ->contentTemplate('mollie-payments/_forms/_index', [
+                'forms' => MolliePayments::getInstance()->forms->getAllForms()
+            ] );
     }
 
     public function actionEdit($formId = null)
     {
-        $currencies = MolliePayments::getInstance()->currency->getCurrencies();
-        if (!$formId) {
-            return $this->renderTemplate('mollie-payments/_forms/_edit', ['currencies' => $currencies]);
-        } else {
+
+        $data = [
+            'currencies' => MolliePayments::getInstance()->currency->getCurrencies()
+        ];
+
+        if ($formId) {
             $form = MolliePayments::getInstance()->forms->getFormById($formId);
+            $data['form'] = $form;
+
             if ($form->fieldLayout) {
-                $layout = Craft::$app->getFields()->getLayoutById($form->fieldLayout);
+                $data['layout'] = Craft::$app->getFields()->getLayoutById($form->fieldLayout) ?? null;
             }
-            return $this->renderTemplate('mollie-payments/_forms/_edit', ['form' => $form, 'layout' => $layout ?? null, 'currencies' => $currencies]);
         }
+
+        return $this->asCpScreen()
+            ->title(isset($form) ? $form->title : Craft::t('mollie-payments', 'New form'))
+            ->selectedSubnavItem('forms')
+            ->crumbs([
+                ['label' => Craft::t('mollie-payments', 'Payments'), 'url' => UrlHelper::cpUrl('mollie-payments')],
+                ['label' => Craft::t("mollie-payments", 'Forms'), 'url' => UrlHelper::cpUrl('mollie-payments/forms')],
+                ['label' => isset($form) ? $form->title : Craft::t('mollie-payments', 'New form')],
+            ])
+            ->action('mollie-payments/forms/save')
+            ->contentTemplate('mollie-payments/_forms/_edit', $data);
+
     }
 
     public function actionSave()

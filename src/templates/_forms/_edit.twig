@@ -1,21 +1,20 @@
 {# @var craft \craft\web\twig\variables\CraftVariable #}
 
 
-{% extends "_layouts/cp" %}
+
 {% import "_includes/forms" as forms %}
 
-{% set fullPageForm = true %}
-{% set title = form.title is defined ? form.title : 'New payment form' %}
-{% set selectedSubnavItem = 'forms' %}
+{#{% set fullPageForm = true %}#}
+{#{% set title = form.title is defined ? form.title : 'New payment form' %}#}
+{#{% set selectedSubnavItem = 'forms' %}#}
 
-{% set crumbs = [
-    { label: "Payments", url: cpUrl('mollie-payments') },
-    { label: 'Forms', url: cpUrl('mollie-payments/forms') },
-    { label: 'Edit', url: '#'}
-] %}
+{#{% set crumbs = [#}
+{#    { label: "Payments", url: cpUrl('mollie-payments') },#}
+{#    { label: 'Forms', url: cpUrl('mollie-payments/forms') },#}
+{#    { label: 'Edit', url: '#'}#}
+{#] %}#}
 
-{# The content of the CP Section#}
-{% block content %}
+
     {{ csrfInput() }}
     {{ actionInput('mollie-payments/forms/save') }}
     {{ redirectInput('mollie-payments/forms') }}
@@ -116,4 +115,3 @@
         fieldLayout: (layout ?? false) ?: null,
     }) }}
 
-{% endblock %}
