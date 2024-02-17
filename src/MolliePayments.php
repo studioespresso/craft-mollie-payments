@@ -114,7 +114,7 @@ class MolliePayments extends Plugin
             UrlManager::class,
             UrlManager::EVENT_REGISTER_CP_URL_RULES,
             function(RegisterUrlRulesEvent $event) {
-                $event->rules['mollie-payments'] = 'mollie-payments/default/index';
+                $event->rules['mollie-payments'] = ['template' => 'mollie-payments/_payment/_index.twig'];
                 $event->rules['mollie-payments/payments/<uid:{uid}>'] = 'mollie-payments/payment/edit';
                 $event->rules['mollie-payments/forms'] = 'mollie-payments/forms/index';
                 $event->rules['mollie-payments/forms/add'] = 'mollie-payments/forms/edit';
