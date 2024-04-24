@@ -11,6 +11,7 @@ use studioespresso\molliepayments\elements\Payment;
 use studioespresso\molliepayments\MolliePayments;
 use yii\base\InvalidArgumentException;
 use yii\base\InvalidConfigException;
+use yii\web\ForbiddenHttpException;
 use yii\web\HttpException;
 use yii\web\NotFoundHttpException;
 
@@ -192,6 +193,10 @@ class PaymentController extends Controller
 
     public function actionSaveCp()
     {
+        $currentUser = Craft::$app->getUser()->getIdentity();
+        if(!$currentUser->can('mollie-payments:edit-payments')) {
+            throw new ForbiddenHttpException();
+        }
         $element = Payment::findOne(['id' => $this->request->getRequiredBodyParam('paymentId')]);
         $element->setFieldValuesFromRequest('fields');
         $element->setScenario('live');

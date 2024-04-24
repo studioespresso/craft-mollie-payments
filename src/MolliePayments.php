@@ -12,8 +12,10 @@ namespace studioespresso\molliepayments;
 
 use craft\base\Model;
 use craft\events\RebuildConfigEvent;
+use craft\events\RegisterUserPermissionsEvent;
 use craft\helpers\UrlHelper;
 use craft\services\ProjectConfig;
+use craft\services\UserPermissions;
 use studioespresso\molliepayments\behaviours\CraftVariableBehavior;
 use studioespresso\molliepayments\elements\Payment;
 use studioespresso\molliepayments\services\Currency;
@@ -162,6 +164,24 @@ class MolliePayments extends Plugin
                 CraftVariableBehavior::class,
             ]);
         });
+
+        Event::on(
+            UserPermissions::class,
+            UserPermissions::EVENT_REGISTER_PERMISSIONS,
+            function(RegisterUserPermissionsEvent $event) {
+
+                // Register our custom permissions
+                $permissions = [
+                    "heading" => Craft::t('mollie-payments', 'Mollie Payments'),
+                    "permissions" => [
+                        'mollie-payments:edit-payments' => [
+                            'label' => Craft::t('mollie-payments', 'Edit Payments'),
+                        ],
+                    ],
+                ];
+                $event->permissions[Craft::t('mollie-payments', 'Mollie Payments')] = $permissions;
+            }
+        );
 
     }
 
