@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 3.2.0 - 2024-04-24
+### Added
+- It's now possible to update fields saved on a payment in the control panel
+- There is a new permission to enable this
+
 ## 3.1.3 - 2023-03-10
 ### Fixed
 - Fixed a missing namespace
