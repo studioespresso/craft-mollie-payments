@@ -1,6 +1,6 @@
 module.exports = {
     title: 'Mollie Payments for Craft',
-    base: '/craft-mollie-payment',
+    base: '/craft-mollie-payments',
     themeConfig: {
 
         // logo: {light: '/icon-vuepress.svg', dark: '/icon-vuepress-light.svg'},
