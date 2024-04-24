@@ -3,6 +3,10 @@
 
 {% set fullPageForm = true %}
 {% set saveShortcutRedirect = continueEditingUrl ?? "" %}
+{% set mainFormAttributes = {
+    action: actionUrl('mollie-payments/payment/save-cp'),
+    method: 'post'
+} %}
 
 {% set crumbs = [
     { label: "Payments", url: cpUrl('mollie-payments') },
@@ -29,16 +33,13 @@
 {% hook 'cp.payments.edit' %}
 
 {% block content %}
-
+    {{ hiddenInput('paymentId', element.id) }}
     {% if element.getFieldLayout() %}
-
         {% set form = element.getFieldLayout().createForm(element) %}
         <div id="fields">
             {{ form.render()|raw }}
         </div>
     {% endif %}
-
-
 
     <div id="tab-transactions" class="{% if tabs|length %}hidden{% endif %}">
         {% include 'mollie-payments/_payment/_transactions.twig' with {transactions : transactions } only %}

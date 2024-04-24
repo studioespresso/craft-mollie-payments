@@ -173,16 +173,37 @@ class PaymentController extends Controller
      * @param $uid
      * @since 1.0.0
      */
-    public function actionEdit($uid)
+    public function actionEdit($uid, $element = null)
     {
-        $query = Payment::find();
-        $query->uid = $uid;
-        $payment = $query->one();
+        if ($element) {
+
+            $payment = $element;
+        } else {
+            $query = Payment::find();
+            $query->uid = $uid;
+            $payment = $query->one();
+        }
 
         $paymentForm = MolliePayments::getInstance()->forms->getFormByid($payment->formId);
         $transactions = MolliePayments::getInstance()->transaction->getAllByPayment($payment->id);
 
         $this->renderTemplate('mollie-payments/_payment/_edit', ['element' => $payment, 'transactions' => $transactions, 'form' => $paymentForm]);
+    }
+
+    public function actionSaveCp()
+    {
+        $element = Payment::findOne(['id' => $this->request->getRequiredBodyParam('paymentId')]);
+        $element->setFieldValuesFromRequest('fields');
+        $element->setScenario('live');
+        if (!$element->validate()) {
+            // Send the payment back to the template
+
+            return $this->runAction('edit', ['uid' => $element->uid, 'element' => $element]);
+        }
+
+        Craft::$app->getElements()->saveElement($element);
+        return $this->redirect(UrlHelper::cpUrl($element->getCpEditUrl()));
+
     }
 
     public function actionRedirect()
@@ -192,7 +213,7 @@ class PaymentController extends Controller
 
         $payment = Payment::findOne(['uid' => $uid]);
         $transaction = MolliePayments::getInstance()->transaction->getTransactionbyPayment($payment->id);
-        if($redirect != $transaction->redirect) {
+        if ($redirect != $transaction->redirect) {
             throw new InvalidArgumentException("Invalid redirect");
         }
 
