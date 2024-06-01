@@ -170,6 +170,11 @@ class MolliePayments extends Plugin
             'url' => 'mollie-payments',
         ];
 
+        $subNavs['subscribers'] = [
+            'label' => Craft::t('mollie-payments', 'Subscribers'),
+            'url' => 'mollie-payments/subscribers',
+        ];
+
         if (Craft::$app->getUser()->getIsAdmin() && Craft::$app->getConfig()->getGeneral()->allowAdminChanges) {
             $subNavs['forms'] = [
                 'label' => Craft::t('mollie-payments', 'Forms'),
