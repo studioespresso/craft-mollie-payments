@@ -43,6 +43,7 @@ class Form extends Component
         $formRecord->uid = $formUid;
         $formRecord->title = $data['title'];
         $formRecord->handle = $data['handle'];
+        $formRecord->type = $data['type'];
         $formRecord->currency = $data['currency'];
         $formRecord->descriptionFormat = $data['descriptionFormat'];
 
