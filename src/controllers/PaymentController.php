@@ -8,6 +8,7 @@ use craft\helpers\ConfigHelper;
 use craft\helpers\UrlHelper;
 use craft\web\Controller;
 use studioespresso\molliepayments\elements\Payment;
+use studioespresso\molliepayments\elements\Subscription;
 use studioespresso\molliepayments\MolliePayments;
 use yii\base\InvalidArgumentException;
 use yii\base\InvalidConfigException;
@@ -44,6 +45,7 @@ class PaymentController extends Controller
         $redirect = Craft::$app->request->getBodyParam('redirect');
         $redirect = Craft::$app->security->validateData($redirect);
 
+        // Check for an existing payment
         if (Craft::$app->getRequest()->getBodyParam('payment') && Craft::$app->getRequest()->getValidatedBodyParam('payment')) {
             $payment = Payment::findOne(['uid' => Craft::$app->getRequest()->getValidatedBodyParam('payment')]);
             if (!$payment) {
@@ -52,13 +54,12 @@ class PaymentController extends Controller
             if (Craft::$app->getRequest()->getBodyParam('email')) {
                 $payment->email = Craft::$app->getRequest()->getBodyParam('email');
             }
-            $form = $payment->formId;
 
-            $paymentForm = MolliePayments::getInstance()->forms->getFormByHandle($form);
-
+            $paymentForm = MolliePayments::getInstance()->forms->getFormByHandle($payment->formId);
             if (!$paymentForm) {
                 throw new NotFoundHttpException("Form not found", 404);
             }
+
         } else {
             $email = Craft::$app->request->getRequiredBodyParam('email');
             $amount = Craft::$app->request->getValidatedBodyParam('amount');
@@ -67,22 +68,60 @@ class PaymentController extends Controller
                 throw new HttpException(400, "Incorrent payment submitted");
             }
 
-            $payment = new Payment();
-
             $paymentForm = MolliePayments::getInstance()->forms->getFormByHandle($form);
             if (!$paymentForm) {
                 throw new NotFoundHttpException("Form not found", 404);
             }
 
-            $payment->email = $email;
-            $payment->amount = $amount;
-            $payment->formId = $paymentForm->id;
-            $payment->fieldLayoutId = $paymentForm->fieldLayout;
+            // Check if we have a single payment or a subscription?
+            $type = $this->request->getBodyParam('type', 'single');
+            if ($type === "subscription") {
+                $duration = $this->request->getBodyParam('duration', null);
+                $interval = $this->request->getRequiredBodyParam('interval');
+                if(!MolliePayments::$plugin->mollie->validateInterval($interval)) {
+                    throw new HttpException(400, "Incorrent subscription interval");
+                }
+
+                // Create subscription
+                $subscription = new Subscription();
+                $subscription->email = $email;
+                $subscription->formId = $paymentForm->id;
+                $fieldsLocation = Craft::$app->getRequest()->getParam('fieldsLocation', 'fields');
+                $subscription->setFieldValuesFromRequest($fieldsLocation);
+
+                $subscription->setScenario(Element::SCENARIO_LIVE);
+
+                if (!$subscription->validate()) {
+                    // Send the payment back to the template
+                    Craft::$app->getUrlManager()->setRouteParams([
+                        'subscription' => $subscription,
+                    ]);
+                    return null;
+                }
+
+                MolliePayments::getInstance()->subscription->save($subscription);
+
+
+                // Create mollie client?
+                // Create first payment
+                // Move this to a function :)
+
+
+                // return early since we don't want to trigger the rest of this function
+            }
+
+            if ($type === "single") {
+                $payment = new Payment();
+                $payment->email = $email;
+                $payment->amount = $amount;
+                $payment->formId = $paymentForm->id;
+                $payment->fieldLayoutId = $paymentForm->fieldLayout;
+            }
+
         }
 
 
         $payment->paymentStatus = 'pending';
-
         $fieldsLocation = Craft::$app->getRequest()->getParam('fieldsLocation', 'fields');
         $payment->setFieldValuesFromRequest($fieldsLocation);
 

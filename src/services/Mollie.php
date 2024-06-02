@@ -86,4 +86,22 @@ class Mollie extends Component
     {
         return $this->mollie->payments->get($orderId);
     }
+
+    public function validateInterval($interval): bool
+    {
+        $split = explode(' ', $interval);
+
+        if (count($split) != 2) {
+            return false;
+        }
+
+        if (!is_int((int)$split[0])) {
+            return false;
+        }
+        if (!in_array($split[1], ['months', 'weeks', 'days'])) {
+            return false;
+        }
+        return true;
+
+    }
 }
