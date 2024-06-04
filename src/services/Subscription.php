@@ -26,7 +26,6 @@ class Subscription extends Component
 //                'isNew' => true,
 //            ])
 //        );
-
         if (Craft::$app->getElements()->saveElement($element)) {
             return $element;
         } else {

@@ -13,9 +13,9 @@
  */
 #}
 {% set crumbs = [
-    { label: "Payments"|t('mollie-payments'), url: cpUrl('mollie-payments') },
+    { label: "Subscriptions"|t('mollie-payments'), url: cpUrl('mollie-payments') },
 ] %}
 
 {% extends '_layouts/elementindex' %}
-{% set title = 'Payments'|t('mollie-payments') %}
-{% set elementType = 'studioespresso\\molliepayments\\elements\\Payment' %}
+{% set title = 'Subscriptions'|t('mollie-payments') %}
+{% set elementType = 'studioespresso\\molliepayments\\elements\\Subscription' %}

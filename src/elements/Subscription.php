@@ -202,7 +202,7 @@ class Subscription extends Element
     // =========================================================================
     public function getCpEditUrl(): ?string
     {
-        return UrlHelper::cpUrl("mollie-payments/subscription/" . $this->uid);
+        return UrlHelper::cpUrl("mollie-payments/subscriptions/" . $this->uid);
     }
 
     /**
@@ -288,7 +288,7 @@ class Subscription extends Element
     public function afterDelete(): void
     {
         \Craft::$app->db->createCommand()
-            ->delete(Subscription::tableName(), ['id' => $this->id])
+            ->delete(SubscriptionRecord::tableName(), ['id' => $this->id])
             ->execute();
     }
 }

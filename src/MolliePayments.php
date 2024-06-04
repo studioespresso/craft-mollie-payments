@@ -119,7 +119,7 @@ class MolliePayments extends Plugin
             function(RegisterUrlRulesEvent $event) {
                 $event->rules['mollie-payments'] = ['template' => 'mollie-payments/_payment/_index.twig'];
                 $event->rules['mollie-payments/payments/<uid:{uid}>'] = 'mollie-payments/payment/edit';
-                $event->rules['mollie-payments/subscriptions'] = ['template' => 'mollie-payments/_payment/_index.twig'];
+                $event->rules['mollie-payments/subscriptions'] = ['template' => 'mollie-payments/_subscription/_index.twig'];
                 $event->rules['mollie-payments/subscriptions/<uid:{uid}>'] = 'mollie-payments/subscription/edit';
                 $event->rules['mollie-payments/forms'] = 'mollie-payments/forms/index';
                 $event->rules['mollie-payments/forms/add'] = 'mollie-payments/forms/edit';

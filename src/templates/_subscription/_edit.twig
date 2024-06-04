@@ -5,7 +5,7 @@
 {% set saveShortcutRedirect = continueEditingUrl ?? "" %}
 
 {% set crumbs = [
-    { label: "Payments", url: cpUrl('mollie-payments') },
+    { label: "Subscriptions", url: cpUrl('mollie-payments/subscriptions') },
     { label: form.title, url: cpUrl('mollie-payments?&source=form:' ~ form.handle) },
 ] %}
 
@@ -26,12 +26,12 @@
 
 {% set tabs = tabData %}
 
-{% hook 'cp.payments.edit' %}
+{% hook 'cp.subscriptions.edit' %}
 
 {% block content %}
 
     {% if element.getFieldLayout() %}
-
+        {{ d(element.firstName) }}
         {% set form = element.getFieldLayout().createForm(element) %}
         <div id="fields">
             {{ form.render()|raw }}
@@ -40,10 +40,10 @@
 
 
 
-    <div id="tab-transactions" class="{% if tabs|length %}hidden{% endif %}">
-        {% include 'mollie-payments/_payment/_transactions.twig' with {transactions : transactions } only %}
-    </div>
-    {% hook 'cp.payments.edit.content' %}
+{#    <div id="tab-transactions" class="{% if tabs|length %}hidden{% endif %}">#}
+{#        {% include 'mollie-payments/_payment/_transactions.twig' with {transactions : transactions } only %}#}
+{#    </div>#}
+    {% hook 'cp.subscriptions.edit.content' %}
 {% endblock %}
 
 {% block details %}
