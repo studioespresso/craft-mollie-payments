@@ -30,6 +30,7 @@ use studioespresso\molliepayments\services\Export;
 use studioespresso\molliepayments\services\Form;
 use studioespresso\molliepayments\services\Mollie;
 use studioespresso\molliepayments\services\Payment as PaymentServivce;
+use studioespresso\molliepayments\services\Subscription;
 use studioespresso\molliepayments\services\Transaction;
 
 use yii\base\Event;
@@ -47,6 +48,7 @@ use yii\base\Event;
  * @property PaymentServivce $payment
  * @property Currency $currency
  * @property Export $export
+ * @property Subscription $subscription
  */
 class MolliePayments extends Plugin
 {
@@ -96,6 +98,7 @@ class MolliePayments extends Plugin
             'mollie' => Mollie::class,
             'transaction' => Transaction::class,
             'payment' => PaymentServivce::class,
+            'subscription' => Subscription::class,
             'currency' => Currency::class,
             'export' => Export::class,
         ]);
@@ -116,6 +119,8 @@ class MolliePayments extends Plugin
             function(RegisterUrlRulesEvent $event) {
                 $event->rules['mollie-payments'] = ['template' => 'mollie-payments/_payment/_index.twig'];
                 $event->rules['mollie-payments/payments/<uid:{uid}>'] = 'mollie-payments/payment/edit';
+                $event->rules['mollie-payments/subscriptions'] = ['template' => 'mollie-payments/_payment/_index.twig'];
+                $event->rules['mollie-payments/subscriptions/<uid:{uid}>'] = 'mollie-payments/subscription/edit';
                 $event->rules['mollie-payments/forms'] = 'mollie-payments/forms/index';
                 $event->rules['mollie-payments/forms/add'] = 'mollie-payments/forms/edit';
                 $event->rules['mollie-payments/forms/<formId:\d+>'] = 'mollie-payments/forms/edit';
@@ -170,9 +175,9 @@ class MolliePayments extends Plugin
             'url' => 'mollie-payments',
         ];
 
-        $subNavs['subscribers'] = [
-            'label' => Craft::t('mollie-payments', 'Subscribers'),
-            'url' => 'mollie-payments/subscribers',
+        $subNavs['subscriptions'] = [
+            'label' => Craft::t('mollie-payments', 'Subscriptions'),
+            'url' => 'mollie-payments/subscriptions',
         ];
 
         if (Craft::$app->getUser()->getIsAdmin() && Craft::$app->getConfig()->getGeneral()->allowAdminChanges) {

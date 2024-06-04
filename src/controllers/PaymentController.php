@@ -17,7 +17,7 @@ use yii\web\NotFoundHttpException;
 
 class PaymentController extends Controller
 {
-    protected array|int|bool $allowAnonymous = ['pay', 'donate', 'redirect', 'webhook'];
+    protected array|int|bool $allowAnonymous = ['pay', 'subscribe', 'donate', 'redirect', 'webhook'];
 
     public function beforeAction($action): bool
     {
@@ -29,6 +29,53 @@ class PaymentController extends Controller
             throw new InvalidConfigException("No Mollie API key set");
         }
         return parent::beforeAction($action);
+    }
+
+    public function actionSubscribe()
+    {
+        $redirect = Craft::$app->request->getBodyParam('redirect');
+        $redirect = Craft::$app->security->validateData($redirect);
+
+        $email = Craft::$app->request->getRequiredBodyParam('email');
+        $amount = Craft::$app->request->getValidatedBodyParam('amount');
+        $form = Craft::$app->request->getValidatedBodyParam('form');
+
+        $paymentForm = MolliePayments::getInstance()->forms->getFormByHandle($form);
+        if (!$paymentForm) {
+            throw new NotFoundHttpException("Form not found", 404);
+        }
+
+
+        $duration = $this->request->getBodyParam('duration', null);
+        $interval = $this->request->getRequiredBodyParam('interval');
+        if (!MolliePayments::$plugin->mollie->validateInterval($interval)) {
+            throw new HttpException(400, "Incorrent subscription interval");
+        }
+
+
+        // Create subscription
+        $subscription = new Subscription();
+        $subscription->email = $email;
+        $subscription->subscriptionStatus = "pending";
+        $subscription->formId = $paymentForm->id;
+        $subscription->amount = $amount;
+        $subscription->interval = $interval;
+        $fieldsLocation = Craft::$app->getRequest()->getParam('fieldsLocation', 'fields');
+        $subscription->setFieldValuesFromRequest($fieldsLocation);
+
+        $subscription->setScenario(Element::SCENARIO_LIVE);
+
+        if (!$subscription->validate()) {
+            dd($subscription->getErrors());
+            // Send the payment back to the template
+            Craft::$app->getUrlManager()->setRouteParams([
+                'subscription' => $subscription,
+            ]);
+            return null;
+        }
+
+        MolliePayments::getInstance()->subscription->save($subscription);
+        return $this->redirect($redirect);
     }
 
 
@@ -73,50 +120,12 @@ class PaymentController extends Controller
                 throw new NotFoundHttpException("Form not found", 404);
             }
 
-            // Check if we have a single payment or a subscription?
-            $type = $this->request->getBodyParam('type', 'single');
-            if ($type === "subscription") {
-                $duration = $this->request->getBodyParam('duration', null);
-                $interval = $this->request->getRequiredBodyParam('interval');
-                if(!MolliePayments::$plugin->mollie->validateInterval($interval)) {
-                    throw new HttpException(400, "Incorrent subscription interval");
-                }
+            $payment = new Payment();
+            $payment->email = $email;
+            $payment->amount = $amount;
+            $payment->formId = $paymentForm->id;
+            $payment->fieldLayoutId = $paymentForm->fieldLayout;
 
-                // Create subscription
-                $subscription = new Subscription();
-                $subscription->email = $email;
-                $subscription->formId = $paymentForm->id;
-                $fieldsLocation = Craft::$app->getRequest()->getParam('fieldsLocation', 'fields');
-                $subscription->setFieldValuesFromRequest($fieldsLocation);
-
-                $subscription->setScenario(Element::SCENARIO_LIVE);
-
-                if (!$subscription->validate()) {
-                    // Send the payment back to the template
-                    Craft::$app->getUrlManager()->setRouteParams([
-                        'subscription' => $subscription,
-                    ]);
-                    return null;
-                }
-
-                MolliePayments::getInstance()->subscription->save($subscription);
-
-
-                // Create mollie client?
-                // Create first payment
-                // Move this to a function :)
-
-
-                // return early since we don't want to trigger the rest of this function
-            }
-
-            if ($type === "single") {
-                $payment = new Payment();
-                $payment->email = $email;
-                $payment->amount = $amount;
-                $payment->formId = $paymentForm->id;
-                $payment->fieldLayoutId = $paymentForm->fieldLayout;
-            }
 
         }
 

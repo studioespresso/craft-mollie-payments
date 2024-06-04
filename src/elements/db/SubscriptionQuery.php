@@ -12,6 +12,8 @@ class SubscriptionQuery extends ElementQuery
 
     public $interval;
 
+    public $subscriptionStatus;
+
     public $email;
 
     public function email($value): self
@@ -29,16 +31,17 @@ class SubscriptionQuery extends ElementQuery
 
     public function status(array|string|null $value): static
     {
-        $this->paymentStatus = $value;
+        $this->subscriptionStatus = $value;
         return $this;
     }
 
-
-    public function paymentStatus($value): self
+    public function subscriptionStatus($value): self
     {
-        $this->paymentStatus = $value;
+        $this->subscriptionStatus = $value;
         return $this;
     }
+
+
 
     public function formId($value): self
     {
@@ -50,17 +53,17 @@ class SubscriptionQuery extends ElementQuery
     {
         switch ($status) {
             case 'cart':
-                return ['paymentStatus' => 'cart'];
+                return ['subscriptionStatus' => 'cart'];
             case 'free':
-                return ['paymentStatus' => 'free'];
+                return ['subscriptionStatus' => 'free'];
             case 'pending':
-                return ['paymentStatus' => 'pending'];
+                return ['subscriptionStatus' => 'pending'];
             case 'paid':
-                return ['paymentStatus' => 'paid'];
+                return ['subscriptionStatus' => 'paid'];
             case 'expired':
-                return ['paymentStatus' => 'expired'];
+                return ['subscriptionStatus' => 'expired'];
             case 'refunded':
-                return ['paymentStatus' => 'refunded'];
+                return ['subscriptionStatus' => 'refunded'];
             default:
                 return parent::statusCondition($status);
         }
@@ -72,18 +75,19 @@ class SubscriptionQuery extends ElementQuery
         $this->joinElementTable(SubscriptionRecord::tableName());
         // select the columns
         $this->query->select([
-            'mollie_payments.email',
-            'mollie_payments.amount',
-            'mollie_payments.formId',
-            'mollie_payments.interval',
+            'mollie_subscriptions.email',
+            'mollie_subscriptions.amount',
+            'mollie_subscriptions.formId',
+            'mollie_subscriptions.interval',
+            'mollie_subscriptions.subscriptionStatus',
         ]);
 
         if ($this->email) {
-            $this->subQuery->andWhere(Db::parseParam('mollie_payments.email', $this->email));
+            $this->subQuery->andWhere(Db::parseParam('mollie_subscriptions.email', $this->email));
         }
 
         if ($this->formId) {
-            $this->subQuery->andWhere(Db::parseParam('mollie_payments.formId', $this->formId));
+            $this->subQuery->andWhere(Db::parseParam('mollie_subscriptions.formId', $this->formId));
         }
 
         return parent::beforePrepare();

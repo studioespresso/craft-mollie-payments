@@ -17,7 +17,7 @@ use craft\elements\User;
 use craft\helpers\UrlHelper;
 use studioespresso\molliepayments\elements\db\SubscriptionQuery;
 use studioespresso\molliepayments\MolliePayments;
-use studioespresso\molliepayments\records\PaymentRecord;
+use studioespresso\molliepayments\records\SubscriptionRecord;
 
 /**
  * @author    Studio Espresso
@@ -34,6 +34,7 @@ class Subscription extends Element
      */
     public $email;
     public $amount = 0;
+    public $subscriptionStatus;
     public $interval;
     public $formId;
 
@@ -101,8 +102,8 @@ class Subscription extends Element
         return [
             'cart' => ['label' => Craft::t('mollie-payments', 'In Cart'), 'color' => 'grey'],
             'pending' => ['label' => Craft::t('mollie-payments', 'Pending'), 'color' => 'orange'],
-            'free' => ['label' => Craft::t('mollie-payments', 'Free'), 'color' => 'blue'],
             'paid' => ['label' => Craft::t('mollie-payments', 'Paid'), 'color' => 'green'],
+            'Canceled' => ['label' => Craft::t('mollie-payments', 'Canceled'), 'color' => 'red'],
             'expired' => ['label' => Craft::t('mollie-payments', 'Expired'), 'color' => 'red'],
             'refunded' => ['label' => Craft::t('mollie-payments', 'Refunded'), 'color' => 'grey'],
         ];
@@ -110,7 +111,7 @@ class Subscription extends Element
 
     public function getStatus(): ?string
     {
-        return $this->paymentStatus;
+        return $this->subscriptionStatus;
     }
 
     /**
@@ -146,6 +147,7 @@ class Subscription extends Element
      */
     protected static function defineSources(string $context = null): array
     {
+        //TODO  Only show forms that have subscriptions related to them
         $sources[] = [
             'key' => '*',
             'label' => Craft::t('app', 'All'),
@@ -262,10 +264,10 @@ class Subscription extends Element
     {
         if ($isNew) {
             \Craft::$app->db->createCommand()
-                ->insert(PaymentRecord::tableName(), [
+                ->insert(SubscriptionRecord::tableName(), [
                     'id' => $this->id,
                     'email' => $this->email,
-                    'paymentStatus' => $this->paymentStatus,
+                    'subscriptionStatus' => $this->subscriptionStatus,
                     'interval' => $this->interval,
                     'amount' => $this->amount,
                     'formId' => $this->formId,
@@ -273,9 +275,9 @@ class Subscription extends Element
                 ->execute();
         } else {
             \Craft::$app->db->createCommand()
-                ->update(PaymentRecord::tableName(), [
+                ->update(SubscriptionRecord::tableName(), [
                     'email' => $this->email,
-                    'amount' => $this->amount,
+                    'subscriptionStatus' => $this->subscriptionStatus,
                 ], ['id' => $this->id])
                 ->execute();
         }
