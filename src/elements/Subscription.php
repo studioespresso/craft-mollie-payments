@@ -33,6 +33,7 @@ class Subscription extends Element
      * @var string
      */
     public $email;
+    public $customerId;
     public $amount = 0;
     public $subscriptionStatus;
     public $interval;

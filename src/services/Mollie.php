@@ -10,24 +10,28 @@ use craft\helpers\UrlHelper;
 use Mollie\Api\MollieApiClient;
 use Mollie\Api\Resources\Customer;
 use studioespresso\molliepayments\elements\Payment;
-use studioespresso\molliepayments\models\PaymentFormModel;
+use studioespresso\molliepayments\elements\Subscription;
 use studioespresso\molliepayments\models\PaymentTransactionModel;
+use studioespresso\molliepayments\models\SubscriberModel;
 use studioespresso\molliepayments\MolliePayments;
+use studioespresso\molliepayments\records\PaymentFormRecord;
 
 class Mollie extends Component
 {
     private MollieApiClient $mollie;
 
+    private $baseUrl;
+
     public function init(): void
     {
         $this->mollie = new \Mollie\Api\MollieApiClient();
         $this->mollie->setApiKey(App::parseEnv(ConfigHelper::localizedValue(MolliePayments::$plugin->getSettings()->apiKey)));
+        $this->baseUrl = Craft::$app->getSites()->getCurrentSite()->getBaseUrl();
     }
 
     public function generatePayment(Payment $payment, $redirect, $extraMeta = [])
     {
         $paymentForm = MolliePayments::getInstance()->forms->getFormByid($payment->formId);
-        $baseUrl = Craft::$app->getSites()->getCurrentSite()->getBaseUrl();
 
 
         if ($paymentForm->descriptionFormat) {
@@ -39,6 +43,7 @@ class Mollie extends Component
         $currentSite = Craft::$app->getSites()->getCurrentSite();
         $metaData = [
             "redirectUrl" => $redirect,
+            "elementType" => Payment::class,
             "element" => $payment->uid,
             "e-mail" => $payment->email,
             "description" => $description,
@@ -61,11 +66,11 @@ class Mollie extends Component
                 "value" => number_format($payment->amount, 2, '.', ''), // You must send the correct number of decimals, thus we enforce the use of strings
             ],
             "description" => $description,
-            "redirectUrl" => UrlHelper::url("{$baseUrl}mollie-payments/payment/redirect", [
+            "redirectUrl" => UrlHelper::url("{$this->baseUrl}mollie-payments/payment/redirect", [
                 "order_id" => $payment->uid,
                 "redirect" => $redirect,
             ]),
-            "webhookUrl" => "{$baseUrl}mollie-payments/payment/webhook",
+            "webhookUrl" => "{$this->baseUrl}mollie-payments/payment/webhook",
             "metadata" => $metaData,
         ]);
 
@@ -84,10 +89,10 @@ class Mollie extends Component
         return $authorization->_links->checkout->href;
     }
 
-    public function createFirstPayment(\studioespresso\molliepayments\elements\Subscription $subscription, PaymentFormModel $form, $redirect)
+    public function createFirstPayment(Subscription $subscription, SubscriberModel $subscriber, PaymentFormRecord $form, $redirect)
     {
-        if ($form->description) {
-            $description = Craft::$app->getView()->renderObjectTemplate($form->description, $subscription);
+        if ($form->descriptionFormat) {
+            $description = Craft::$app->getView()->renderObjectTemplate($form->descriptionFormat, $subscription);
         } else {
             $description = "Order #{$subscription->id}";
         }
@@ -100,15 +105,15 @@ class Mollie extends Component
             "customerId" => $subscriber->customerId,
             "sequenceType" => "first",
             "description" => $description,
-            "redirectUrl" => UrlHelper::url("{$this->baseUrl}mollie-subscriptions/subscriptions/process", [
+            "redirectUrl" => UrlHelper::url("{$this->baseUrl}mollie-payments/subscription/redirect", [
                 "formUid" => $form->uid,
                 "subscriptionUid" => $subscription->uid,
                 "redirect" => $redirect
             ]),
-            "webhookUrl" => "{$this->baseUrl}mollie-subscriptions/subscriptions/webhook",
+            "webhookUrl" => "{$this->baseUrl}mollie-payments/subscription/webhook",
             "metadata" => [
-                "plan" => $form->id,
-                "customer" => $subscriber->id,
+                "elementType" => Subscription::class,
+                "formId" => $form->id,
                 "createSubscription" => true //  TODO interval true or false
             ]
         ]);
@@ -117,13 +122,11 @@ class Mollie extends Component
         $transaction->id = $response->id;
         $transaction->payment = $subscription->id;
         $transaction->currency = $form->currency;
-        $transaction->amount = $response->amount;
+        $transaction->amount = $subscription->amount;
         $transaction->redirect = $redirect;
-        $transaction->status = $authorization->status;
+        $transaction->status = $response->status;
 
-        MollieSubscriptions::$plugin->payments->save($transaction);
-
-
+        MolliePayments::$plugin->transaction->save($transaction);
         return $response->_links->checkout->href;
     }
 

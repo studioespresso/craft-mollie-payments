@@ -10,6 +10,7 @@ use craft\web\Controller;
 use studioespresso\molliepayments\elements\Payment;
 use studioespresso\molliepayments\elements\Subscription;
 use studioespresso\molliepayments\MolliePayments;
+use studioespresso\molliepayments\records\SubscriptionRecord;
 use yii\base\InvalidArgumentException;
 use yii\base\InvalidConfigException;
 use yii\web\HttpException;
@@ -46,7 +47,6 @@ class SubscriptionController extends Controller
         }
 
 
-
         $duration = $this->request->getBodyParam('duration', null);
         $interval = $this->request->getRequiredBodyParam('interval');
         if (!MolliePayments::$plugin->mollie->validateInterval($interval)) {
@@ -65,13 +65,13 @@ class SubscriptionController extends Controller
 
         $subscription->subscriptionStatus = "pending";
         $fieldsLocation = Craft::$app->getRequest()->getParam('fieldsLocation', 'fields');
-//        $subscription->setFieldValuesFromRequest($fieldsLocation);
-        $subscription->setFieldValue("firstName", "Jan");
-        $subscription->setFieldValue("lastName", "Henckens");
+        $subscription->setFieldValuesFromRequest($fieldsLocation);
+
 
         $subscription->setScenario(Element::SCENARIO_LIVE);
 
         $subscriber = MolliePayments::$plugin->subscriber->getOrCreateSubscriberByEmail($email);
+        $subscription->customerId = $subscriber->customerId;
 
         if (!$subscription->validate()) {
             // TODO Remove this before release
@@ -82,11 +82,16 @@ class SubscriptionController extends Controller
             ]);
             return null;
         }
-        
-        MolliePayments::getInstance()->subscription->save($subscription);
-        return $this->redirect($redirect);
+        if (MolliePayments::getInstance()->subscription->save($subscription)) {
+            $url = MolliePayments::getInstance()->mollie->createFirstPayment(
+                $subscription,
+                $subscriber,
+                $paymentForm,
+                $redirect
+            );
+            return $this->redirect($url);
+        }
     }
-
 
 
     /**
@@ -107,20 +112,18 @@ class SubscriptionController extends Controller
 
     public function actionRedirect()
     {
-        $uid = Craft::$app->getRequest()->getRequiredParam('order_id');
-        $redirect = Craft::$app->getRequest()->getParam('redirect');
+        $request = Craft::$app->getRequest();
+        $uid = $request->getQueryParam('subscriptionUid');
 
-        $payment = Payment::findOne(['uid' => $uid]);
-        $transaction = MolliePayments::getInstance()->transaction->getTransactionbyPayment($payment->id);
-        if ($redirect != $transaction->redirect) {
-            throw new InvalidArgumentException("Invalid redirect");
-        }
+        $redirect = $request->getQueryParam('redirect');
+        $element = Subscription::findOne(['uid' => $uid]);
+        $transaction = MolliePayments::$plugin->transaction->getTransactionbyPayment($element->id);
 
         try {
-            $molliePayment = MolliePayments::getInstance()->mollie->getStatus($transaction->id);
-            $this->redirect(UrlHelper::url($redirect, ['payment' => $uid, 'status' => $molliePayment->status]));
+            $molliePayment = MolliePayments::$plugin->mollie->getStatus($transaction->id);
+            $this->redirect(UrlHelper::url($redirect, ['subscription' => $uid, 'status' => $molliePayment->status]));
         } catch (\Exception $e) {
-            throw new NotFoundHttpException('Payment not found', '404');
+            throw new NotFoundHttpException('Payments not found', '404');
         }
     }
 
@@ -133,7 +136,11 @@ class SubscriptionController extends Controller
         $id = Craft::$app->getRequest()->getRequiredParam('id');
         $transaction = MolliePayments::getInstance()->transaction->getTransactionbyId($id);
         $molliePayment = MolliePayments::getInstance()->mollie->getStatus($id);
+
         MolliePayments::getInstance()->transaction->updateTransaction($transaction, $molliePayment);
+        if($molliePayment->metadata->createSubscription) {
+            dd($molliePayment);
+        }
         return;
     }
 }

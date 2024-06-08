@@ -34,6 +34,8 @@ class TransactionUpdateEvent extends Event
      */
     public $payment;
 
+    public $element;
+
     /**
      * @string the updated status of the transaction
      */

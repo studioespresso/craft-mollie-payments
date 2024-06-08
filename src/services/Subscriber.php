@@ -21,7 +21,7 @@ class Subscriber extends Component
         }
     }
 
-    public function getOrCreateSubscriberByEmail($email): SubscriberModel|null
+    public function getOrCreateSubscriberByEmail($email): SubscriberModel
     {
         $record = SubscriberRecord::findOne(['email' => $email]);
 
