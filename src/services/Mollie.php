@@ -8,7 +8,9 @@ use craft\helpers\App;
 use craft\helpers\ConfigHelper;
 use craft\helpers\UrlHelper;
 use Mollie\Api\MollieApiClient;
+use Mollie\Api\Resources\Customer;
 use studioespresso\molliepayments\elements\Payment;
+use studioespresso\molliepayments\models\PaymentFormModel;
 use studioespresso\molliepayments\models\PaymentTransactionModel;
 use studioespresso\molliepayments\MolliePayments;
 
@@ -80,6 +82,60 @@ class Mollie extends Component
 
 
         return $authorization->_links->checkout->href;
+    }
+
+    public function createFirstPayment(\studioespresso\molliepayments\elements\Subscription $subscription, PaymentFormModel $form, $redirect)
+    {
+        if ($form->description) {
+            $description = Craft::$app->getView()->renderObjectTemplate($form->description, $subscription);
+        } else {
+            $description = "Order #{$subscription->id}";
+        }
+
+        $response = $this->mollie->payments->create([
+            "amount" => [
+                "value" => number_format((float)$subscription->amount, 2, '.', ''),
+                "currency" => $form->currency
+            ],
+            "customerId" => $subscriber->customerId,
+            "sequenceType" => "first",
+            "description" => $description,
+            "redirectUrl" => UrlHelper::url("{$this->baseUrl}mollie-subscriptions/subscriptions/process", [
+                "formUid" => $form->uid,
+                "subscriptionUid" => $subscription->uid,
+                "redirect" => $redirect
+            ]),
+            "webhookUrl" => "{$this->baseUrl}mollie-subscriptions/subscriptions/webhook",
+            "metadata" => [
+                "plan" => $form->id,
+                "customer" => $subscriber->id,
+                "createSubscription" => true //  TODO interval true or false
+            ]
+        ]);
+
+        $transaction = new PaymentTransactionModel();
+        $transaction->id = $response->id;
+        $transaction->payment = $subscription->id;
+        $transaction->currency = $form->currency;
+        $transaction->amount = $response->amount;
+        $transaction->redirect = $redirect;
+        $transaction->status = $authorization->status;
+
+        MollieSubscriptions::$plugin->payments->save($transaction);
+
+
+        return $response->_links->checkout->href;
+    }
+
+    /**
+     * @throws \Mollie\Api\Exceptions\ApiException
+     */
+    public function createCustomer($email): Customer
+    {
+        $customer = $this->mollie->customers->create([
+            "email" => $email,
+        ]);
+        return $customer;
     }
 
     public function getStatus($orderId)

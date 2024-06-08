@@ -71,9 +71,10 @@ class SubscriptionController extends Controller
 
         $subscription->setScenario(Element::SCENARIO_LIVE);
 
-
+        $subscriber = MolliePayments::$plugin->subscriber->getOrCreateSubscriberByEmail($email);
 
         if (!$subscription->validate()) {
+            // TODO Remove this before release
             dd($subscription->getErrors());
             // Send the payment back to the template
             Craft::$app->getUrlManager()->setRouteParams([
@@ -81,7 +82,7 @@ class SubscriptionController extends Controller
             ]);
             return null;
         }
-
+        
         MolliePayments::getInstance()->subscription->save($subscription);
         return $this->redirect($redirect);
     }
@@ -94,11 +95,9 @@ class SubscriptionController extends Controller
      */
     public function actionEdit($uid)
     {
-        d($uid);
         $query = Subscription::find();
         $query->uid = $uid;
         $element = $query->one();
-        dd($element->firstName);
 
         $form = MolliePayments::getInstance()->forms->getFormByid($element->formId);
 //        $transactions = MolliePayments::getInstance()->transaction->getAllByPayment($element->id);

@@ -30,6 +30,7 @@ use studioespresso\molliepayments\services\Export;
 use studioespresso\molliepayments\services\Form;
 use studioespresso\molliepayments\services\Mollie;
 use studioespresso\molliepayments\services\Payment as PaymentServivce;
+use studioespresso\molliepayments\services\Subscriber;
 use studioespresso\molliepayments\services\Subscription;
 use studioespresso\molliepayments\services\Transaction;
 
@@ -49,6 +50,7 @@ use yii\base\Event;
  * @property Currency $currency
  * @property Export $export
  * @property Subscription $subscription
+ * @property Subscriber $subscriber
  */
 class MolliePayments extends Plugin
 {
@@ -99,6 +101,7 @@ class MolliePayments extends Plugin
             'transaction' => Transaction::class,
             'payment' => PaymentServivce::class,
             'subscription' => Subscription::class,
+            'subscriber' => Subscriber::class,
             'currency' => Currency::class,
             'export' => Export::class,
         ]);
