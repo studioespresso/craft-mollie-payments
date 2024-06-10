@@ -7,6 +7,8 @@ use craft\db\Migration;
 use studioespresso\molliepayments\records\PaymentFormRecord;
 use studioespresso\molliepayments\records\PaymentRecord;
 use studioespresso\molliepayments\records\PaymentTransactionRecord;
+use studioespresso\molliepayments\records\SubscriberRecord;
+use studioespresso\molliepayments\records\SubscriptionRecord;
 
 /***
  * @author    Studio Espresso
@@ -125,6 +127,8 @@ class Install extends Migration
     {
         $this->dropTableIfExists(PaymentTransactionRecord::tableName());
         $this->dropTableIfExists(PaymentRecord::tableName());
+        $this->dropTableIfExists(SubscriptionRecord::tableName());
+        $this->dropTableIfExists(SubscriberRecord::tableName());
         $this->dropTableIfExists(PaymentFormRecord::tableName());
     }
 }
