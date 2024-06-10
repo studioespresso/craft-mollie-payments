@@ -15,6 +15,7 @@ use studioespresso\molliepayments\models\PaymentTransactionModel;
 use studioespresso\molliepayments\models\SubscriberModel;
 use studioespresso\molliepayments\MolliePayments;
 use studioespresso\molliepayments\records\PaymentFormRecord;
+use studioespresso\molliepayments\records\SubscriberRecord;
 
 class Mollie extends Component
 {
@@ -135,7 +136,7 @@ class Mollie extends Component
         /** @var  $customer */
         $form = MolliePayments::$plugin->forms->getFormByid($element->formId);
 
-        if($form->descriptionFormat) {
+        if ($form->descriptionFormat) {
             $description = Craft::$app->getView()->renderObjectTemplate($form->descriptionFormat, $element);
         } else {
             $description = "Order #{$element->id}";
@@ -164,6 +165,18 @@ class Mollie extends Component
             $element->subscriptionStatus = "ongoing";
             $element->subscriptionId = $response->id;
             Craft::$app->getElements()->saveElement($element);
+        }
+    }
+
+    public function cancelSubscription(SubscriberRecord $subscriber, Subscription $subscription)
+    {
+        try {
+
+            $customer = $this->getCustomer($subscriber->customerId);
+            $customer->cancelSubscription($subscription->subscriptionId);
+            return true;
+        } catch (\Exception $e) {
+            return;
         }
     }
 

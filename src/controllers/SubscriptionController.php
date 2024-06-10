@@ -8,12 +8,9 @@ use craft\helpers\ConfigHelper;
 use craft\helpers\UrlHelper;
 use craft\web\Controller;
 use Mollie\Api\Types\PaymentStatus;
-use studioespresso\molliepayments\elements\Payment;
 use studioespresso\molliepayments\elements\Subscription;
 use studioespresso\molliepayments\MolliePayments;
 use studioespresso\molliepayments\records\SubscriberRecord;
-use studioespresso\molliepayments\records\SubscriptionRecord;
-use yii\base\InvalidArgumentException;
 use yii\base\InvalidConfigException;
 use yii\web\HttpException;
 use yii\web\NotFoundHttpException;
@@ -165,14 +162,23 @@ class SubscriptionController extends Controller
         }
         $customer = SubscriberRecord::findOne(['email' => $email]);
         MolliePayments::getInstance()->mail->sendSubscriptionAccessEmail($customer);
-        $this->redirectToPostedUrl();
+        return $this->redirectToPostedUrl();
     }
 
     public function actionCancel($subscription, $subscriber)
     {
+        $subscription = Subscription::findOne(['id' => $subscription]);
+        $subscriber = SubscriberRecord::findOne(['uid' => $subscriber]);
+        if(!$subscription->subscriptionId) {
+            Craft::error("Subscription ID missing", MolliePayments::class);
+            $subscription->status = 'cancelled';
+            Craft::$app->getElements()->saveElement($subscription);
+            return $this->redirectToPostedUrl();
+        }
 
-        dd($subscription, $subscriber);
-
-
+        if(MolliePayments::getInstance()->mollie->cancelSubscription($subscriber, $subscription)) {
+            // TODO Should we do this here or should we wait for the webhook? Is there a webhook for this?
+            return $this->redirectToPostedUrl();
+        }
     }
 }
