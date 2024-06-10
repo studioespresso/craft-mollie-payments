@@ -171,14 +171,14 @@ class SubscriptionController extends Controller
         $subscriber = SubscriberRecord::findOne(['uid' => $subscriber]);
         if(!$subscription->subscriptionId) {
             Craft::error("Subscription ID missing", MolliePayments::class);
-            $subscription->status = 'cancelled';
+            $subscription->subscriptionStatus = 'canceled';
             Craft::$app->getElements()->saveElement($subscription);
-            return $this->redirectToPostedUrl();
+            return;
         }
 
         if(MolliePayments::getInstance()->mollie->cancelSubscription($subscriber, $subscription)) {
             // TODO Should we do this here or should we wait for the webhook? Is there a webhook for this?
-            return $this->redirectToPostedUrl();
+            return;
         }
     }
 }

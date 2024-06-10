@@ -282,6 +282,7 @@ class Subscription extends Element
                 ->update(SubscriptionRecord::tableName(), [
                     'email' => $this->email,
                     'subscriptionId' => $this->subscriptionId,
+                    'customerId' => $this->customerId,
                     'subscriptionStatus' => $this->subscriptionStatus,
                 ], ['id' => $this->id])
                 ->execute();

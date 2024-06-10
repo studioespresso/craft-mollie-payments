@@ -96,6 +96,40 @@ class Install extends Migration
             'uid' => $this->uid(),
         ]);
 
+        $this->createTable(
+            SubscriptionRecord::tableName(),
+            [
+                'id' => $this->integer()->notNull(),
+                'email' => $this->string()->notNull(),
+                'formId' => $this->integer()->notNull(),
+                'interval' => $this->string()->notNull(),
+                'subscriptionStatus' => $this->string()->notNull(),
+                'customerId' => $this->string()->notNull(),
+                'subscriptionId' => $this->string()->notNull(),
+                'amount' => $this->decimal("10,2")->notNull(),
+                'dateCreated' => $this->dateTime()->notNull(),
+                'dateUpdated' => $this->dateTime()->notNull(),
+                'uid' => $this->uid(),
+                'PRIMARY KEY(id)',
+            ]
+        );
+
+        $this->createTable(
+            SubscriberRecord::tableName(),
+            [
+                'id' => $this->primaryKey(),
+                'email' => $this->string()->notNull(),
+                'customerId' => $this->string(30),
+                'userId' => $this->integer(),
+                'locale' => $this->string(5),
+                'metadata' => $this->text(),
+                'links' => $this->text(),
+                'dateCreated' => $this->dateTime()->notNull(),
+                'dateUpdated' => $this->dateTime()->notNull(),
+                'uid' => $this->uid(),
+            ]
+        );
+
         return $tablesCreated;
     }
 

@@ -24,6 +24,7 @@ class m240602_143712_addSubscriptionsTable extends Migration
                 'formId' => $this->integer()->notNull(),
                 'interval' => $this->string()->notNull(),
                 'subscriptionStatus' => $this->string()->notNull(),
+                'customerId' => $this->string()->notNull(),
                 'subscriptionId' => $this->string()->notNull(),
                 'amount' => $this->decimal("10,2")->notNull(),
                 'dateCreated' => $this->dateTime()->notNull(),
