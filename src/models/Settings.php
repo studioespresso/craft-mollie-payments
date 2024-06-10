@@ -6,5 +6,9 @@ use craft\base\Model;
 
 class Settings extends Model
 {
-    public $apiKey;
+    public string $apiKey = '';
+
+    public string $manageSubscriptionEmailPath = '';
+
+    public string $manageSubscriptionRoute = '';
 }

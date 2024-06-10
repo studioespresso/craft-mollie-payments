@@ -106,7 +106,7 @@ class Subscription extends Element
         return [
             'cart' => ['label' => Craft::t('mollie-payments', 'In Cart'), 'color' => 'grey'],
             'pending' => ['label' => Craft::t('mollie-payments', 'Pending'), 'color' => 'orange'],
-            'active' => ['label' => Craft::t('mollie-payments', 'Active'), 'color' => 'green'],
+            'ongoing' => ['label' => Craft::t('mollie-payments', 'Actives'), 'color' => 'green'],
             'Canceled' => ['label' => Craft::t('mollie-payments', 'Canceled'), 'color' => 'red'],
             'expired' => ['label' => Craft::t('mollie-payments', 'Expired'), 'color' => 'red'],
             'refunded' => ['label' => Craft::t('mollie-payments', 'Refunded'), 'color' => 'grey'],

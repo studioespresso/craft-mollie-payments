@@ -11,6 +11,7 @@ use Mollie\Api\Types\PaymentStatus;
 use studioespresso\molliepayments\elements\Payment;
 use studioespresso\molliepayments\elements\Subscription;
 use studioespresso\molliepayments\MolliePayments;
+use studioespresso\molliepayments\records\SubscriberRecord;
 use studioespresso\molliepayments\records\SubscriptionRecord;
 use yii\base\InvalidArgumentException;
 use yii\base\InvalidConfigException;
@@ -19,7 +20,7 @@ use yii\web\NotFoundHttpException;
 
 class SubscriptionController extends Controller
 {
-    protected array|int|bool $allowAnonymous = ['subscribe', 'redirect', 'webhook'];
+    protected array|int|bool $allowAnonymous = ['subscribe', 'redirect', 'webhook', 'get-customer', 'cancel'];
 
     public function beforeAction($action): bool
     {
@@ -132,25 +133,46 @@ class SubscriptionController extends Controller
      * @throws \yii\web\BadRequestHttpException
      * @since 1.0.0
      */
-    public function actionWebhook()
+    public function actionWebhook(): void
     {
         $id = Craft::$app->getRequest()->getRequiredParam('id');
         $transaction = MolliePayments::getInstance()->transaction->getTransactionbyId($id);
         $molliePayment = MolliePayments::getInstance()->mollie->getStatus($id);
 
-        if($molliePayment->subscriptionId) {
+        if ($molliePayment->subscriptionId) {
             //TODO  Create new transation for subsequent recurring payments
 
         }
 
         MolliePayments::getInstance()->transaction->updateTransaction($transaction, $molliePayment);
         $subscriptionElement = Subscription::findOne(['id' => $transaction->payment]);
-        if(in_array($molliePayment->status, [PaymentStatus::STATUS_PAID, PaymentStatus::STATUS_OPEN])
+        if (in_array($molliePayment->status, [PaymentStatus::STATUS_PAID, PaymentStatus::STATUS_OPEN])
             && $molliePayment->metadata->createSubscription
             && !$molliePayment->subscriptionId
         ) {
             MolliePayments::$plugin->mollie->createSubscription($subscriptionElement);
         }
-        return;
+    }
+
+    public function actionGetLinkForCustomer() {
+        $email = $this->request->getRequiredBodyParam('email');
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            Craft::$app->getUrlManager()->setRouteParams([
+                'email' => $email,
+                'error' => Craft::t('mollie-payments', 'Invalid email address'),
+            ]);
+            return null;
+        }
+        $customer = SubscriberRecord::findOne(['email' => $email]);
+        MolliePayments::getInstance()->mail->sendSubscriptionAccessEmail($customer);
+        $this->redirectToPostedUrl();
+    }
+
+    public function actionCancel($subscription, $subscriber)
+    {
+
+        dd($subscription, $subscriber);
+
+
     }
 }

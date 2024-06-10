@@ -21,6 +21,7 @@ use craft\services\Elements;
 use craft\services\ProjectConfig;
 use craft\web\twig\variables\CraftVariable;
 use craft\web\UrlManager;
+use studioespresso\exporter\variables\ExporterVariable;
 use studioespresso\molliepayments\behaviours\CraftVariableBehavior;
 use studioespresso\molliepayments\elements\Payment;
 
@@ -28,12 +29,14 @@ use studioespresso\molliepayments\models\Settings;
 use studioespresso\molliepayments\services\Currency;
 use studioespresso\molliepayments\services\Export;
 use studioespresso\molliepayments\services\Form;
+use studioespresso\molliepayments\services\Mail;
 use studioespresso\molliepayments\services\Mollie;
 use studioespresso\molliepayments\services\Payment as PaymentServivce;
 use studioespresso\molliepayments\services\Subscriber;
 use studioespresso\molliepayments\services\Subscription;
 use studioespresso\molliepayments\services\Transaction;
 
+use studioespresso\molliepayments\variables\MollieVariable;
 use yii\base\Event;
 
 /**
@@ -51,6 +54,7 @@ use yii\base\Event;
  * @property Export $export
  * @property Subscription $subscription
  * @property Subscriber $subscriber
+ * @property Mail $mail
  */
 class MolliePayments extends Plugin
 {
@@ -104,6 +108,7 @@ class MolliePayments extends Plugin
             'subscriber' => Subscriber::class,
             'currency' => Currency::class,
             'export' => Export::class,
+            'mail' => Mail::class,
         ]);
 
         Craft::$app->projectConfig
@@ -151,6 +156,16 @@ class MolliePayments extends Plugin
                 CraftVariableBehavior::class,
             ]);
         });
+
+        Event::on(
+            CraftVariable::class,
+            CraftVariable::EVENT_INIT,
+            function(Event $event) {
+                /** @var CraftVariable $variable */
+                $variable = $event->sender;
+                $variable->set('mollie', MollieVariable::class);
+            }
+        );
 
         Event::on(
             Elements::class,

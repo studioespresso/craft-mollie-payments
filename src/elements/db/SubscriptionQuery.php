@@ -14,6 +14,8 @@ class SubscriptionQuery extends ElementQuery
 
     public $subscriptionStatus;
 
+    public $subscriptionId;
+
     public $email;
 
     public function email($value): self
@@ -56,6 +58,8 @@ class SubscriptionQuery extends ElementQuery
                 return ['subscriptionStatus' => 'cart'];
             case 'free':
                 return ['subscriptionStatus' => 'free'];
+            case 'ongoing':
+                return ['subscriptionStatus' => 'ongoing'];
             case 'pending':
                 return ['subscriptionStatus' => 'pending'];
             case 'paid':
