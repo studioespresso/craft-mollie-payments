@@ -130,6 +130,43 @@ class Mollie extends Component
         return $response->_links->checkout->href;
     }
 
+    public function createSubscription(Subscription $element)
+    {
+        /** @var  $customer */
+        $form = MolliePayments::$plugin->forms->getFormByid($element->formId);
+
+        if($form->descriptionFormat) {
+            $description = Craft::$app->getView()->renderObjectTemplate($form->descriptionFormat, $element);
+        } else {
+            $description = "Order #{$element->id}";
+        }
+
+        $subscriber = MolliePayments::$plugin->subscriber->getByEmail($element->email);
+
+        $customer = $this->getCustomer($subscriber->customerId);
+        $data = [
+            "amount" => [
+                "value" => $element->amount,
+                "currency" => $form->currency
+            ],
+            "interval" => $element->interval,
+            "description" => $description,
+            "webhookUrl" => "{$this->baseUrl}mollie-payments/subscription/webhook"
+
+        ];
+
+//        if ($form->times) {
+//            $data["times"] = $form->times;
+//        }
+
+        $response = $customer->createSubscription($data);
+        if ($response) {
+            $element->subscriptionStatus = "active";
+            $element->subscriptionId = $response->id;
+            Craft::$app->getElements()->saveElement($element);
+        }
+    }
+
     /**
      * @throws \Mollie\Api\Exceptions\ApiException
      */
@@ -144,6 +181,14 @@ class Mollie extends Component
     public function getStatus($orderId)
     {
         return $this->mollie->payments->get($orderId);
+    }
+
+    /**
+     * @throws \Mollie\Api\Exceptions\ApiException
+     */
+    public function getCustomer($id): Customer
+    {
+        return $this->mollie->customers->get($id);
     }
 
     public function validateInterval($interval): bool

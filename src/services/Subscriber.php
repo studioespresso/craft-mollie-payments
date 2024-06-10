@@ -21,11 +21,17 @@ class Subscriber extends Component
         }
     }
 
+    public function getByEmail($email): SubscriberModel
+    {
+        $record =  SubscriberRecord::findOne(['email' => $email]);
+        $model = new SubscriberModel();
+        $model->setAttributes($record->getAttributes());
+        return $model;
+    }
+
     public function getOrCreateSubscriberByEmail($email): SubscriberModel
     {
         $record = SubscriberRecord::findOne(['email' => $email]);
-
-
         if ($record) {
             $model = new SubscriberModel();
             $model->setAttributes($record->getAttributes());

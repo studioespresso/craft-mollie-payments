@@ -35,8 +35,11 @@ class Subscription extends Element
     public $email;
     public $customerId;
     public $amount = 0;
+    public $subscriptionId;
     public $subscriptionStatus;
     public $interval;
+    // TODO save this to allow for of fixed duration
+    public $times = null;
     public $formId;
 
     /**
@@ -103,7 +106,7 @@ class Subscription extends Element
         return [
             'cart' => ['label' => Craft::t('mollie-payments', 'In Cart'), 'color' => 'grey'],
             'pending' => ['label' => Craft::t('mollie-payments', 'Pending'), 'color' => 'orange'],
-            'paid' => ['label' => Craft::t('mollie-payments', 'Paid'), 'color' => 'green'],
+            'active' => ['label' => Craft::t('mollie-payments', 'Active'), 'color' => 'green'],
             'Canceled' => ['label' => Craft::t('mollie-payments', 'Canceled'), 'color' => 'red'],
             'expired' => ['label' => Craft::t('mollie-payments', 'Expired'), 'color' => 'red'],
             'refunded' => ['label' => Craft::t('mollie-payments', 'Refunded'), 'color' => 'grey'],
@@ -278,6 +281,7 @@ class Subscription extends Element
             \Craft::$app->db->createCommand()
                 ->update(SubscriptionRecord::tableName(), [
                     'email' => $this->email,
+                    'subscriptionId' => $this->subscriptionId,
                     'subscriptionStatus' => $this->subscriptionStatus,
                 ], ['id' => $this->id])
                 ->execute();

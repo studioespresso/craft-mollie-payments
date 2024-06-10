@@ -79,6 +79,7 @@ class SubscriptionQuery extends ElementQuery
             'mollie_subscriptions.amount',
             'mollie_subscriptions.formId',
             'mollie_subscriptions.interval',
+            'mollie_subscriptions.subscriptionId',
             'mollie_subscriptions.subscriptionStatus',
         ]);
 

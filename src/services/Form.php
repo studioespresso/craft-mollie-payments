@@ -73,7 +73,7 @@ class Form extends Component
         return $forms;
     }
 
-    public function getFormByid($id)
+    public function getFormByid($id): PaymentFormRecord
     {
         $form = PaymentFormRecord::findOne(['id' => $id]);
         if (!$form) {

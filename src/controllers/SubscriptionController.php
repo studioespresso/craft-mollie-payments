@@ -7,6 +7,7 @@ use craft\base\Element;
 use craft\helpers\ConfigHelper;
 use craft\helpers\UrlHelper;
 use craft\web\Controller;
+use Mollie\Api\Types\PaymentStatus;
 use studioespresso\molliepayments\elements\Payment;
 use studioespresso\molliepayments\elements\Subscription;
 use studioespresso\molliepayments\MolliePayments;
@@ -137,9 +138,18 @@ class SubscriptionController extends Controller
         $transaction = MolliePayments::getInstance()->transaction->getTransactionbyId($id);
         $molliePayment = MolliePayments::getInstance()->mollie->getStatus($id);
 
+        if($molliePayment->subscriptionId) {
+            //TODO  Create new transation for subsequent recurring payments
+
+        }
+
         MolliePayments::getInstance()->transaction->updateTransaction($transaction, $molliePayment);
-        if($molliePayment->metadata->createSubscription) {
-            dd($molliePayment);
+        $subscriptionElement = Subscription::findOne(['id' => $transaction->payment]);
+        if(in_array($molliePayment->status, [PaymentStatus::STATUS_PAID, PaymentStatus::STATUS_OPEN])
+            && $molliePayment->metadata->createSubscription
+            && !$molliePayment->subscriptionId
+        ) {
+            MolliePayments::$plugin->mollie->createSubscription($subscriptionElement);
         }
         return;
     }
