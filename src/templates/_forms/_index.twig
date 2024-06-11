@@ -22,7 +22,6 @@
     {% set tableData = tableData|merge([{
         id: form.id,
         title: form.title,
-        type: form.type|capitalize,
         url: url('mollie-payments/forms/' ~ form.id),
         handle: form.handle,
     }]) %}
@@ -31,7 +30,6 @@
 {% set columns = [
     { name: '__slot:title', title: "Name"|t('app') },
     { name: '__slot:handle', title: "Handle"|t('app') },
-    { name: 'type', title: "Type"|t('app') },
     { name: 'id', title: "Id"|t('app') },
 ] %}
 

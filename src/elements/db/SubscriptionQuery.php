@@ -104,7 +104,7 @@ class SubscriptionQuery extends ElementQuery
             $this->subQuery->andWhere(Db::parseParam('mollie_subscriptions.formId', $this->formId));
         }
 
-        if ($this->customerId()) {
+        if ($this->customerId) {
             $this->subQuery->andWhere(Db::parseParam('mollie_subscriptions.customerId', $this->customerId));
         }
 

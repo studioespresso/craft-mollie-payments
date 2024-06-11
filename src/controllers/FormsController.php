@@ -73,7 +73,6 @@ class FormsController extends Controller
 
         $paymentFormModel->title = $data['title'];
         $paymentFormModel->handle = $data['handle'];
-        $paymentFormModel->type = $data['type'];
         $paymentFormModel->currency = $data['currency'];
         $paymentFormModel->descriptionFormat = $data['descriptionFormat'];
 

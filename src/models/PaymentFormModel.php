@@ -18,7 +18,6 @@ class PaymentFormModel extends Model
 
     public $id;
 
-    public $type = self::FORM_TYPE_SINGLE;
 
     public $handle;
 
@@ -32,9 +31,6 @@ class PaymentFormModel extends Model
 
     public $uid;
 
-    public const FORM_TYPE_SINGLE = "single";
-
-    public const FORM_TYPE_RECURRING = "recurring";
 
     public function behaviors(): array
     {
@@ -49,7 +45,7 @@ class PaymentFormModel extends Model
     public function rules(): array
     {
         return [
-            [['title', 'handle', 'currency', 'type'], 'required'],
+            [['title', 'handle', 'currency'], 'required'],
             [['title', 'handle', 'currency', 'descriptionFormat', 'type'], 'safe'],
             ['handle', 'validateHandle'],
         ];
@@ -70,7 +66,6 @@ class PaymentFormModel extends Model
         $config = [
             'title' => $this->title,
             'handle' => $this->handle,
-            'type' => $this->type,
             'currency' => $this->currency,
             'descriptionFormat' => $this->descriptionFormat,
         ];

@@ -60,21 +60,21 @@
         {% endif %}
     </div>
 
-        {% set types = {
-            'single': 'Single payment',
-            'recurring': 'Recurring payments'
-        } %}
+{#        {% set types = {#}
+{#            'single': 'Single payment',#}
+{#            'recurring': 'Recurring payments'#}
+{#        } %}#}
 
-    {# TODO make this read only after save? Type shouldn't be changed onces we have payments related to it #}
-    {{ forms.selectField({
-        label: "Payment type"|t('mollie-payments'),
-        id: "type",
-        name: "data[type]",
-        required: true,
-        options: types,
-        value: form.type ?? "",
-        errors: errors is defined and errors.type is defined ? errors.type
-    }) }}
+{#    #}{# TODO make this read only after save? Type shouldn't be changed onces we have payments related to it #}
+{#    {{ forms.selectField({#}
+{#        label: "Payment type"|t('mollie-payments'),#}
+{#        id: "type",#}
+{#        name: "data[type]",#}
+{#        required: true,#}
+{#        options: types,#}
+{#        value: form.type ?? "",#}
+{#        errors: errors is defined and errors.type is defined ? errors.type#}
+{#    }) }}#}
 
 
     {% set availableCurrencies = { '': '---'} %}
