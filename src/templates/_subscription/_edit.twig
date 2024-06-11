@@ -12,7 +12,7 @@
 {% set title = "Payment for "|t('mollie-payments') ~ form.title ~' - '~ element.email %}
 {% block header %}
     {{ block('pageTitle') }}
-{#    {{ block('actionButton') }}#}
+    {#    {{ block('actionButton') }} #}
 {% endblock %}
 
 {% set tabData = [] %}
@@ -40,14 +40,25 @@
 
 
 
-{#    <div id="tab-transactions" class="{% if tabs|length %}hidden{% endif %}">#}
-{#        {% include 'mollie-payments/_payment/_transactions.twig' with {transactions : transactions } only %}#}
-{#    </div>#}
+    {#    <div id="tab-transactions" class="{% if tabs|length %}hidden{% endif %}"> #}
+    {#        {% include 'mollie-payments/_payment/_transactions.twig' with {transactions : transactions } only %} #}
+    {#    </div> #}
     {% hook 'cp.subscriptions.edit.content' %}
 {% endblock %}
 
 {% block details %}
     <div id="settings" class="meta">
+        {% if subscriber is defined %}
+            {# TODO Styling? #}
+            <div class="field" id="email-field">
+                {# TODO only show this on active subscriptions #}
+                {# TODO add confirmation modal #}
+                <a href="{{ actionUrl('mollie-payments/subscription/cancel', {
+                    'subscription' : element.id,
+                    'subscriber': subscriber.uid
+                }) }}" class="btn">{{ 'Cancel subscription?'|t('mollie-payments') }}</a>
+            </div>
+        {% endif %}
         <div class="field" id="email-field">
             <div class="heading">
                 <label id="slug-label" for="slug">{{ "Form"|t("mollie-payments") }}</label>

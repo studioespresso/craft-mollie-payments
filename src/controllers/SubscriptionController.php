@@ -102,11 +102,18 @@ class SubscriptionController extends Controller
         $query = Subscription::find();
         $query->uid = $uid;
         $element = $query->one();
+        if ($element->customerId) {
+            $subscriber = SubscriberRecord::findOne(['customerId' => $element->customerId]);
+        }
 
         $form = MolliePayments::getInstance()->forms->getFormByid($element->formId);
 //        $transactions = MolliePayments::getInstance()->transaction->getAllByPayment($element->id);
 
-        $this->renderTemplate('mollie-payments/_subscription/_edit', ['element' => $element, 'form' => $form]);
+        $this->renderTemplate('mollie-payments/_subscription/_edit', [
+            'element' => $element,
+            'subscriber' => $subscriber ?? null,
+            'form' => $form
+        ]);
     }
 
     public function actionRedirect()
