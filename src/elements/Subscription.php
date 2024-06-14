@@ -190,7 +190,7 @@ class Subscription extends Element
             'email' => Craft::t('mollie-payments', 'Email'),
             'amount' => Craft::t('mollie-payments', 'Amount'),
             'interval' => Craft::t('mollie-payments', 'Interval'),
-            'status' => Craft::t('mollie-payments', 'Status'),
+            'subscriptionStatus' => Craft::t('mollie-payments', 'Status'),
             'dateCreated' => Craft::t('mollie-payments', 'Date Created'),
         ];
     }

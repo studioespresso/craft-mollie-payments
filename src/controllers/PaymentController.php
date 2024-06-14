@@ -5,6 +5,7 @@ namespace studioespresso\molliepayments\controllers;
 use Craft;
 use craft\base\Element;
 use craft\helpers\ConfigHelper;
+use craft\helpers\Cp;
 use craft\helpers\UrlHelper;
 use craft\web\Controller;
 use studioespresso\molliepayments\elements\Payment;
