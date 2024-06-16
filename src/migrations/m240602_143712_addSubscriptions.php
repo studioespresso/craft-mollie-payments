@@ -4,12 +4,13 @@ namespace studioespresso\molliepayments\migrations;
 
 use Craft;
 use craft\db\Migration;
+use studioespresso\molliepayments\records\SubscriberRecord;
 use studioespresso\molliepayments\records\SubscriptionRecord;
 
 /**
  * m240602_143712_addSubscriptionsTable migration.
  */
-class m240602_143712_addSubscriptionsTable extends Migration
+class m240602_143712_addSubscriptions extends Migration
 {
     /**
      * @inheritdoc
@@ -31,6 +32,22 @@ class m240602_143712_addSubscriptionsTable extends Migration
                 'dateUpdated' => $this->dateTime()->notNull(),
                 'uid' => $this->uid(),
                 'PRIMARY KEY(id)',
+            ]
+        );
+
+        $this->createTable(
+            SubscriberRecord::tableName(),
+            [
+                'id' => $this->primaryKey(),
+                'email' => $this->string()->notNull(),
+                'customerId' => $this->string(30),
+                'userId' => $this->integer(),
+                'locale' => $this->string(5),
+                'metadata' => $this->text(),
+                'links' => $this->text(),
+                'dateCreated' => $this->dateTime()->notNull(),
+                'dateUpdated' => $this->dateTime()->notNull(),
+                'uid' => $this->uid(),
             ]
         );
 
