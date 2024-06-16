@@ -14,7 +14,6 @@ use Craft;
 use craft\base\Element;
 use craft\elements\db\ElementQueryInterface;
 use craft\elements\User;
-use craft\helpers\Cp;
 use craft\helpers\UrlHelper;
 use Mollie\Api\Resources\Customer;
 use studioespresso\molliepayments\elements\db\SubscriptionQuery;
@@ -180,8 +179,6 @@ class Subscription extends Element
 
     protected static function defineSortOptions(): array
     {
-
-
         return [
             'dateCreated' => \Craft::t('app', 'Date created'),
         ];

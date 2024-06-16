@@ -101,7 +101,7 @@ class Mollie extends Component
         $response = $this->mollie->payments->create([
             "amount" => [
                 "value" => number_format((float)$subscription->amount, 2, '.', ''),
-                "currency" => $form->currency
+                "currency" => $form->currency,
             ],
             "customerId" => $subscriber->customerId,
             "sequenceType" => "first",
@@ -109,14 +109,14 @@ class Mollie extends Component
             "redirectUrl" => UrlHelper::url("{$this->baseUrl}mollie-payments/subscription/redirect", [
                 "formUid" => $form->uid,
                 "subscriptionUid" => $subscription->uid,
-                "redirect" => $redirect
+                "redirect" => $redirect,
             ]),
             "webhookUrl" => "{$this->baseUrl}mollie-payments/subscription/webhook",
             "metadata" => [
                 "elementType" => Subscription::class,
                 "formId" => $form->id,
-                "createSubscription" => true //  TODO interval true or false
-            ]
+                "createSubscription" => true, //  TODO interval true or false
+            ],
         ]);
 
         $transaction = new PaymentTransactionModel();
@@ -148,11 +148,11 @@ class Mollie extends Component
         $data = [
             "amount" => [
                 "value" => $element->amount,
-                "currency" => $form->currency
+                "currency" => $form->currency,
             ],
             "interval" => $element->interval,
             "description" => $description,
-            "webhookUrl" => "{$this->baseUrl}mollie-payments/subscription/webhook"
+            "webhookUrl" => "{$this->baseUrl}mollie-payments/subscription/webhook",
 
         ];
 
@@ -171,7 +171,6 @@ class Mollie extends Component
     public function cancelSubscription(SubscriberRecord $subscriber, Subscription $subscription)
     {
         try {
-
             $customer = $this->getCustomer($subscriber->customerId);
             $customer->cancelSubscription($subscription->subscriptionId);
             return true;
@@ -219,6 +218,5 @@ class Mollie extends Component
             return false;
         }
         return true;
-
     }
 }

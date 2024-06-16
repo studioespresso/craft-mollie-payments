@@ -6,7 +6,6 @@ use Craft;
 use craft\base\Component;
 use studioespresso\molliepayments\elements\Subscription as SubscriptionElement;
 
-
 class Subscription extends Component
 {
     public function getStatus($id)

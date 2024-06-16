@@ -115,7 +115,7 @@ class SubscriptionController extends Controller
             'element' => $element,
             'transactions' => $transactions,
             'subscriber' => $subscriber ?? null,
-            'form' => $form
+            'form' => $form,
         ];
 
 
@@ -124,7 +124,7 @@ class SubscriptionController extends Controller
             ->title("Subscription - {$form->title} - {$element->email}")
             ->crumbs([
                 ['label' => 'Subscriptions', 'url' => UrlHelper::cpUrl('mollie-payments/subscriptions')],
-                ['label' => $element->email, 'url' => $element->getCpEditUrl()]
+                ['label' => $element->email, 'url' => $element->getCpEditUrl()],
             ])
             ->selectedSubnavItem('subscriptions')
             ->metaSidebarTemplate('mollie-payments/_subscription/_edit/_details', $data)

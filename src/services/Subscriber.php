@@ -10,7 +10,6 @@ use studioespresso\molliepayments\models\SubscriberModel;
 use studioespresso\molliepayments\MolliePayments;
 use studioespresso\molliepayments\records\SubscriberRecord;
 
-
 class Subscriber extends Component
 {
     public function getStatus($id)
@@ -23,7 +22,7 @@ class Subscriber extends Component
 
     public function getByEmail($email): SubscriberModel
     {
-        $record =  SubscriberRecord::findOne(['email' => $email]);
+        $record = SubscriberRecord::findOne(['email' => $email]);
         $model = new SubscriberModel();
         $model->setAttributes($record->getAttributes());
         return $model;

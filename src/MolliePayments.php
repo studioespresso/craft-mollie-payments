@@ -22,7 +22,6 @@ use craft\services\ProjectConfig;
 use craft\web\twig\variables\CraftVariable;
 use craft\web\UrlManager;
 use Mollie\Api\Types\PaymentStatus;
-use studioespresso\exporter\variables\ExporterVariable;
 use studioespresso\molliepayments\behaviours\CraftVariableBehavior;
 use studioespresso\molliepayments\elements\Payment;
 
@@ -152,18 +151,17 @@ class MolliePayments extends Plugin
         Event::on(
             Transaction::class,
             MolliePayments::EVENT_AFTER_TRANSACTION_UPDATE,
-            function (TransactionUpdateEvent $event) {
+            function(TransactionUpdateEvent $event) {
                 $transaction = $event->transaction;
                 $element = $event->element;
                 try {
-                    if(get_class($element) === \studioespresso\molliepayments\elements\Subscription::class) {
-                        if($transaction->status === PaymentStatus::STATUS_EXPIRED) {
+                    if (get_class($element) === \studioespresso\molliepayments\elements\Subscription::class) {
+                        if ($transaction->status === PaymentStatus::STATUS_EXPIRED) {
                             $element->subscriptionStatus = "expired";
                             Craft::$app->getElements()->saveElement($element);
                         }
                     }
-
-                } catch(\Throwable $e) {
+                } catch (\Throwable $e) {
                     Craft::error($e->getMessage(), __CLASS__);
                 }
             }

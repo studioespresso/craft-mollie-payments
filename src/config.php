@@ -30,5 +30,5 @@
 return [
     'apiKey' => '',
     'manageSubscriptionEmailPath' => '',
-    'manageSubscriptionRoute' => ''
+    'manageSubscriptionRoute' => '',
 ];

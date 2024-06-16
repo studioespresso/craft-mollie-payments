@@ -5,11 +5,9 @@ namespace studioespresso\molliepayments\controllers;
 use Craft;
 use craft\base\Element;
 use craft\helpers\ConfigHelper;
-use craft\helpers\Cp;
 use craft\helpers\UrlHelper;
 use craft\web\Controller;
 use studioespresso\molliepayments\elements\Payment;
-use studioespresso\molliepayments\elements\Subscription;
 use studioespresso\molliepayments\MolliePayments;
 use yii\base\InvalidArgumentException;
 use yii\base\InvalidConfigException;
@@ -59,7 +57,6 @@ class PaymentController extends Controller
             if (!$paymentForm) {
                 throw new NotFoundHttpException("Form not found", 404);
             }
-
         } else {
             $email = Craft::$app->request->getRequiredBodyParam('email');
             $amount = Craft::$app->request->getValidatedBodyParam('amount');
@@ -78,8 +75,6 @@ class PaymentController extends Controller
             $payment->amount = $amount;
             $payment->formId = $paymentForm->id;
             $payment->fieldLayoutId = $paymentForm->fieldLayout;
-
-
         }
 
 
