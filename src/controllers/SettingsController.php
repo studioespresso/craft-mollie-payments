@@ -33,7 +33,9 @@ class SettingsController extends Controller
         $data = $params['settings'];
 
         $settings = MolliePayments::getInstance()->getSettings();
-        $settings->apiKey = $data['apiKey'] ?? $settings->orderReferenceFormat;
+        $settings->apiKey = $data['apiKey'];
+        $settings->manageSubscriptionEmailPath = $data['manageSubscriptionEmailPath'];
+        $settings->manageSubscriptionRoute = $data['manageSubscriptionRoute'];
 
         if (!$settings->validate()) {
             Craft::$app->getSession()->setError(Craft::t('mollie-payments', 'Couldn’t save settings.'));
