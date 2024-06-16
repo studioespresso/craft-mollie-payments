@@ -25,6 +25,7 @@ class m240602_143712_addSubscriptions extends Migration
                 'email' => $this->string()->notNull(),
                 'formId' => $this->integer()->notNull(),
                 'interval' => $this->string()->notNull(),
+                'times' => $this->string()->defaultValue(null),
                 'subscriptionStatus' => $this->string()->notNull(),
                 'customerId' => $this->string(),
                 'subscriptionId' => $this->string(),
