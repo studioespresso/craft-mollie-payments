@@ -40,7 +40,6 @@ class Subscription extends Element
     public $subscriptionId;
     public $subscriptionStatus;
     public $interval;
-    // TODO save this to allow for of fixed duration
     public $times = null;
     public $formId;
 
@@ -246,7 +245,7 @@ class Subscription extends Element
     public function rules(): array
     {
         $rules = parent::rules();
-        $rules[] = [['email', 'interval'], 'string'];
+        $rules[] = [['email', 'interval', 'times'], 'string'];
         if ($this->getScenario() != Element::SCENARIO_ESSENTIALS) {
             $rules[] = [['email', 'amount', 'interval'], 'required'];
         }
@@ -286,6 +285,7 @@ class Subscription extends Element
                     'subscriptionStatus' => $this->subscriptionStatus,
                     'customerId' => $this->customerId,
                     'interval' => $this->interval,
+                    'times' => $this->times,
                     'amount' => $this->amount,
                     'formId' => $this->formId,
                 ])
