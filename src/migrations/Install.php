@@ -146,15 +146,8 @@ class Install extends Migration
             null
         );
 
-        $this->addForeignKey(
-            $this->db->getForeignKeyName(PaymentTransactionRecord::tableName(), 'payment'),
-            PaymentTransactionRecord::tableName(),
-            'payment',
-            "{{%mollie_payments}}",
-            'id',
-            'CASCADE',
-            null
-        );
+
+        $this->dropForeignKeyIfExists(PaymentTransactionRecord::tableName(), 'payment');
     }
 
     protected function removeTables()

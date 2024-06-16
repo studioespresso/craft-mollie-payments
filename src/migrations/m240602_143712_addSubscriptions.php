@@ -4,6 +4,7 @@ namespace studioespresso\molliepayments\migrations;
 
 use Craft;
 use craft\db\Migration;
+use studioespresso\molliepayments\records\PaymentTransactionRecord;
 use studioespresso\molliepayments\records\SubscriberRecord;
 use studioespresso\molliepayments\records\SubscriptionRecord;
 
@@ -51,6 +52,7 @@ class m240602_143712_addSubscriptions extends Migration
             ]
         );
 
+        $this->dropForeignKeyIfExists(PaymentTransactionRecord::tableName(), 'payment');
         return true;
     }
 
