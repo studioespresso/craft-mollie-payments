@@ -201,9 +201,10 @@ class Subscription extends Element
         return ['email'];
     }
 
+
     public function getCustomer(): Customer|null
     {
-        if(!$this->customerId) {
+        if (!$this->customerId) {
             return null;
         }
         return MolliePayments::getInstance()->mollie->getCustomer($this->customerId);

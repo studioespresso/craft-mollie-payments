@@ -40,9 +40,9 @@
 
 
 
-    {#    <div id="tab-transactions" class="{% if tabs|length %}hidden{% endif %}"> #}
-    {#        {% include 'mollie-payments/_payment/_transactions.twig' with {transactions : transactions } only %} #}
-    {#    </div> #}
+    <div id="tab-transactions" class="{% if tabs|length %}hidden{% endif %}">
+        {% include 'mollie-payments/_payment/_transactions.twig' with {transactions : transactions } only %}
+    </div>
     {% hook 'cp.subscriptions.edit.content' %}
 {% endblock %}
 
@@ -59,7 +59,7 @@
                     </p>
 
                     {# TODO Styling? #}
-                    {% if element.status == 'ongoing' %}
+                    {% if element.status == 'ongoing' and subscriber %}
                         <p>
                             <a href="{{ actionUrl('mollie-payments/subscription/cancel', {
                                 'subscription' : element.id,
@@ -72,6 +72,16 @@
                 </div>
             {% endif %}
         </div>
+        {% if element.subscriptionId %}
+            <div class="field" id="email-field">
+                <div class="heading">
+                    <label>{{ "Subscription ID"|t("mollie-payments") }}</label>
+                </div>
+                <div class="input ltr">
+                    {{ element.subscriptionId }}
+                </div>
+            </div>
+        {% endif %}
         <div class="field" id="email-field">
             <div class="heading">
                 <label>{{ "Form"|t("mollie-payments") }}</label>

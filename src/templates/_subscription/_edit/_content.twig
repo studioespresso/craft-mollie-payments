@@ -1,0 +1,24 @@
+{% set tabData = [] %}
+{% if element.getFieldLayout() %}
+    {% for tab in element.getFieldLayout().getTabs() %}
+        {% set data = { label: tab.name, url: '#' ~ tab.getHtmlId()} %}
+        {% set tabData = tabData|merge({ (tab.id) : data}) %}
+    {% endfor %}
+{% endif %}
+{% set tabData = tabData|merge( {translactions: { label: 'Transactions'|t('mollie-payments'), url : "#tab-transactions"} }) %}
+
+{% set tabs = tabData %}
+
+
+{% if element.getFieldLayout() %}
+    {{ d(element.firstName) }}
+    {% set form = element.getFieldLayout().createForm(element) %}
+    <div id="fields">
+        {{ form.render()|raw }}
+    </div>
+{% endif %}
+
+<div id="tab-transactions" class="{% if tabs|length %}hidden{% endif %}">
+    {% include 'mollie-payments/_payment/_transactions.twig' with {transactions : transactions } only %}
+</div>
+{% hook 'cp.subscriptions.edit.content' %}

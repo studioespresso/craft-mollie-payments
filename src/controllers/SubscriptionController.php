@@ -9,6 +9,7 @@ use craft\helpers\UrlHelper;
 use craft\web\Controller;
 use Mollie\Api\Types\PaymentStatus;
 use studioespresso\molliepayments\elements\Subscription;
+use studioespresso\molliepayments\models\PaymentTransactionModel;
 use studioespresso\molliepayments\MolliePayments;
 use studioespresso\molliepayments\records\SubscriberRecord;
 use yii\base\InvalidConfigException;
@@ -81,6 +82,7 @@ class SubscriptionController extends Controller
             ]);
             return null;
         }
+
         if (MolliePayments::getInstance()->subscription->save($subscription)) {
             $url = MolliePayments::getInstance()->mollie->createFirstPayment(
                 $subscription,
@@ -92,7 +94,6 @@ class SubscriptionController extends Controller
         }
     }
 
-
     /**
      * @param $uid
      * @since 1.0.0
@@ -102,18 +103,30 @@ class SubscriptionController extends Controller
         $query = Subscription::find();
         $query->uid = $uid;
         $element = $query->one();
-        if ($element->customerId) {
+        if ($element->customerId !== null) {
             $subscriber = SubscriberRecord::findOne(['customerId' => $element->customerId]);
         }
 
         $form = MolliePayments::getInstance()->forms->getFormByid($element->formId);
-//        $transactions = MolliePayments::getInstance()->transaction->getAllByPayment($element->id);
+        $transactions = MolliePayments::getInstance()->transaction->getAllByPayment($element->id);
 
-        $this->renderTemplate('mollie-payments/_subscription/_edit', [
+
+        $data = [
             'element' => $element,
+            'transactions' => $transactions,
             'subscriber' => $subscriber ?? null,
             'form' => $form
-        ]);
+        ];
+
+        // TODO Breadcrumbs!
+        // TODO Fix tabs
+        // TODO Add save button
+        return $this->asCpScreen()
+            ->title("Subscription")
+            ->selectedSubnavItem('subscriptions')
+            ->addTab("transactions", "transactions", '#transactions')
+            ->metaSidebarTemplate('mollie-payments/_subscription/_edit/_details', $data)
+            ->contentTemplate('mollie-payments/_subscription/_edit/_content', $data);
     }
 
     public function actionRedirect()
@@ -143,9 +156,20 @@ class SubscriptionController extends Controller
         $transaction = MolliePayments::getInstance()->transaction->getTransactionbyId($id);
         $molliePayment = MolliePayments::getInstance()->mollie->getStatus($id);
 
-        if ($molliePayment->subscriptionId) {
-            //TODO  Create new transation for subsequent recurring payments
+        // If we have a subscription id, the payment belongs to an active subscription
+        // So we need to create a new transaction for it.
+        if ($molliePayment->subscriptionId && !$transaction) {
+            $subscription = Subscription::findOne(['subscriptionId' => $molliePayment->subscriptionId]);
+            $form = $subscription->getForm();
 
+            $model = new PaymentTransactionModel();
+            $model->id = $molliePayment->id;
+            $model->payment = $subscription->id;
+            $model->currency = $form->currency;
+            $model->amount = $molliePayment->amount->value;
+            $model->status = $molliePayment->status;
+            MolliePayments::getInstance()->transaction->save($model);
+            return;
         }
 
         MolliePayments::getInstance()->transaction->updateTransaction($transaction, $molliePayment);
@@ -155,10 +179,12 @@ class SubscriptionController extends Controller
             && !$molliePayment->subscriptionId
         ) {
             MolliePayments::$plugin->mollie->createSubscription($subscriptionElement);
+            return;
         }
     }
 
-    public function actionGetLinkForCustomer() {
+    public function actionGetLinkForCustomer()
+    {
         $email = $this->request->getRequiredBodyParam('email');
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             Craft::$app->getUrlManager()->setRouteParams([
@@ -176,15 +202,14 @@ class SubscriptionController extends Controller
     {
         $subscription = Subscription::findOne(['id' => $subscription]);
         $subscriber = SubscriberRecord::findOne(['uid' => $subscriber]);
-        if(!$subscription->subscriptionId) {
+        if (!$subscription->subscriptionId) {
             Craft::error("Subscription ID missing", MolliePayments::class);
             $subscription->subscriptionStatus = 'canceled';
             Craft::$app->getElements()->saveElement($subscription);
             return;
         }
 
-
-        if(MolliePayments::getInstance()->mollie->cancelSubscription($subscriber, $subscription)) {
+        if (MolliePayments::getInstance()->mollie->cancelSubscription($subscriber, $subscription)) {
             $subscription->subscriptionStatus = 'canceled';
             Craft::$app->getElements()->saveElement($subscription);
             return $this->redirect($subscription->cpEditUrl);

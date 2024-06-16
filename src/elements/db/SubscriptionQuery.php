@@ -51,6 +51,12 @@ class SubscriptionQuery extends ElementQuery
         return $this;
     }
 
+    public function subscriptioId($value): self
+    {
+        $this->subscriptionIdb = $value;
+        return $this;
+    }
+
 
 
     public function formId($value): self
@@ -106,6 +112,10 @@ class SubscriptionQuery extends ElementQuery
 
         if ($this->customerId) {
             $this->subQuery->andWhere(Db::parseParam('mollie_subscriptions.customerId', $this->customerId));
+        }
+
+        if ($this->subscriptionId) {
+            $this->subQuery->andWhere(Db::parseParam('mollie_subscriptions.subscriptionId', $this->subscriptionId));
         }
 
         return parent::beforePrepare();
