@@ -12,6 +12,11 @@
  * @since     1.0.0
  */
 #}
+
+{% set crumbs = [
+    { label: "Subscriptions"|t('mollie-payments'), url: cpUrl('mollie-payments/subscriptions') },
+] %}
+
 {% set selectedSubnavItem = "subscriptions" %}
 {% extends '_layouts/elementindex' %}
 {% set elementType = 'studioespresso\\molliepayments\\elements\\Subscription' %}
