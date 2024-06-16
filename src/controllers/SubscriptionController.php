@@ -117,24 +117,16 @@ class SubscriptionController extends Controller
             'subscriber' => $subscriber ?? null,
             'form' => $form
         ];
-//        $crumbs['menu'] = [
-//            'label' => Craft::t('site', 'Select site'),
-//            'items' => Cp::siteMenuItems($sites, $this->site),
-//        ];
 
 
-
-        // TODO Breadcrumbs!
-        // TODO Fix tabs
         // TODO Add save button
         return $this->asCpScreen()
-            ->title("Subscription")
+            ->title("Subscription - {$form->title} - {$element->email}")
             ->crumbs([
                 ['label' => 'Subscriptions', 'url' => UrlHelper::cpUrl('mollie-payments/subscriptions')],
                 ['label' => $element->email, 'url' => $element->getCpEditUrl()]
             ])
             ->selectedSubnavItem('subscriptions')
-            ->addTab("transactions", "transactions", '#transactions')
             ->metaSidebarTemplate('mollie-payments/_subscription/_edit/_details', $data)
             ->contentTemplate('mollie-payments/_subscription/_edit/_content', $data);
     }

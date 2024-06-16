@@ -40,9 +40,7 @@
 
 
 
-    <div id="tab-transactions" class="{% if tabs|length %}hidden{% endif %}">
         {% include 'mollie-payments/_payment/_transactions.twig' with {transactions : transactions } only %}
-    </div>
     {% hook 'cp.subscriptions.edit.content' %}
 {% endblock %}
 

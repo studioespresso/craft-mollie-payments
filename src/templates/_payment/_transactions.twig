@@ -1,23 +1,25 @@
 {% macro transactionRow(transaction, level) %}
 
-   {% set colors = {
-       pending: 'orange',
-       paid: 'green',
-       free: 'green',
-       expired: 'red'
-   } %}
-    <tr class="infoRow" >
-        <td data-id="{{ 'Status'|t('mollie-payments') }}">
+    {% set colors = {
+        pending: 'orange',
+        paid: 'green',
+        free: 'green',
+        expired: 'red'
+    } %}
+    <tr class="infoRow">
+        <td {{ 'Status'|t('mollie-payments') }}>
             <span class="status {{ attribute(colors, transaction.status) is defined ? attribute(colors, transaction.status) : '' }}"></span> {{ transaction.status|title }}
         </td>
-        <td data-id="{{ 'Id'|t('mollie-payments') }}">
-            {{ transaction.id }} {% if transaction.status != 'free' %}<a href="https://www.mollie.com/dashboard/payments/{{ transaction.id }}" rel="noopener" target="_blank" data-icon="world" title="View on mollie"></a>{% endif %}
+        <td {{ 'Id'|t('mollie-payments') }}>
+            {{ transaction.id }} {% if transaction.status != 'free' %}<a
+                href="https://www.mollie.com/dashboard/payments/{{ transaction.id }}" rel="noopener" target="_blank"
+                data-icon="world" title="View on mollie"></a>{% endif %}
         </td>
-        <td data-title="{{ 'Amount'|t('mollie-payments') }}">{{ transaction.amount|currency(transaction.currency) }}
+        <td {{ 'Amount'|t('mollie-payments') }}>{{ transaction.amount|currency(transaction.currency) }}
             <small class="light">({{ transaction.currency }})</small>
         </td>
-        <td data-title="{{ 'Date'|t('mollie-payments') }}">{{ transaction.dateUpdated|date('H:i:s (jS M Y)') }}</td>
-        <td data-method="{{ 'Method'|t('mollie-payments') }}">{{ transaction.method ?? '' }}</td>
+        <td {{ 'Date'|t('mollie-payments') }}>{{ transaction.dateUpdated|date('H:i:s (jS M Y)') }}</td>
+        <td >{{ transaction.method ?? '' }}</td>
     </tr>
 
 {% endmacro %}

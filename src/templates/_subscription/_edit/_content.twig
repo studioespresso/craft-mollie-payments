@@ -11,14 +11,15 @@
 
 
 {% if element.getFieldLayout() %}
-    {{ d(element.firstName) }}
     {% set form = element.getFieldLayout().createForm(element) %}
     <div id="fields">
         {{ form.render()|raw }}
     </div>
 {% endif %}
 
-<div id="tab-transactions" class="{% if tabs|length %}hidden{% endif %}">
+<hr>
+<div>
+    <h2>{{ "Transactions"|t }}</h2>
     {% include 'mollie-payments/_payment/_transactions.twig' with {transactions : transactions } only %}
 </div>
 {% hook 'cp.subscriptions.edit.content' %}
