@@ -15,6 +15,7 @@ use craft\base\Element;
 use craft\elements\db\ElementQueryInterface;
 use craft\elements\User;
 use craft\helpers\UrlHelper;
+use Mollie\Api\Resources\Customer;
 use studioespresso\molliepayments\elements\db\SubscriptionQuery;
 use studioespresso\molliepayments\MolliePayments;
 use studioespresso\molliepayments\records\SubscriptionRecord;
@@ -107,7 +108,7 @@ class Subscription extends Element
             'cart' => ['label' => Craft::t('mollie-payments', 'In Cart'), 'color' => 'grey'],
             'pending' => ['label' => Craft::t('mollie-payments', 'Pending'), 'color' => 'orange'],
             'ongoing' => ['label' => Craft::t('mollie-payments', 'Actives'), 'color' => 'green'],
-            'Canceled' => ['label' => Craft::t('mollie-payments', 'Canceled'), 'color' => 'red'],
+            'canceled' => ['label' => Craft::t('mollie-payments', 'Canceled'), 'color' => 'red'],
             'expired' => ['label' => Craft::t('mollie-payments', 'Expired'), 'color' => 'red'],
             'refunded' => ['label' => Craft::t('mollie-payments', 'Refunded'), 'color' => 'grey'],
         ];
@@ -200,7 +201,13 @@ class Subscription extends Element
         return ['email'];
     }
 
-
+    public function getCustomer(): Customer|null
+    {
+        if(!$this->customerId) {
+            return null;
+        }
+        return MolliePayments::getInstance()->mollie->getCustomer($this->customerId);
+    }
 
     // Public Methods
     // =========================================================================
@@ -272,6 +279,7 @@ class Subscription extends Element
                     'id' => $this->id,
                     'email' => $this->email,
                     'subscriptionStatus' => $this->subscriptionStatus,
+                    'customerId' => $this->customerId,
                     'interval' => $this->interval,
                     'amount' => $this->amount,
                     'formId' => $this->formId,
