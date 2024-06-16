@@ -1,11 +1,15 @@
 {# @var craft \craft\web\twig\variables\CraftVariable #}
+{% from 'mollie-payments/_includes/macros' import configWarning %}
+
 {% import "_includes/forms" as forms %}
+
     {{ forms.autosuggestField({
         label: 'Mollie API key'|t('mollie-payments'),
         id: 'apiKey',
         name: 'settings[apiKey]',
         value: settings['apiKey'] is iterable  ? settings['apiKey']|json_encode : settings['apiKey'] ,
         errors: settings.getErrors('apiKey'),
-        suggestEnvVars: true,
+        suggestEnvVars: not configWarning('apiKey', 'mollie-payments') ,
         suggestAliases: true,
+        'warning': configWarning('apiKey', 'mollie-payments')
     }) }}
