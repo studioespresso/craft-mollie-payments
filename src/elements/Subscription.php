@@ -17,6 +17,7 @@ use craft\elements\User;
 use craft\helpers\UrlHelper;
 use Mollie\Api\Resources\Customer;
 use studioespresso\molliepayments\elements\db\SubscriptionQuery;
+use studioespresso\molliepayments\models\PaymentFormModel;
 use studioespresso\molliepayments\MolliePayments;
 use studioespresso\molliepayments\records\SubscriptionRecord;
 
@@ -151,12 +152,11 @@ class Subscription extends Element
      */
     protected static function defineSources(string $context = null): array
     {
-        //TODO  Only show forms that have subscriptions related to them
         $sources[] = [
             'key' => '*',
             'label' => Craft::t('app', 'All'),
         ];
-        $forms = MolliePayments::getInstance()->forms->getAllForms();
+        $forms = MolliePayments::getInstance()->forms->getAllFormsByType(PaymentFormModel::TYPE_SUBSCRIPTION);
 
         foreach ($forms as $form) {
             $sources[] = [

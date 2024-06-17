@@ -18,6 +18,7 @@ use craft\helpers\UrlHelper;
 use studioespresso\molliepayments\actions\ExportAllPaymentsAction;
 use studioespresso\molliepayments\actions\ExportPaymentAction;
 use studioespresso\molliepayments\elements\db\PaymentQuery;
+use studioespresso\molliepayments\models\PaymentFormModel;
 use studioespresso\molliepayments\MolliePayments;
 use studioespresso\molliepayments\records\PaymentRecord;
 
@@ -165,7 +166,7 @@ class Payment extends Element
             'key' => '*',
             'label' => Craft::t('app', 'All'),
         ];
-        $forms = MolliePayments::getInstance()->forms->getAllForms();
+        $forms = MolliePayments::getInstance()->forms->getAllFormsByType(PaymentFormModel::TYPE_PAYMENT);
 
         foreach ($forms as $form) {
             $sources[] = [

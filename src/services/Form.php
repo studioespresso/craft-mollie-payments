@@ -54,7 +54,7 @@ class Form extends Component
             $layout = FieldLayout::createFromConfig(reset($data['fieldLayouts']));
             $layout->id = $formRecord->fieldLayout;
 
-            if($data['type'] === PaymentFormModel::TYPE_PAYMENT) {
+            if ($data['type'] === PaymentFormModel::TYPE_PAYMENT) {
                 $layout->type = \studioespresso\molliepayments\elements\Payment::class;
             } else {
                 $layout->type = \studioespresso\molliepayments\elements\Subscription::class;
@@ -74,10 +74,14 @@ class Form extends Component
         $transaction->commit();
     }
 
-    public function getAllForms()
+    public function getAllForms(): array
     {
-        $forms = PaymentFormRecord::find()->all();
-        return $forms;
+        return PaymentFormRecord::find()->all();
+    }
+
+    public function getAllFormsByType($type): array
+    {
+        return PaymentFormRecord::findAll(['type' => $type]);
     }
 
     public function getFormByid($id): PaymentFormRecord
