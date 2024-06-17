@@ -103,6 +103,7 @@ class SubscriptionController extends Controller
         $query = Subscription::find();
         $query->uid = $uid;
         $element = $query->one();
+
         if ($element->customerId !== null) {
             $subscriber = SubscriberRecord::findOne(['customerId' => $element->customerId]);
         }
@@ -117,7 +118,6 @@ class SubscriptionController extends Controller
             'subscriber' => $subscriber ?? null,
             'form' => $form,
         ];
-
 
         // TODO Add save button
         return $this->asCpScreen()

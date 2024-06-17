@@ -7,6 +7,7 @@ use craft\helpers\UrlHelper;
 use craft\web\assets\admintable\AdminTableAsset;
 use craft\web\Controller;
 use studioespresso\molliepayments\elements\Payment;
+use studioespresso\molliepayments\elements\Subscription;
 use studioespresso\molliepayments\models\PaymentFormModel;
 use studioespresso\molliepayments\MolliePayments;
 use studioespresso\molliepayments\records\PaymentFormRecord;
@@ -73,11 +74,18 @@ class FormsController extends Controller
 
         $paymentFormModel->title = $data['title'];
         $paymentFormModel->handle = $data['handle'];
+        $paymentFormModel->type = $data['type'];
         $paymentFormModel->currency = $data['currency'];
         $paymentFormModel->descriptionFormat = $data['descriptionFormat'];
 
         $fieldLayout = Craft::$app->getFields()->assembleLayoutFromPost();
-        $fieldLayout->type = Payment::class;
+
+        if($data['type'] === PaymentFormModel::TYPE_PAYMENT) {
+            $fieldLayout->type = Payment::class;
+        } else {
+            $fieldLayout->type = Subscription::class;
+        }
+
         $paymentFormModel->setFieldLayout($fieldLayout);
 
         if ($paymentFormModel->validate()) {

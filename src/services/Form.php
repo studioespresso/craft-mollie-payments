@@ -8,6 +8,7 @@ use craft\events\ConfigEvent;
 use craft\helpers\StringHelper;
 use craft\models\FieldLayout;
 use studioespresso\molliepayments\elements\Payment;
+use studioespresso\molliepayments\elements\Subscription;
 use studioespresso\molliepayments\models\PaymentFormModel;
 use studioespresso\molliepayments\records\PaymentFormRecord;
 use yii\base\InvalidConfigException;
@@ -42,6 +43,7 @@ class Form extends Component
         $transaction = Craft::$app->getDb()->beginTransaction();
         $formRecord->uid = $formUid;
         $formRecord->title = $data['title'];
+        $formRecord->type = $data['type'];
         $formRecord->handle = $data['handle'];
         $formRecord->currency = $data['currency'];
         $formRecord->descriptionFormat = $data['descriptionFormat'];
@@ -51,7 +53,13 @@ class Form extends Component
             // Save the field layout
             $layout = FieldLayout::createFromConfig(reset($data['fieldLayouts']));
             $layout->id = $formRecord->fieldLayout;
-            $layout->type = \studioespresso\molliepayments\elements\Payment::class;
+
+            if($data['type'] === PaymentFormModel::TYPE_PAYMENT) {
+                $layout->type = \studioespresso\molliepayments\elements\Payment::class;
+            } else {
+                $layout->type = \studioespresso\molliepayments\elements\Subscription::class;
+            }
+
             $layout->uid = key($data['fieldLayouts']);
             Craft::$app->getFields()->saveLayout($layout);
             $formRecord->fieldLayout = $layout->id;

@@ -31,6 +31,12 @@ class PaymentFormModel extends Model
 
     public $uid;
 
+    public $type = self::TYPE_PAYMENT;
+
+    const TYPE_PAYMENT = 'payment';
+
+    const TYPE_SUBSCRIPTION = 'subscription';
+
 
     public function behaviors(): array
     {
@@ -45,7 +51,7 @@ class PaymentFormModel extends Model
     public function rules(): array
     {
         return [
-            [['title', 'handle', 'currency'], 'required'],
+            [['title', 'handle', 'currency', 'type'], 'required'],
             [['title', 'handle', 'currency', 'descriptionFormat', 'type'], 'safe'],
             ['handle', 'validateHandle'],
         ];
@@ -66,6 +72,7 @@ class PaymentFormModel extends Model
         $config = [
             'title' => $this->title,
             'handle' => $this->handle,
+            'type' => $this->type,
             'currency' => $this->currency,
             'descriptionFormat' => $this->descriptionFormat,
         ];

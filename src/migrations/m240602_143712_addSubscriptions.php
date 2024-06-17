@@ -3,6 +3,8 @@
 namespace studioespresso\molliepayments\migrations;
 
 use craft\db\Migration;
+use studioespresso\molliepayments\models\PaymentFormModel;
+use studioespresso\molliepayments\records\PaymentFormRecord;
 use studioespresso\molliepayments\records\PaymentTransactionRecord;
 use studioespresso\molliepayments\records\SubscriberRecord;
 use studioespresso\molliepayments\records\SubscriptionRecord;
@@ -51,6 +53,18 @@ class m240602_143712_addSubscriptions extends Migration
                 'uid' => $this->uid(),
             ]
         );
+
+        $this->addColumn(PaymentFormRecord::tableName(),
+            'type',
+            $this->string(32)->after('handle')
+        );
+
+        $forms = PaymentFormRecord::find();
+        foreach($forms->all() as $record) {
+            $record->setAttribute('type', PaymentFormModel::TYPE_PAYMENT);
+            $record->save();
+        }
+
 
         $this->dropForeignKeyIfExists(PaymentTransactionRecord::tableName(), 'payment');
         return true;

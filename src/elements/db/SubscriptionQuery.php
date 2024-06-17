@@ -58,7 +58,7 @@ class SubscriptionQuery extends ElementQuery
         $this->subscriptionIdb = $value;
         return $this;
     }
-    
+
     public function formId($value): self
     {
         $this->formId = $value;

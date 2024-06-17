@@ -57,6 +57,7 @@ class Install extends Migration
                     'id' => $this->primaryKey(),
                     'title' => $this->string(255)->notNull()->defaultValue(''),
                     'handle' => $this->string(255)->notNull()->defaultValue(''),
+                    'type' => $this->string(32)->notNull(),
                     'currency' => $this->string(3)->defaultValue('EUR'),
                     'descriptionFormat' => $this->string(255),
                     'fieldLayout' => $this->integer(10),
