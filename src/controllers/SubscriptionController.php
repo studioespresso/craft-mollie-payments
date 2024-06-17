@@ -9,6 +9,7 @@ use craft\helpers\UrlHelper;
 use craft\web\Controller;
 use Mollie\Api\Types\PaymentStatus;
 use studioespresso\molliepayments\elements\Subscription;
+use studioespresso\molliepayments\models\PaymentFormModel;
 use studioespresso\molliepayments\models\PaymentTransactionModel;
 use studioespresso\molliepayments\MolliePayments;
 use studioespresso\molliepayments\records\SubscriberRecord;
@@ -46,13 +47,15 @@ class SubscriptionController extends Controller
             throw new NotFoundHttpException("Form not found", 404);
         }
 
-
-        $duration = $this->request->getBodyParam('duration', null);
-        $interval = $this->request->getRequiredBodyParam('interval');
-        if (!MolliePayments::$plugin->mollie->validateInterval($interval)) {
-            throw new HttpException(400, "Incorrent subscription interval");
+        if($paymentForm->type !== PaymentFormModel::TYPE_SUBSCRIPTION) {
+            throw new InvalidConfigException("Incorrect form type for this request", 500);
         }
 
+        $times = $this->request->getBodyParam('times', null);
+        $interval = $this->request->getRequiredBodyParam('interval');
+        if (!MolliePayments::$plugin->mollie->validateInterval($interval)) {
+            throw new HttpException(400, Craft::t('mollie-payments', 'Interval must be a valid interval'));
+        }
 
         // Create subscription
         $subscription = new Subscription();

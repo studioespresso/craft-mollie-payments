@@ -8,6 +8,7 @@ use craft\helpers\ConfigHelper;
 use craft\helpers\UrlHelper;
 use craft\web\Controller;
 use studioespresso\molliepayments\elements\Payment;
+use studioespresso\molliepayments\models\PaymentFormModel;
 use studioespresso\molliepayments\MolliePayments;
 use yii\base\InvalidArgumentException;
 use yii\base\InvalidConfigException;
@@ -57,6 +58,9 @@ class PaymentController extends Controller
             if (!$paymentForm) {
                 throw new NotFoundHttpException("Form not found", 404);
             }
+            if($paymentForm->type !== PaymentFormModel::TYPE_PAYMENT) {
+                throw new InvalidConfigException("Incorrect form type for this request", 500);
+            }
         } else {
             $email = Craft::$app->request->getRequiredBodyParam('email');
             $amount = Craft::$app->request->getValidatedBodyParam('amount');
@@ -68,6 +72,10 @@ class PaymentController extends Controller
             $paymentForm = MolliePayments::getInstance()->forms->getFormByHandle($form);
             if (!$paymentForm) {
                 throw new NotFoundHttpException("Form not found", 404);
+            }
+
+            if($paymentForm->type !== PaymentFormModel::TYPE_PAYMENT) {
+                throw new InvalidConfigException("Incorrect form type for this request", 500);
             }
 
             $payment = new Payment();
