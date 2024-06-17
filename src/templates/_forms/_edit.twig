@@ -4,15 +4,15 @@
 
 {% import "_includes/forms" as forms %}
 
-{#{% set fullPageForm = true %}#}
-{#{% set title = form.title is defined ? form.title : 'New payment form' %}#}
-{#{% set selectedSubnavItem = 'forms' %}#}
+{# {% set fullPageForm = true %} #}
+{# {% set title = form.title is defined ? form.title : 'New payment form' %} #}
+{# {% set selectedSubnavItem = 'forms' %} #}
 
-{#{% set crumbs = [#}
-{#    { label: "Payments", url: cpUrl('mollie-payments') },#}
-{#    { label: 'Forms', url: cpUrl('mollie-payments/forms') },#}
-{#    { label: 'Edit', url: '#'}#}
-{#] %}#}
+{# {% set crumbs = [ #}
+{#    { label: "Payments", url: cpUrl('mollie-payments') }, #}
+{#    { label: 'Forms', url: cpUrl('mollie-payments/forms') }, #}
+{#    { label: 'Edit', url: '#'} #}
+{# ] %} #}
 
 
     {{ csrfInput() }}
@@ -21,58 +21,62 @@
     {% if form is defined and form.id is defined %}
         <input type="hidden" name="data[id]" value="{{ form.id }}">
     {% endif %}
-    <div class="field" id="name-field">
-        <div class="heading">
-            <label id="name-label" class="required" for="title">{{ 'Title'|t('app') }}</label>
-            <div class="instructions"><p>{{ 'What this field will be called in the control panel.'|t('app') }}</p>
-            </div>
+<div class="field" id="name-field">
+    <div class="heading">
+        <label id="name-label" class="required" for="title">{{ 'Title'|t('app') }}</label>
+        <div class="instructions"><p>{{ 'What this field will be called in the control panel.'|t('app') }}</p>
         </div>
-        <div class="input ltr {% if errors is defined and errors.title is defined %}errors{% endif %}">
-            <input class="text fullwidth" type="text" id="title" name="data[title]"
-                   {% if form is defined %}value="{{ form.title }}"{% endif %} autofocus=""
-                   autocomplete="off" required="required">
-        </div>
-        {% if errors is defined and errors.title is defined %}
-            <ul class="errors">
-                {% for error in errors.title %}
-                    <li>{{ error }}</li>
-                {% endfor %}
-            </ul>
-        {% endif %}
     </div>
-    <div class="field" id="handle-field">
-        <div class="heading">
-            <label id="handle-label" class="required" for="handle">{{ 'Handle'|t('app') }}</label>
-            <div class="instructions"><p>{{ 'How you’ll refer to this field in the templates.'|t('app') }}</p>
-            </div>
-        </div>
-        <div class="input ltr {% if errors is defined and errors.handle is defined %}errors{% endif %}">
-            <input class="text code fullwidth" type="text" id="handle" name="data[handle]"
-                   {% if form is defined %}value="{{ form.handle }}"{% endif %} maxlength="64"
-                   autocomplete="off" required="required">
-        </div>
-        {% if errors is defined and errors.handle is defined %}
-            <ul class="errors">
-                {% for error in errors.handle %}
-                    <li>{{ error }}</li>
-                {% endfor %}
-            </ul>
-        {% endif %}
+    <div class="input ltr {% if errors is defined and errors.title is defined %}errors{% endif %}">
+        <input class="text fullwidth" type="text" id="title" name="data[title]"
+               {% if form is defined %}value="{{ form.title }}"{% endif %} autofocus=""
+               autocomplete="off" required="required">
     </div>
+    {% if errors is defined and errors.title is defined %}
+        <ul class="errors">
+            {% for error in errors.title %}
+                <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+</div>
+<div class="field" id="handle-field">
+    <div class="heading">
+        <label id="handle-label" class="required" for="handle">{{ 'Handle'|t('app') }}</label>
+        <div class="instructions"><p>{{ 'How you’ll refer to this field in the templates.'|t('app') }}</p>
+        </div>
+    </div>
+    <div class="input ltr {% if errors is defined and errors.handle is defined %}errors{% endif %}">
+        <input class="text code fullwidth" type="text" id="handle" name="data[handle]"
+               {% if form is defined %}value="{{ form.handle }}"{% endif %} maxlength="64"
+               autocomplete="off" required="required">
+    </div>
+    {% if errors is defined and errors.handle is defined %}
+        <ul class="errors">
+            {% for error in errors.handle %}
+                <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+</div>
 
-        {% set types = {
-            'payment': 'Single payment',
-            'subscription': 'Subscription (recurring payments)'
-        } %}
+{% set types = {
+    'payment': 'Single payment',
+    'subscription': 'Subscription (recurring payments)'
+} %}
 
-{#     TODO make this read only after save? Type shouldn't be changed onces we have payments related to it#}
+{% if hasElements %}
+    {{ hiddenInput('data[type]', form.type) }}
+{% endif %}
     {{ forms.selectField({
         label: "Payment type"|t('mollie-payments'),
+        instructions: hasElements ? "This settings cannot be changed once payments have been made with them",
         id: "type",
         name: "data[type]",
         required: true,
         options: types,
         value: form.type ?? "",
+        inputAttributes: { disabled: hasElements ? 'disabled': '' },
         errors: errors is defined and errors.type is defined ? errors.type
     }) }}
 
@@ -94,33 +98,33 @@
         errors: errors is defined and errors.currency is defined ? errors.currency
     }) }}
 
-    <div class="field" id="handle-field">
-        <div class="heading">
-            <label id="handle-label" for="handle">{{ 'Payment description'|t('mollie-payments') }}</label>
-            <div class="instructions"><p>{{ 'How these payments are called in Mollie. You can include tags that output entry properties, such as {myCustomField}. Defaults to "Order #payment.id".'|t('mollie-payments') }}</p>
-            </div>
+<div class="field" id="handle-field">
+    <div class="heading">
+        <label id="handle-label" for="handle">{{ 'Payment description'|t('mollie-payments') }}</label>
+        <div class="instructions">
+            <p>{{ 'How these payments are called in Mollie. You can include tags that output entry properties, such as {myCustomField}. Defaults to "Order #payment.id".'|t('mollie-payments') }}</p>
         </div>
-        <div class="input ltr {% if errors is defined and errors.descriptionFormat is defined %}errors{% endif %}">
-            <input class="text code fullwidth" type="text" id="handle" name="data[descriptionFormat]"
-                   {% if form is defined %}value="{{ form.descriptionFormat }}"{% endif %}
-                   autocomplete="off">
-        </div>
-        {% if errors is defined and errors.descriptionFormat is defined %}
-            <ul class="errors">
-                {% for error in errors.descriptionFormat %}
-                    <li>{{ error }}</li>
-                {% endfor %}
-            </ul>
-        {% endif %}
     </div>
-
-
-
-    {% if form is not defined or not form.handle|length %}
-        {% js %}
-            new Craft.HandleGenerator('#title', '#handle');
-        {% endjs %}
+    <div class="input ltr {% if errors is defined and errors.descriptionFormat is defined %}errors{% endif %}">
+        <input class="text code fullwidth" type="text" id="handle" name="data[descriptionFormat]"
+               {% if form is defined %}value="{{ form.descriptionFormat }}"{% endif %}
+               autocomplete="off">
+    </div>
+    {% if errors is defined and errors.descriptionFormat is defined %}
+        <ul class="errors">
+            {% for error in errors.descriptionFormat %}
+                <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
     {% endif %}
+</div>
+
+
+{% if form is not defined or not form.handle|length %}
+    {% js %}
+        new Craft.HandleGenerator('#title', '#handle');
+    {% endjs %}
+{% endif %}
 
     {% from '_includes/forms' import fieldLayoutDesignerField %}
 
