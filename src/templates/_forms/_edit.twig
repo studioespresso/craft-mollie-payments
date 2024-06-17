@@ -70,7 +70,7 @@
 {% endif %}
     {{ forms.selectField({
         label: "Payment type"|t('mollie-payments'),
-        instructions: hasElements ? "This settings cannot be changed once payments have been made with them",
+        instructions: "This settings cannot be changed once payments have been made with them"|t('mollie-payments'),
         id: "type",
         name: "data[type]",
         required: true,

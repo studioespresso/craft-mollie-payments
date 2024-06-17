@@ -16,6 +16,15 @@
     warning: configWarning('apiKey', 'mollie-payments')
 }) }}
 
+{{ forms.autosuggestField({
+    label: 'Plugin label'|t('mollie-payments'),
+    id: 'pluginLabel',
+    name: 'settings[pluginLabel]',
+    value: settings['pluginLabel'],
+    errors: settings.getErrors('pluginLabel'),
+    warning: configWarning('pluginLabel', 'mollie-payments')
+}) }}
+
 <hr>
 <h2>{{ "Subscriptions"|t('mollie-payments') }}</h2>
 

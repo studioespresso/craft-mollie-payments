@@ -208,7 +208,7 @@ class MolliePayments extends Plugin
     {
         $subNavs = [];
         $navItem = parent::getCpNavItem();
-        $navItem['label'] = Craft::t("mollie-payments", "Payments");
+        $navItem['label'] = self::getInstance()->getSettings()->pluginLabel;
 
         $subNavs['payments'] = [
             'label' => Craft::t('mollie-payments', 'Payments'),

@@ -8,6 +8,8 @@ class Settings extends Model
 {
     public string $apiKey = '';
 
+    public string $pluginLabel = "Payments";
+
     public string $manageSubscriptionEmailPath = '';
 
     public string $manageSubscriptionRoute = '';
