@@ -185,7 +185,6 @@ class PaymentController extends Controller
         $query = Payment::find();
         $query->uid = $uid;
         $element = $query->one();
-        dd($element->fieldLayout);
 
         $paymentForm = MolliePayments::getInstance()->forms->getFormByid($element->formId);
         $transactions = MolliePayments::getInstance()->transaction->getAllByPayment($element->id);
@@ -223,6 +222,18 @@ class PaymentController extends Controller
         $molliePayment = MolliePayments::getInstance()->mollie->getStatus($id);
         MolliePayments::getInstance()->transaction->updateTransaction($transaction, $molliePayment);
         return;
+    }
+
+    public function actionCheckTransactionStatus($id, $redirect)
+    {
+
+        $transaction = MolliePayments::getInstance()->transaction->getTransactionbyId($id);
+        $molliePayment = MolliePayments::getInstance()->mollie->getStatus($id);
+        if($transaction->status !== $molliePayment->status) {
+            MolliePayments::getInstance()->transaction->updateTransaction($transaction, $molliePayment);
+            return $this->asSuccess("Transaction status updated", [], $redirect);
+        }
+        return $this->asSuccess("Transaction already up to date", [], $redirect);
     }
 
     /**

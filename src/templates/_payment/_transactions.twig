@@ -1,4 +1,4 @@
-{% macro transactionRow(transaction, level) %}
+{% macro transactionRow(transaction, level, element) %}
 
     {% set colors = {
         pending: 'orange',
@@ -20,6 +20,9 @@
         </td>
         <td {{ 'Date'|t('mollie-payments') }}>{{ transaction.dateUpdated|date('H:i:s (jS M Y)') }}</td>
         <td >{{ transaction.method ?? '' }}</td>
+        <td>
+            <a href="{{ actionUrl('mollie-payments/payment/check-transaction-status', {'id': transaction.id, redirect: element.getCpEditUrl()}) }}">{{ "Check status?"|t('mollie-payments') }}</a>
+        </td>
     </tr>
 
 {% endmacro %}
@@ -33,13 +36,13 @@
             <th scope="col">{{ 'ID'|t('mollie-payments') }}</th>
             <th scope="col">{{ 'Amount'|t('mollie-payments') }}</th>
             <th scope="col">{{ 'Date'|t('mollie-payments') }}</th>
-            <th scope="col">{{ 'Method'|t('mollie-payments') }}</th>
+            <th scope="col">{{ 'Check status?'|t('mollie-payments') }}</th>
             <th></th>
         </tr>
         </thead>
         <tbody>
         {% for transaction in transactions %}
-            {{ transactionRow(transaction, 0) }}
+            {{ transactionRow(transaction, 0, element) }}
         {% endfor %}
         </tbody>
     </table>
