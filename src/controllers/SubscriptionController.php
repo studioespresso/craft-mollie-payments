@@ -47,12 +47,14 @@ class SubscriptionController extends Controller
             throw new NotFoundHttpException("Form not found", 404);
         }
 
-        if($paymentForm->type !== PaymentFormModel::TYPE_SUBSCRIPTION) {
+        if ($paymentForm->type !== PaymentFormModel::TYPE_SUBSCRIPTION) {
             throw new InvalidConfigException("Incorrect form type for this request", 500);
         }
 
         $times = $this->request->getBodyParam('times', null);
         $interval = $this->request->getRequiredBodyParam('interval');
+        $times = $this->request->getBodyParam('times', null);
+
         if (!MolliePayments::$plugin->mollie->validateInterval($interval)) {
             throw new HttpException(400, Craft::t('mollie-payments', 'Interval must be a valid interval'));
         }
@@ -65,6 +67,7 @@ class SubscriptionController extends Controller
 
         $subscription->amount = $amount;
         $subscription->interval = $interval;
+        $subscription->times = $times;
 
         $subscription->subscriptionStatus = "pending";
         $fieldsLocation = Craft::$app->getRequest()->getParam('fieldsLocation', 'fields');
@@ -211,13 +214,16 @@ class SubscriptionController extends Controller
             Craft::error("Subscription ID missing", MolliePayments::class);
             $subscription->subscriptionStatus = 'canceled';
             Craft::$app->getElements()->saveElement($subscription);
-            return;
         }
 
         if (MolliePayments::getInstance()->mollie->cancelSubscription($subscriber, $subscription)) {
             $subscription->subscriptionStatus = 'canceled';
             Craft::$app->getElements()->saveElement($subscription);
+        }
+        if ($this->request->isCpRequest) {
             return $this->redirect($subscription->cpEditUrl);
         }
+        // TODO Should this be a form with a redirect?
+        return true;
     }
 }

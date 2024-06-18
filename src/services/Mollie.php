@@ -156,9 +156,9 @@ class Mollie extends Component
 
         ];
 
-//        if ($form->times) {
-//            $data["times"] = $form->times;
-//        }
+        if ($element->times) {
+            $data["times"] = $element->times;
+        }
 
         $response = $customer->createSubscription($data);
         if ($response) {

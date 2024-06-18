@@ -60,7 +60,7 @@ class m240602_143712_addSubscriptions extends Migration
         );
 
         $forms = PaymentFormRecord::find();
-        foreach($forms->all() as $record) {
+        foreach ($forms->all() as $record) {
             $record->setAttribute('type', PaymentFormModel::TYPE_PAYMENT);
             $record->save();
         }

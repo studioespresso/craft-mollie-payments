@@ -12,5 +12,7 @@ class Settings extends Model
 
     public string $manageSubscriptionEmailPath = '';
 
+    public string $manageSubscriptionEmailSubject = '';
+
     public string $manageSubscriptionRoute = '';
 }

@@ -40,6 +40,17 @@
     warning: configWarning('manageSubscriptionEmailPath', 'mollie-payments')
 }) }}
 
+
+{{ forms.autosuggestField({
+    label: 'Subject of the "manage subscription" email'|t('mollie-payments'),
+    instructions: 'To set this subject per site or language, please set it through the plugin config file'|t('mollie-payments'),
+    id: 'manageSubscriptionEmailSubject',
+    name: 'settings[manageSubscriptionEmailSubject]',
+    value: settings['manageSubscriptionEmailSubject'] is iterable  ? settings['manageSubscriptionEmailSubject']|json_encode : settings['manageSubscriptionEmailSubject'] ,
+    errors: settings.getErrors('manageSubscriptionEmailSubject'),
+    warning: configWarning('manageSubscriptionEmailSubject', 'mollie-payments')
+}) }}
+
 {{ forms.autosuggestField({
     label: 'Route/URL to the "manage your subscription" page'|t('mollie-payments'),
     id: 'manageSubscriptionRoute',

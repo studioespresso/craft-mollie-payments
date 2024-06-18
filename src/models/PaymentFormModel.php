@@ -33,9 +33,9 @@ class PaymentFormModel extends Model
 
     public $type = self::TYPE_PAYMENT;
 
-    const TYPE_PAYMENT = 'payment';
+    public const TYPE_PAYMENT = 'payment';
 
-    const TYPE_SUBSCRIPTION = 'subscription';
+    public const TYPE_SUBSCRIPTION = 'subscription';
 
 
     public function behaviors(): array

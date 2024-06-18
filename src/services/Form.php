@@ -8,7 +8,6 @@ use craft\events\ConfigEvent;
 use craft\helpers\StringHelper;
 use craft\models\FieldLayout;
 use studioespresso\molliepayments\elements\Payment;
-use studioespresso\molliepayments\elements\Subscription;
 use studioespresso\molliepayments\models\PaymentFormModel;
 use studioespresso\molliepayments\records\PaymentFormRecord;
 use yii\base\InvalidConfigException;

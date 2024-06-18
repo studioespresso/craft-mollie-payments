@@ -43,14 +43,14 @@ class FormsController extends Controller
             if ($form->fieldLayout) {
                 $data['layout'] = Craft::$app->getFields()->getLayoutById($form->fieldLayout) ?? null;
             }
-            if($form->type === PaymentFormModel::TYPE_PAYMENT) {
+            if ($form->type === PaymentFormModel::TYPE_PAYMENT) {
                 $elements = Payment::findAll(['formId' => $formId]);
-                if($elements) {
+                if ($elements) {
                     $data['hasElements'] = true;
                 }
             } else {
                 $elements = Subscription::findAll(['formId' => $formId]);
-                if($elements) {
+                if ($elements) {
                     $data['hasElements'] = true;
                 }
             }
@@ -91,7 +91,7 @@ class FormsController extends Controller
 
         $fieldLayout = Craft::$app->getFields()->assembleLayoutFromPost();
 
-        if($data['type'] === PaymentFormModel::TYPE_PAYMENT) {
+        if ($data['type'] === PaymentFormModel::TYPE_PAYMENT) {
             $fieldLayout->type = Payment::class;
         } else {
             $fieldLayout->type = Subscription::class;

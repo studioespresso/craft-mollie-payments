@@ -58,7 +58,7 @@ class PaymentController extends Controller
             if (!$paymentForm) {
                 throw new NotFoundHttpException("Form not found", 404);
             }
-            if($paymentForm->type !== PaymentFormModel::TYPE_PAYMENT) {
+            if ($paymentForm->type !== PaymentFormModel::TYPE_PAYMENT) {
                 throw new InvalidConfigException("Incorrect form type for this request", 500);
             }
         } else {
@@ -74,7 +74,7 @@ class PaymentController extends Controller
                 throw new NotFoundHttpException("Form not found", 404);
             }
 
-            if($paymentForm->type !== PaymentFormModel::TYPE_PAYMENT) {
+            if ($paymentForm->type !== PaymentFormModel::TYPE_PAYMENT) {
                 throw new InvalidConfigException("Incorrect form type for this request", 500);
             }
 
@@ -226,10 +226,9 @@ class PaymentController extends Controller
 
     public function actionCheckTransactionStatus($id, $redirect)
     {
-
         $transaction = MolliePayments::getInstance()->transaction->getTransactionbyId($id);
         $molliePayment = MolliePayments::getInstance()->mollie->getStatus($id);
-        if($transaction->status !== $molliePayment->status) {
+        if ($transaction->status !== $molliePayment->status) {
             MolliePayments::getInstance()->transaction->updateTransaction($transaction, $molliePayment);
             return $this->asSuccess("Transaction status updated", [], $redirect);
         }
