@@ -40,6 +40,9 @@ class Subscriber extends Component
         /** @var Customer $customer */
         $customer = MolliePayments::getInstance()->mollie->createCustomer($email);
         $model = new SubscriberModel();
+        if(Craft::$app->getUser()->getIdentity()) {
+            $model->userId = Craft::$app->getUser()->getIdentity()->id;
+        }
         $model->customerId = $customer->id;
         $model->email = $customer->email;
         $model->locale = $customer->locale ?? '';
@@ -63,6 +66,7 @@ class Subscriber extends Component
             $record = new SubscriberRecord();
         }
         $record->customerId = $model->customerId;
+        $record->userId = $model->userId;
         $record->email = $model->email;
         $record->locale = $model->locale ?? '';
         $record->metadata = $model->metadata ?? '';

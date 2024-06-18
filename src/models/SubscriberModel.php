@@ -12,6 +12,8 @@ class SubscriberModel extends Model
 
     public $customerId;
 
+    public $userId;
+
     public $locale;
 
     public $metadata;
@@ -21,8 +23,8 @@ class SubscriberModel extends Model
     public function rules(): array
     {
         return [
-            [['email', ], 'required'],
-            [['email', 'customerId', 'locale', 'metadata', 'links'], 'safe'],
+            [['email',], 'required'],
+            [['email', 'customerId', 'userId', 'locale', 'metadata', 'links'], 'safe'],
         ];
     }
 }
