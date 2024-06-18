@@ -18,8 +18,8 @@
         <td {{ 'Amount'|t('mollie-payments') }}>{{ transaction.amount|currency(transaction.currency) }}
             <small class="light">({{ transaction.currency }})</small>
         </td>
-        <td {{ 'Date'|t('mollie-payments') }}>{{ transaction.dateUpdated|date('H:i:s (jS M Y)') }}</td>
-        <td >{{ transaction.method ?? '' }}</td>
+        <td {{ 'Date'|t('mollie-payments') }}>{{ transaction.dateUpdated|date('j/m/Y H:i') }}</td>
+        <td >{{ transaction.method ? transaction.method|ucfirst : '' }}</td>
         <td>
             <a href="{{ actionUrl('mollie-payments/payment/check-transaction-status', {'id': transaction.id, redirect: element.getCpEditUrl()}) }}">{{ "Check status?"|t('mollie-payments') }}</a>
         </td>
