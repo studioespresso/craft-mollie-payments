@@ -29,6 +29,8 @@
 
 return [
     'apiKey' => '',
+    'pluginLabel' => '',
     'manageSubscriptionEmailPath' => '',
+    'manageSubscriptionEmailSubject' => '',
     'manageSubscriptionRoute' => '',
 ];
