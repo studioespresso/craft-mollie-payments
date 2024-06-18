@@ -226,13 +226,17 @@ class PaymentController extends Controller
 
     public function actionCheckTransactionStatus($id, $redirect)
     {
-        $transaction = MolliePayments::getInstance()->transaction->getTransactionbyId($id);
-        $molliePayment = MolliePayments::getInstance()->mollie->getStatus($id);
-        if ($transaction->status !== $molliePayment->status) {
-            MolliePayments::getInstance()->transaction->updateTransaction($transaction, $molliePayment);
-            return $this->asSuccess("Transaction status updated", [], $redirect);
+        try {
+            $transaction = MolliePayments::getInstance()->transaction->getTransactionbyId($id);
+            $molliePayment = MolliePayments::getInstance()->mollie->getStatus($id);
+            if ($transaction->status !== $molliePayment->status) {
+                MolliePayments::getInstance()->transaction->updateTransaction($transaction, $molliePayment);
+                return $this->asSuccess("Transaction status updated", [], $redirect);
+            }
+            return $this->asSuccess("Transaction already up to date", [], $redirect);
+        } catch (\Throwable $e) {
+            return $this->asFailure("Somethinng went wrong checking the status for this payment", [], $redirect);
         }
-        return $this->asSuccess("Transaction already up to date", [], $redirect);
     }
 
     /**
