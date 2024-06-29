@@ -67,8 +67,27 @@
 
 {% if hasElements %}
     {{ hiddenInput('data[type]', form.type) }}
-{% endif %}
-    {# TODO Fix readonly-ness #}
+    <div id="type-field" class="field" data-attribute="type">
+        <div class="heading"><label id="type-label" for="type">{{ "Payment type"|t }}<span class="visually-hidden">{{ "Required"|t }}</span><span
+                        class="required" aria-hidden="true"></span></label></div>
+        <div id="type-instructions" class="instructions"><p>{{ "This settings cannot be changed once payments have been made
+                with them"|t }}</p>
+        </div>
+        <div class="input ltr">
+
+            <div class="select">
+                <select id="type" name="data[type]" aria-describedby="type-instructions"
+                        aria-labelledby="type-label" disabled>
+                    {% if form.type == 'payment' %}
+                        <option value="payment" selected="">Single payment</option>
+                    {% else %}
+                        <option value="subscription">Subscription (recurring payments)</option>
+                    {% endif %}
+                </select>
+            </div>
+        </div>
+    </div>
+{% else %}
     {{ forms.selectField({
         label: "Payment type"|t('mollie-payments'),
         instructions: "This settings cannot be changed once payments have been made with them"|t('mollie-payments'),
@@ -77,9 +96,9 @@
         required: true,
         options: types,
         value: form.type ?? "",
-
         errors: errors is defined and errors.type is defined ? errors.type
     }) }}
+{% endif %}
 
 
     {% set availableCurrencies = { '': '---'} %}
