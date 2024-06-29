@@ -1,14 +1,8 @@
 {% macro transactionRow(transaction, level, element) %}
 
-    {% set colors = {
-        pending: 'orange',
-        paid: 'green',
-        free: 'green',
-        expired: 'red'
-    } %}
     <tr class="infoRow">
         <td {{ 'Status'|t('mollie-payments') }}>
-            <span class="status {{ attribute(colors, transaction.status) is defined ? attribute(colors, transaction.status) : '' }}"></span> {{ transaction.status|title }}
+            {{ transaction.getStatusComponent()|raw }}
         </td>
         <td {{ 'Id'|t('mollie-payments') }}>
             {{ transaction.id }} {% if transaction.status != 'free' %}<a
