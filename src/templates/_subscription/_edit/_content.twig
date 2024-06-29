@@ -8,7 +8,7 @@
 {% set tabData = tabData|merge( {translactions: { label: 'Transactions'|t('mollie-payments'), url : "#tab-transactions"} }) %}
 
 {% set tabs = tabData %}
-
+{{ hiddenInput('elementId', element.id) }}
 
 {% if element.getFieldLayout() %}
     {% set form = element.getFieldLayout().createForm(element) %}

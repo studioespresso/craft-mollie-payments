@@ -132,9 +132,26 @@ class SubscriptionController extends Controller
                 ['label' => 'Subscriptions', 'url' => UrlHelper::cpUrl('mollie-payments/subscriptions')],
                 ['label' => $element->email, 'url' => $element->getCpEditUrl()],
             ])
+            ->action('mollie-payments/subscription/save-cp')
             ->selectedSubnavItem('subscriptions')
             ->metaSidebarTemplate('mollie-payments/_subscription/_edit/_details', $data)
             ->contentTemplate('mollie-payments/_subscription/_edit/_content', $data);
+    }
+
+    public function actionSaveCp()
+    {
+        $element = Subscription::findOne(['id' => $this->request->getRequiredBodyParam('elementId')]);
+        $element->setFieldValuesFromRequest('fields');
+        $element->setScenario('live');
+        if (!$element->validate()) {
+            // Send the payment back to the template
+
+            return $this->runAction('edit', ['uid' => $element->uid, 'element' => $element]);
+        }
+
+        Craft::$app->getElements()->saveElement($element);
+        return $this->redirect(UrlHelper::cpUrl($element->getCpEditUrl()));
+
     }
 
     public function actionRedirect()

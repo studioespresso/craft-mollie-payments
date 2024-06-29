@@ -254,8 +254,7 @@ class Subscription extends Element
      */
     public function getIsEditable(): bool
     {
-        // TODO  Make editable
-        return false;
+        return true;
     }
 
 
