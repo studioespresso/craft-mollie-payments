@@ -40,7 +40,8 @@ module.exports = {
                 text: 'Subscriptions',
                 items:
                     [
-                        {text: 'Templating', link: '/template'},
+                        {text: 'Getting started', link: '/subscription-getting-started'},
+                        {text: 'Subscription form', link: '/subscription-form'},
                     ]
             },
             {

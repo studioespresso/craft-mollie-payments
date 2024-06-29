@@ -10,9 +10,15 @@
 ] %}
 
 {% set title = "Payment for "|t('mollie-payments') ~ form.title ~' - '~ element.email %}
+
+{% set mainFormAttributes = {
+    action: actionUrl('mollie-payments/payment/save-cp'),
+    method: 'post'
+} %}
+
 {% block header %}
     {{ block('pageTitle') }}
-    {#    {{ block('actionButton') }} #}
+        {{ block('actionButton') }}
 {% endblock %}
 
 {% set tabData = [] %}
@@ -26,7 +32,8 @@
 {% hook 'cp.payments.edit' %}
 
 {% block content %}
-
+    
+    {{ hiddenInput('paymentId', element.id) }}
     {% if element.getFieldLayout() %}
 
         {% set form = element.getFieldLayout().createForm(element) %}

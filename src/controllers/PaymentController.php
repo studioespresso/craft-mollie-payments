@@ -192,6 +192,22 @@ class PaymentController extends Controller
         $this->renderTemplate('mollie-payments/_payment/_edit', ['element' => $element, 'transactions' => $transactions, 'form' => $paymentForm]);
     }
 
+    public function actionSaveCp()
+    {
+        $element = Payment::findOne(['id' => $this->request->getRequiredBodyParam('paymentId')]);
+        $element->setFieldValuesFromRequest('fields');
+        $element->setScenario('live');
+        if (!$element->validate()) {
+            // Send the payment back to the template
+
+            return $this->runAction('edit', ['uid' => $element->uid, 'element' => $element]);
+        }
+
+        Craft::$app->getElements()->saveElement($element);
+        return $this->redirect(UrlHelper::cpUrl($element->getCpEditUrl()));
+
+    }
+
     public function actionRedirect()
     {
         $uid = Craft::$app->getRequest()->getRequiredParam('order_id');
