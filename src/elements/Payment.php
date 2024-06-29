@@ -14,6 +14,7 @@ use Craft;
 use craft\base\Element;
 use craft\elements\db\ElementQueryInterface;
 use craft\elements\User;
+use craft\enums\Color;
 use craft\helpers\UrlHelper;
 use studioespresso\molliepayments\actions\ExportAllPaymentsAction;
 use studioespresso\molliepayments\actions\ExportPaymentAction;
@@ -115,12 +116,12 @@ class Payment extends Element
     public static function statuses(): array
     {
         return [
-            'cart' => ['label' => Craft::t('mollie-payments', 'In Cart'), 'color' => 'grey'],
-            'pending' => ['label' => Craft::t('mollie-payments', 'Pending'), 'color' => 'orange'],
-            'free' => ['label' => Craft::t('mollie-payments', 'Free'), 'color' => 'blue'],
-            'paid' => ['label' => Craft::t('mollie-payments', 'Paid'), 'color' => 'green'],
-            'expired' => ['label' => Craft::t('mollie-payments', 'Expired'), 'color' => 'red'],
-            'refunded' => ['label' => Craft::t('mollie-payments', 'Refunded'), 'color' => 'grey'],
+            'cart' => ['label' => Craft::t('mollie-payments', 'In Cart'), 'color' => Color::Gray],
+            'pending' => ['label' => Craft::t('mollie-payments', 'Pending'), 'color' => Color::Orange],
+            'free' => ['label' => Craft::t('mollie-payments', 'Free'), 'color' => Color::Blue],
+            'paid' => ['label' => Craft::t('mollie-payments', 'Paid'), 'color' => Color::Green],
+            'expired' => ['label' => Craft::t('mollie-payments', 'Expired'), 'color' => Color::Red],
+            'refunded' => ['label' => Craft::t('mollie-payments', 'Refunded'), 'color' => Color::Gray],
         ];
     }
 
