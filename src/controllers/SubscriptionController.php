@@ -125,7 +125,6 @@ class SubscriptionController extends Controller
             'form' => $form,
         ];
 
-        // TODO Add save button
         return $this->asCpScreen()
             ->title("Subscription - {$form->title} - {$element->email}")
             ->crumbs([

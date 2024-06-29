@@ -203,7 +203,7 @@ class Payment extends Element
         return [
             'email' => Craft::t('mollie-payments', 'Email'),
             'amount' => Craft::t('mollie-payments', 'Amount'),
-            'paymentStatus' => Craft::t('mollie-payments', 'Status'),
+            'status' => Craft::t('mollie-payments', 'Status'),
             'dateCreated' => Craft::t('mollie-payments', 'Date Created'),
         ];
     }

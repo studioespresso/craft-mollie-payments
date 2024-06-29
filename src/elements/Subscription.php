@@ -15,6 +15,7 @@ use craft\base\Element;
 use craft\elements\db\ElementQueryInterface;
 use craft\elements\User;
 use craft\enums\Color;
+use craft\helpers\Cp;
 use craft\helpers\UrlHelper;
 use Mollie\Api\Resources\Customer;
 use studioespresso\molliepayments\elements\db\SubscriptionQuery;
@@ -108,7 +109,7 @@ class Subscription extends Element
         return [
             'cart' => ['label' => Craft::t('mollie-payments', 'In Cart'), 'color' => Color::Gray],
             'pending' => ['label' => Craft::t('mollie-payments', 'Pending'), 'color' => Color::Orange],
-            'active' => ['label' => Craft::t('mollie-payments', 'Actives'), 'color' => Color::Green],
+            'active' => ['label' => Craft::t('mollie-payments', 'Active'), 'color' => Color::Green],
             'canceled' => ['label' => Craft::t('mollie-payments', 'Canceled'), 'color' => Color::Red],
             'expired' => ['label' => Craft::t('mollie-payments', 'Expired'), 'color' => Color::Red],
             'refunded' => ['label' => Craft::t('mollie-payments', 'Refunded'), 'color' => Color::Gray],
@@ -118,6 +119,11 @@ class Subscription extends Element
     public function getStatus(): ?string
     {
         return $this->subscriptionStatus;
+    }
+
+    public function getCpStatusItem()
+    {
+        return Cp::componentStatusLabelHtml($this);
     }
 
     /**
@@ -191,7 +197,7 @@ class Subscription extends Element
             'email' => Craft::t('mollie-payments', 'Email'),
             'amount' => Craft::t('mollie-payments', 'Amount'),
             'interval' => Craft::t('mollie-payments', 'Interval'),
-            'subscriptionStatus' => Craft::t('mollie-payments', 'Status'),
+            'status' => Craft::t('mollie-payments', 'Status'),
             'dateCreated' => Craft::t('mollie-payments', 'Date Created'),
         ];
     }

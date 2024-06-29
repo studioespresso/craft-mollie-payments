@@ -162,7 +162,7 @@ class Mollie extends Component
 
         $response = $customer->createSubscription($data);
         if ($response) {
-            $element->subscriptionStatus = "ongoing";
+            $element->subscriptionStatus = "active";
             $element->subscriptionId = $response->id;
             Craft::$app->getElements()->saveElement($element);
         }
