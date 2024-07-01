@@ -26,16 +26,16 @@ To give you control over this experience (both how it looks and how it is worded
 <br>
 
 #### Template path for "manage subscription" email  - `manageSubscriptionEmailPath`
-// TODO
+Which template the plugin should use for this email. The link to manage the user's subscriptions is available in the ``link`` variable. You also have access to the full `subscription` element, with the custom fields you have set on it. 
 
 #### Subject of the "manage subscription" email - `manageSubscriptionEmailSubject`
-// TODO
+The subject for the email
 
 #### Route/URL to the "manage your subscription - `manageSubscriptionRoute`
-// TODO
+URL where the page to manage subscriptions is located.
 
 
-
+#### Form
 ````twig
  <form method="post">
     {{ csrfInput() }}
@@ -47,3 +47,26 @@ To give you control over this experience (both how it looks and how it is worded
     <button type="submit">{{ "Find my subscription"|t }}</button 
 </form>
 ````
+
+#### Overview
+
+````twig
+{% set uid = craft.app.request.getParam('subscriber') %}
+{% set subscriptions = craft.mollie.getSubscriptionbyUid(uid) %}
+
+{% for sub in subscriptions %}
+    <div class="my-4">
+        {{ sub.interval }} - €{{ sub.amount }} - {{ sub.email }}<br>
+        <a href="{{ actionUrl('mollie-payments/subscription/cancel', {
+            'subscription' : sub.id,
+            'subscriber': uid
+        }) }}">{{ "Cancel subscription"|t }}</a>
+        <hr>
+    </div>
+{% endfor %}
+````
+
+## Control panel
+Subscriptions can also be managed from the control panel. For active subscriptions, a button to cancel the subscrtiption will be displayed in the sidebar.
+
+![Cancel subscriptions button](./images/subscriptions-cancel.png)

@@ -19,6 +19,8 @@ Since subscriptions come with a couple of extra requirements, payment forms now 
 - Single payment - *the classic one-off payment that was always available)*
 - Subscription (recurring payment) - *the subscription option added in 5.1.0*
 
+![Payment form type setting](./images/subscriptions-form-type.png)
+
 
 > [!Warning]
 > Note that changing the type of a form is not possible once there are payments associated with that form.
