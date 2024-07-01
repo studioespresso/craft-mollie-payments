@@ -41,7 +41,7 @@ module.exports = {
                 items:
                     [
                         {text: 'Getting started', link: '/subscription-getting-started'},
-                        {text: 'Subscription form', link: '/subscription-form'},
+                        {text: 'Manage subscriptions', link: '/manage-subscription'},
                     ]
             },
             {
