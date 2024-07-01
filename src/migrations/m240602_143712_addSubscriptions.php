@@ -59,6 +59,8 @@ class m240602_143712_addSubscriptions extends Migration
             $this->string(32)->after('handle')
         );
 
+        $this->alterColumn(PaymentTransactionRecord::tableName(), 'redirect', $this->string(255));
+
         $forms = PaymentFormRecord::find();
         foreach ($forms->all() as $record) {
             $record->setAttribute('type', PaymentFormModel::TYPE_PAYMENT);
