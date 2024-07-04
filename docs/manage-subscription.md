@@ -10,9 +10,13 @@ next: false
 To allow users to manage their subscription(s), we need a way to authenticate them. 
 
 ### Craft User
-If there is a Craft user signed in when the subscription is created, the plugin will save the user's ID with a subscription automatically.
+If there is a Craft user signed in when the subscription is created, the plugin will save the user's ID with a subscriber automatically.
 
-// TODO function to get subscriptions by user?
+Fetching subscriptions by a logged-in user can be done using the following function, passing the currentUser as the argument
+
+```twig
+{% set subscriptions = craft.mollie.getSubscriptionsByUser(currentUser) %}
+```
 
 
 ### By e-mail
@@ -52,7 +56,7 @@ URL where the page to manage subscriptions is located.
 
 ````twig
 {% set uid = craft.app.request.getParam('subscriber') %}
-{% set subscriptions = craft.mollie.getSubscriptionbyUid(uid) %}
+{% set subscriptions = craft.mollie.getSubscriptionsByUid(uid) %}
 
 {% for sub in subscriptions %}
     <div class="my-4">
