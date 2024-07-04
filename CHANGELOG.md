@@ -6,9 +6,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ## 5.1.0-beta.01 - 2024-07-04
 ### Added
-- Full Craft 5 support
-- Dutch translations
-- French translations
+- Initial support for Mollie Subscriptions
 
 ## 5.0.0 - 2024-02-21
 ### Added
