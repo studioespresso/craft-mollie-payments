@@ -7,6 +7,7 @@ use craft\helpers\UrlHelper;
 use craft\web\assets\admintable\AdminTableAsset;
 use craft\web\Controller;
 use studioespresso\molliepayments\elements\Payment;
+use studioespresso\molliepayments\elements\Subscription;
 use studioespresso\molliepayments\models\PaymentFormModel;
 use studioespresso\molliepayments\MolliePayments;
 use studioespresso\molliepayments\records\PaymentFormRecord;
@@ -33,14 +34,25 @@ class FormsController extends Controller
     {
         $data = [
             'currencies' => MolliePayments::getInstance()->currency->getCurrencies(),
+            'hasElements' => false,
         ];
 
         if ($formId) {
             $form = MolliePayments::getInstance()->forms->getFormById($formId);
             $data['form'] = $form;
-
             if ($form->fieldLayout) {
                 $data['layout'] = Craft::$app->getFields()->getLayoutById($form->fieldLayout) ?? null;
+            }
+            if ($form->type === PaymentFormModel::TYPE_PAYMENT) {
+                $elements = Payment::findAll(['formId' => $formId]);
+                if ($elements) {
+                    $data['hasElements'] = true;
+                }
+            } else {
+                $elements = Subscription::findAll(['formId' => $formId]);
+                if ($elements) {
+                    $data['hasElements'] = true;
+                }
             }
         }
 
@@ -73,11 +85,18 @@ class FormsController extends Controller
 
         $paymentFormModel->title = $data['title'];
         $paymentFormModel->handle = $data['handle'];
+        $paymentFormModel->type = $data['type'];
         $paymentFormModel->currency = $data['currency'];
         $paymentFormModel->descriptionFormat = $data['descriptionFormat'];
 
         $fieldLayout = Craft::$app->getFields()->assembleLayoutFromPost();
-        $fieldLayout->type = Payment::class;
+
+        if ($data['type'] === PaymentFormModel::TYPE_PAYMENT) {
+            $fieldLayout->type = Payment::class;
+        } else {
+            $fieldLayout->type = Subscription::class;
+        }
+
         $paymentFormModel->setFieldLayout($fieldLayout);
 
         if ($paymentFormModel->validate()) {

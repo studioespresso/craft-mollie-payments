@@ -8,6 +8,7 @@ use craft\helpers\ConfigHelper;
 use craft\helpers\UrlHelper;
 use craft\web\Controller;
 use studioespresso\molliepayments\elements\Payment;
+use studioespresso\molliepayments\models\PaymentFormModel;
 use studioespresso\molliepayments\MolliePayments;
 use yii\base\InvalidArgumentException;
 use yii\base\InvalidConfigException;
@@ -16,7 +17,7 @@ use yii\web\NotFoundHttpException;
 
 class PaymentController extends Controller
 {
-    protected array|int|bool $allowAnonymous = ['pay', 'donate', 'redirect', 'webhook'];
+    protected array|int|bool $allowAnonymous = ['pay', 'subscribe', 'donate', 'redirect', 'webhook'];
 
     public function beforeAction($action): bool
     {
@@ -29,7 +30,6 @@ class PaymentController extends Controller
         }
         return parent::beforeAction($action);
     }
-
 
     /**
      * @throws HttpException
@@ -44,6 +44,7 @@ class PaymentController extends Controller
         $redirect = Craft::$app->request->getBodyParam('redirect');
         $redirect = Craft::$app->security->validateData($redirect);
 
+        // Check for an existing payment
         if (Craft::$app->getRequest()->getBodyParam('payment') && Craft::$app->getRequest()->getValidatedBodyParam('payment')) {
             $payment = Payment::findOne(['uid' => Craft::$app->getRequest()->getValidatedBodyParam('payment')]);
             if (!$payment) {
@@ -52,12 +53,13 @@ class PaymentController extends Controller
             if (Craft::$app->getRequest()->getBodyParam('email')) {
                 $payment->email = Craft::$app->getRequest()->getBodyParam('email');
             }
-            $form = $payment->formId;
 
-            $paymentForm = MolliePayments::getInstance()->forms->getFormByHandle($form);
-
+            $paymentForm = MolliePayments::getInstance()->forms->getFormByHandle($payment->formId);
             if (!$paymentForm) {
                 throw new NotFoundHttpException("Form not found", 404);
+            }
+            if ($paymentForm->type !== PaymentFormModel::TYPE_PAYMENT) {
+                throw new InvalidConfigException("Incorrect form type for this request", 500);
             }
         } else {
             $email = Craft::$app->request->getRequiredBodyParam('email');
@@ -67,13 +69,16 @@ class PaymentController extends Controller
                 throw new HttpException(400, "Incorrent payment submitted");
             }
 
-            $payment = new Payment();
-
             $paymentForm = MolliePayments::getInstance()->forms->getFormByHandle($form);
             if (!$paymentForm) {
                 throw new NotFoundHttpException("Form not found", 404);
             }
 
+            if ($paymentForm->type !== PaymentFormModel::TYPE_PAYMENT) {
+                throw new InvalidConfigException("Incorrect form type for this request", 500);
+            }
+
+            $payment = new Payment();
             $payment->email = $email;
             $payment->amount = $amount;
             $payment->formId = $paymentForm->id;
@@ -82,7 +87,6 @@ class PaymentController extends Controller
 
 
         $payment->paymentStatus = 'pending';
-
         $fieldsLocation = Craft::$app->getRequest()->getParam('fieldsLocation', 'fields');
         $payment->setFieldValuesFromRequest($fieldsLocation);
 
@@ -180,12 +184,27 @@ class PaymentController extends Controller
     {
         $query = Payment::find();
         $query->uid = $uid;
-        $payment = $query->one();
+        $element = $query->one();
 
-        $paymentForm = MolliePayments::getInstance()->forms->getFormByid($payment->formId);
-        $transactions = MolliePayments::getInstance()->transaction->getAllByPayment($payment->id);
+        $paymentForm = MolliePayments::getInstance()->forms->getFormByid($element->formId);
+        $transactions = MolliePayments::getInstance()->transaction->getAllByPayment($element->id);
 
-        $this->renderTemplate('mollie-payments/_payment/_edit', ['element' => $payment, 'transactions' => $transactions, 'form' => $paymentForm]);
+        $this->renderTemplate('mollie-payments/_payment/_edit', ['element' => $element, 'transactions' => $transactions, 'form' => $paymentForm]);
+    }
+
+    public function actionSaveCp()
+    {
+        $element = Payment::findOne(['id' => $this->request->getRequiredBodyParam('paymentId')]);
+        $element->setFieldValuesFromRequest('fields');
+        $element->setScenario('live');
+        if (!$element->validate()) {
+            // Send the payment back to the template
+
+            return $this->runAction('edit', ['uid' => $element->uid, 'element' => $element]);
+        }
+
+        Craft::$app->getElements()->saveElement($element);
+        return $this->redirect(UrlHelper::cpUrl($element->getCpEditUrl()));
     }
 
     public function actionRedirect()
@@ -218,6 +237,21 @@ class PaymentController extends Controller
         $molliePayment = MolliePayments::getInstance()->mollie->getStatus($id);
         MolliePayments::getInstance()->transaction->updateTransaction($transaction, $molliePayment);
         return;
+    }
+
+    public function actionCheckTransactionStatus($id, $redirect)
+    {
+        try {
+            $transaction = MolliePayments::getInstance()->transaction->getTransactionbyId($id);
+            $molliePayment = MolliePayments::getInstance()->mollie->getStatus($id);
+            if ($transaction->status !== $molliePayment->status) {
+                MolliePayments::getInstance()->transaction->updateTransaction($transaction, $molliePayment);
+                return $this->asSuccess("Transaction status updated", [], $redirect);
+            }
+            return $this->asSuccess("Transaction already up to date", [], $redirect);
+        } catch (\Throwable $e) {
+            return $this->asFailure("Somethinng went wrong checking the status for this payment", [], $redirect);
+        }
     }
 
     /**

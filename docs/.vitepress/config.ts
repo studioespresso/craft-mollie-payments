@@ -20,16 +20,34 @@ module.exports = {
                 items:
                     [
                         {text: 'Getting started', link: '/general'},
-                        {text: 'Templating', link: '/template'},
+                        {text: 'Core concepts', link: '/element'},
                         {text: 'Settings', link: '/settings'},
 
+                    ]
+            },
+            {
+                text: 'Payments',
+
+                items:
+                    [
+                        {text: 'Basic payment form', link: '/basic-payment-form'},
+                        {text: 'Donation form', link: '/donation-payment-form'},
+                        {text: 'Multi-step form', link: '/multistep-payment-form'},
+                        {text: 'craft.payments', link: '/payment-template-function'},
+                    ]
+            },
+            {
+                text: 'Subscriptions',
+                items:
+                    [
+                        {text: 'Getting started', link: '/subscription-getting-started'},
+                        {text: 'Manage subscriptions', link: '/manage-subscription'},
                     ]
             },
             {
                 text: 'Customization',
                 items:
                     [
-                        {text: 'Payments elements', link: '/element'},
                         {text: 'Events', link: '/events'},
                         {text: 'Webhook', link: '/webhook'},
                     ]

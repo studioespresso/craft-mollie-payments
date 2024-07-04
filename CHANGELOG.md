@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 5.1.0-beta.01 - 2024-07-04
+### Added
+- Initial support for Mollie Subscriptions
+
 ## 5.0.0 - 2024-02-21
 ### Added
 - Full Craft 5 support

@@ -11,6 +11,7 @@
 namespace studioespresso\molliepayments\events;
 
 use studioespresso\molliepayments\elements\Payment;
+use studioespresso\molliepayments\elements\Subscription;
 use studioespresso\molliepayments\models\PaymentTransactionModel;
 use yii\base\Event;
 
@@ -19,7 +20,7 @@ use yii\base\Event;
  * @package   MolliePayments
  * @since     1.0.0
  */
-class TransactionUpdateEvent extends Event
+class SubscriptionCreatedEvent extends Event
 {
     // Properties
     // =========================================================================
@@ -30,10 +31,8 @@ class TransactionUpdateEvent extends Event
     public $transaction;
 
     /**
-     * @var Payment the payment element associated with the transations.
+     * @var Subscription the payment element associated with the transations.
      */
-    public $payment;
-
     public $element;
 
     /**

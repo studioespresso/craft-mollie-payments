@@ -45,23 +45,40 @@ class Transaction extends Component
         }
 
         if ($transaction->validate() && $transaction->save()) {
-            $payment = Payment::findOne(['id' => $transaction->payment]);
-            $payment->paymentStatus = $transaction->status;
-            Craft::$app->getElements()->saveElement($payment);
-            $this->fireEventAfterTransactionUpdate($transaction, $payment, $molliePayment->status);
+            if ($molliePayment->metadata->elementType !== null && $molliePayment->metadata->elementType === \studioespresso\molliepayments\elements\Subscription::class) {
+                $element = \studioespresso\molliepayments\elements\Subscription::findOne(['id' => $transaction->payment]);
+                $element->subscriptionStatus = $transaction->status;
+            } else {
+                $element = Payment::findOne(['id' => $transaction->payment]);
+                $element->paymentStatus = $transaction->status;
+                Craft::$app->getElements()->saveElement($element);
+            }
+            $this->fireEventAfterTransactionUpdate($transaction, $element, $molliePayment->status);
         }
     }
 
-    public function fireEventAfterTransactionUpdate($transaction, $payment, $status)
+    public function fireEventAfterTransactionUpdate($transaction, $element, $status)
     {
-        $this->trigger(MolliePayments::EVENT_AFTER_TRANSACTION_UPDATE,
-            new TransactionUpdateEvent([
-                'transaction' => $transaction,
-                'payment' => $payment,
-                'status' => $status,
-            ])
-        );
+        if (get_class($element) === \studioespresso\molliepayments\elements\Subscription::class) {
+            $this->trigger(MolliePayments::EVENT_AFTER_TRANSACTION_UPDATE,
+                new TransactionUpdateEvent([
+                    'transaction' => $transaction,
+                    'element' => $element,
+                    'status' => $status,
+                ])
+            );
+        } else {
+            $this->trigger(MolliePayments::EVENT_AFTER_TRANSACTION_UPDATE,
+                new TransactionUpdateEvent([
+                    'transaction' => $transaction,
+                    'payment' => $element,
+                    'element' => $element,
+                    'status' => $status,
+                ])
+            );
+        }
     }
+
 
     public function getStatusForPayment($id)
     {

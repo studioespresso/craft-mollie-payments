@@ -7,6 +7,8 @@ use craft\db\Migration;
 use studioespresso\molliepayments\records\PaymentFormRecord;
 use studioespresso\molliepayments\records\PaymentRecord;
 use studioespresso\molliepayments\records\PaymentTransactionRecord;
+use studioespresso\molliepayments\records\SubscriberRecord;
+use studioespresso\molliepayments\records\SubscriptionRecord;
 
 /***
  * @author    Studio Espresso
@@ -55,6 +57,7 @@ class Install extends Migration
                     'id' => $this->primaryKey(),
                     'title' => $this->string(255)->notNull()->defaultValue(''),
                     'handle' => $this->string(255)->notNull()->defaultValue(''),
+                    'type' => $this->string(32)->notNull(),
                     'currency' => $this->string(3)->defaultValue('EUR'),
                     'descriptionFormat' => $this->string(255),
                     'fieldLayout' => $this->integer(10),
@@ -83,7 +86,7 @@ class Install extends Migration
             'amount' => $this->decimal("10,2")->notNull(),
             'currency' => $this->string(3)->defaultValue('EUR'),
             'status' => $this->string()->notNull(),
-            'redirect' => $this->string(255)->notNull(),
+            'redirect' => $this->string(255),
             'method' => $this->string(),
             'paidAt' => $this->dateTime(),
             'canceledAt' => $this->dateTime(),
@@ -93,6 +96,41 @@ class Install extends Migration
             'dateUpdated' => $this->dateTime()->notNull(),
             'uid' => $this->uid(),
         ]);
+
+        $this->createTable(
+            SubscriptionRecord::tableName(),
+            [
+                'id' => $this->integer()->notNull(),
+                'email' => $this->string()->notNull(),
+                'formId' => $this->integer()->notNull(),
+                'interval' => $this->string()->notNull(),
+                'times' => $this->string()->defaultValue(null),
+                'subscriptionStatus' => $this->string()->notNull(),
+                'customerId' => $this->string(),
+                'subscriptionId' => $this->string(),
+                'amount' => $this->decimal("10,2")->notNull(),
+                'dateCreated' => $this->dateTime()->notNull(),
+                'dateUpdated' => $this->dateTime()->notNull(),
+                'uid' => $this->uid(),
+                'PRIMARY KEY(id)',
+            ]
+        );
+
+        $this->createTable(
+            SubscriberRecord::tableName(),
+            [
+                'id' => $this->primaryKey(),
+                'email' => $this->string()->notNull(),
+                'customerId' => $this->string(30),
+                'userId' => $this->integer(),
+                'locale' => $this->string(5),
+                'metadata' => $this->text(),
+                'links' => $this->text(),
+                'dateCreated' => $this->dateTime()->notNull(),
+                'dateUpdated' => $this->dateTime()->notNull(),
+                'uid' => $this->uid(),
+            ]
+        );
 
         return $tablesCreated;
     }
@@ -110,21 +148,16 @@ class Install extends Migration
             null
         );
 
-        $this->addForeignKey(
-            $this->db->getForeignKeyName(PaymentTransactionRecord::tableName(), 'payment'),
-            PaymentTransactionRecord::tableName(),
-            'payment',
-            "{{%mollie_payments}}",
-            'id',
-            'CASCADE',
-            null
-        );
+
+        $this->dropForeignKeyIfExists(PaymentTransactionRecord::tableName(), 'payment');
     }
 
     protected function removeTables()
     {
         $this->dropTableIfExists(PaymentTransactionRecord::tableName());
         $this->dropTableIfExists(PaymentRecord::tableName());
+        $this->dropTableIfExists(SubscriptionRecord::tableName());
+        $this->dropTableIfExists(SubscriberRecord::tableName());
         $this->dropTableIfExists(PaymentFormRecord::tableName());
     }
 }
