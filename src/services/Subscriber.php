@@ -40,7 +40,7 @@ class Subscriber extends Component
         /** @var Customer $customer */
         $customer = MolliePayments::getInstance()->mollie->createCustomer($email);
         $model = new SubscriberModel();
-        if(Craft::$app->getUser()->getIdentity()) {
+        if (Craft::$app->getUser()->getIdentity()) {
             $model->userId = Craft::$app->getUser()->getIdentity()->id;
         }
         $model->customerId = $customer->id;

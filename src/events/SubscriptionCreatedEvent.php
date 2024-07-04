@@ -13,7 +13,6 @@ namespace studioespresso\molliepayments\events;
 use studioespresso\molliepayments\elements\Payment;
 use studioespresso\molliepayments\elements\Subscription;
 use studioespresso\molliepayments\models\PaymentTransactionModel;
-use studioespresso\molliepayments\records\SubscriberRecord;
 use yii\base\Event;
 
 /**

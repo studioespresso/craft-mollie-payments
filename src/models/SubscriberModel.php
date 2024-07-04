@@ -23,7 +23,7 @@ class SubscriberModel extends Model
     public function rules(): array
     {
         return [
-            [['email',], 'required'],
+            [['email', ], 'required'],
             [['email', 'customerId', 'userId', 'locale', 'metadata', 'links'], 'safe'],
         ];
     }

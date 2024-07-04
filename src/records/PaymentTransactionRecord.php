@@ -21,7 +21,6 @@ class PaymentTransactionRecord extends ActiveRecord
 
     public function getStatusComponent()
     {
-
         $color = match ($this->status) {
             PaymentStatus::STATUS_OPEN, PaymentStatus::STATUS_PENDING, => Color::Gray,
             PaymentStatus::STATUS_PAID, PaymentStatus::STATUS_AUTHORIZED, 'free' => Color::Green,
@@ -33,7 +32,7 @@ class PaymentTransactionRecord extends ActiveRecord
             'color' => $color->value,
             'icon' => null,
             'label' => $this->status,
-            'indicatorClass' => null
+            'indicatorClass' => null,
         ]);
     }
 }

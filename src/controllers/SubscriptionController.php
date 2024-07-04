@@ -150,7 +150,6 @@ class SubscriptionController extends Controller
 
         Craft::$app->getElements()->saveElement($element);
         return $this->redirect(UrlHelper::cpUrl($element->getCpEditUrl()));
-
     }
 
     public function actionRedirect()
