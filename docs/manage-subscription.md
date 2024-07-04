@@ -58,14 +58,18 @@ URL where the page to manage subscriptions is located.
 {% set uid = craft.app.request.getParam('subscriber') %}
 {% set subscriptions = craft.mollie.getSubscriptionsByUid(uid) %}
 
-{% for sub in subscriptions %}
+{% for subscription in subscriptions %}
     <div class="my-4">
-        {{ sub.interval }} - €{{ sub.amount }} - {{ sub.email }}<br>
-        <a href="{{ actionUrl('mollie-payments/subscription/cancel', {
-            'subscription' : sub.id,
-            'subscriber': uid
-        }) }}">{{ "Cancel subscription"|t }}</a>
-        <hr>
+        <form method="post">
+            {{ actionInput('mollie-payments/subscription/cancel') }}
+            {{ redirectInput('') }}
+            {{ hiddenInput('subscription', subscription.id) }}
+            {{ hiddenInput('subscriber', uid) }}
+            
+            {{ sub.interval }} - €{{ sub.amount }} - {{ sub.email }}<br>
+            
+            <button type="submit">{{ "Cancel subscription"|t }}</button>
+        </form>
     </div>
 {% endfor %}
 ````

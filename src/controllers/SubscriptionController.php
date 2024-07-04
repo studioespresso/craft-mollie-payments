@@ -217,13 +217,28 @@ class SubscriptionController extends Controller
             ]);
             return null;
         }
+
         $customer = SubscriberRecord::findOne(['email' => $email]);
-        MolliePayments::getInstance()->mail->sendSubscriptionAccessEmail($customer);
+        if ($customer) {
+            MolliePayments::getInstance()->mail->sendSubscriptionAccessEmail($customer);
+        }
+
+        if ($this->request->isAjax) {
+            return $this->asJson([
+                'success' => true,
+            ]);
+        }
+
         return $this->redirectToPostedUrl();
     }
 
-    public function actionCancel($subscription, $subscriber)
+    public function actionCancel()
     {
+        $this->requirePostRequest();
+
+        $subscription = $this->request->getRequiredBodyParam('subscription');
+        $subscriber = $this->request->getRequiredBodyParam('subscriber');
+
         $subscription = Subscription::findOne(['id' => $subscription]);
         $subscriber = SubscriberRecord::findOne(['uid' => $subscriber]);
         if (!$subscription->subscriptionId) {
@@ -239,7 +254,13 @@ class SubscriptionController extends Controller
         if ($this->request->isCpRequest) {
             return $this->redirect($subscription->cpEditUrl);
         }
-        // TODO Should this be a form with a redirect?
-        return true;
+
+        if ($this->request->isAjax) {
+            return $this->asJson([
+                'success' => true,
+            ]);
+        }
+
+        return $this->redirectToPostedUrl();
     }
 }
