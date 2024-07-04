@@ -6,5 +6,13 @@ use craft\base\Model;
 
 class Settings extends Model
 {
-    public $apiKey;
+    public string $apiKey = '';
+
+    public string $pluginLabel = "Payments";
+
+    public string $manageSubscriptionEmailPath = '';
+
+    public string $manageSubscriptionEmailSubject = '';
+
+    public string $manageSubscriptionRoute = '';
 }

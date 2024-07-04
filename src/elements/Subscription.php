@@ -15,20 +15,20 @@ use craft\base\Element;
 use craft\elements\db\ElementQueryInterface;
 use craft\elements\User;
 use craft\enums\Color;
+use craft\helpers\Cp;
 use craft\helpers\UrlHelper;
-use studioespresso\molliepayments\actions\ExportAllPaymentsAction;
-use studioespresso\molliepayments\actions\ExportPaymentAction;
-use studioespresso\molliepayments\elements\db\PaymentQuery;
+use Mollie\Api\Resources\Customer;
+use studioespresso\molliepayments\elements\db\SubscriptionQuery;
 use studioespresso\molliepayments\models\PaymentFormModel;
 use studioespresso\molliepayments\MolliePayments;
-use studioespresso\molliepayments\records\PaymentRecord;
+use studioespresso\molliepayments\records\SubscriptionRecord;
 
 /**
  * @author    Studio Espresso
  * @package   MolliePayments
  * @since     1.0.0
  */
-class Payment extends Element
+class Subscription extends Element
 {
     // Public Properties
     // =========================================================================
@@ -37,16 +37,20 @@ class Payment extends Element
      * @var string
      */
     public $email;
+    public $customerId;
     public $amount = 0;
+    public $subscriptionId;
+    public $subscriptionStatus;
+    public $interval;
+    public $times = null;
     public $formId;
-    public $paymentStatus;
 
     /**
      * @inheritdoc
      */
     public static function displayName(): string
     {
-        return Craft::t('mollie-payments', 'Payment');
+        return Craft::t('mollie-payments', 'Subscription');
     }
 
     /**
@@ -54,7 +58,7 @@ class Payment extends Element
      */
     public static function pluralDisplayName(): string
     {
-        return Craft::t('mollie-payments', 'Payments');
+        return Craft::t('mollie-payments', 'Subscriptions');
     }
 
     /**
@@ -62,7 +66,7 @@ class Payment extends Element
      */
     public static function lowerDisplayName(): string
     {
-        return Craft::t('mollie-payments', 'payment');
+        return Craft::t('mollie-payments', 'subscription');
     }
 
     /**
@@ -70,7 +74,7 @@ class Payment extends Element
      */
     public static function pluralLowerDisplayName(): string
     {
-        return Craft::t('mollie-payments', 'payments');
+        return Craft::t('mollie-payments', 'subscriptions');
     }
 
     /**
@@ -94,19 +98,6 @@ class Payment extends Element
         return true;
     }
 
-    /**
-     * Retuns the elements first attribute in the CP, for pre 3.2 installs
-     * See getUiLabel for > 3.2
-     * @return string
-     */
-    public function __toString(): string
-    {
-        if ($this->email) {
-            return (string)$this->email;
-        }
-        return (string)$this->id;
-    }
-
     public function getUiLabel(): string
     {
         return $this->email ?: Craft::t("mollie-payments", 'Cart') . ' ' . $this->id;
@@ -118,8 +109,8 @@ class Payment extends Element
         return [
             'cart' => ['label' => Craft::t('mollie-payments', 'In Cart'), 'color' => Color::Gray],
             'pending' => ['label' => Craft::t('mollie-payments', 'Pending'), 'color' => Color::Orange],
-            'free' => ['label' => Craft::t('mollie-payments', 'Free'), 'color' => Color::Blue],
-            'paid' => ['label' => Craft::t('mollie-payments', 'Paid'), 'color' => Color::Green],
+            'active' => ['label' => Craft::t('mollie-payments', 'Active'), 'color' => Color::Green],
+            'canceled' => ['label' => Craft::t('mollie-payments', 'Canceled'), 'color' => Color::Red],
             'expired' => ['label' => Craft::t('mollie-payments', 'Expired'), 'color' => Color::Red],
             'refunded' => ['label' => Craft::t('mollie-payments', 'Refunded'), 'color' => Color::Gray],
         ];
@@ -127,7 +118,12 @@ class Payment extends Element
 
     public function getStatus(): ?string
     {
-        return $this->paymentStatus;
+        return $this->subscriptionStatus;
+    }
+
+    public function getCpStatusItem()
+    {
+        return Cp::componentStatusLabelHtml($this);
     }
 
     /**
@@ -154,7 +150,7 @@ class Payment extends Element
      */
     public static function find(): ElementQueryInterface
     {
-        return new PaymentQuery(static::class);
+        return new SubscriptionQuery(static::class);
     }
 
 
@@ -167,7 +163,7 @@ class Payment extends Element
             'key' => '*',
             'label' => Craft::t('app', 'All'),
         ];
-        $forms = MolliePayments::getInstance()->forms->getAllFormsByType(PaymentFormModel::TYPE_PAYMENT);
+        $forms = MolliePayments::getInstance()->forms->getAllFormsByType(PaymentFormModel::TYPE_SUBSCRIPTION);
 
         foreach ($forms as $form) {
             $sources[] = [
@@ -185,10 +181,7 @@ class Payment extends Element
 
     protected static function defineActions(string $source = null): array
     {
-        return [
-            ExportPaymentAction::class,
-            ExportAllPaymentsAction::class,
-        ];
+        return [];
     }
 
     protected static function defineSortOptions(): array
@@ -203,6 +196,7 @@ class Payment extends Element
         return [
             'email' => Craft::t('mollie-payments', 'Email'),
             'amount' => Craft::t('mollie-payments', 'Amount'),
+            'interval' => Craft::t('mollie-payments', 'Interval'),
             'status' => Craft::t('mollie-payments', 'Status'),
             'dateCreated' => Craft::t('mollie-payments', 'Date Created'),
         ];
@@ -214,12 +208,19 @@ class Payment extends Element
     }
 
 
+    public function getCustomer(): Customer|null
+    {
+        if (!$this->customerId) {
+            return null;
+        }
+        return MolliePayments::getInstance()->mollie->getCustomer($this->customerId);
+    }
 
     // Public Methods
     // =========================================================================
     public function getCpEditUrl(): ?string
     {
-        return UrlHelper::cpUrl("mollie-payments/payments/" . $this->uid);
+        return UrlHelper::cpUrl("mollie-payments/subscriptions/" . $this->uid);
     }
 
     /**
@@ -248,9 +249,9 @@ class Payment extends Element
     public function rules(): array
     {
         $rules = parent::rules();
-        $rules[] = [['email'], 'string'];
+        $rules[] = [['email', 'interval', 'times'], 'string'];
         if ($this->getScenario() != Element::SCENARIO_ESSENTIALS) {
-            $rules[] = [['email', 'amount'], 'required'];
+            $rules[] = [['email', 'amount', 'interval'], 'required'];
         }
         return $rules;
     }
@@ -260,7 +261,7 @@ class Payment extends Element
      */
     public function getIsEditable(): bool
     {
-        return false;
+        return true;
     }
 
 
@@ -281,20 +282,24 @@ class Payment extends Element
     {
         if ($isNew) {
             \Craft::$app->db->createCommand()
-                ->insert(PaymentRecord::tableName(), [
+                ->insert(SubscriptionRecord::tableName(), [
                     'id' => $this->id,
                     'email' => $this->email,
-                    'paymentStatus' => $this->paymentStatus,
+                    'subscriptionStatus' => $this->subscriptionStatus,
+                    'customerId' => $this->customerId,
+                    'interval' => $this->interval,
+                    'times' => $this->times,
                     'amount' => $this->amount,
                     'formId' => $this->formId,
                 ])
                 ->execute();
         } else {
             \Craft::$app->db->createCommand()
-                ->update(PaymentRecord::tableName(), [
+                ->update(SubscriptionRecord::tableName(), [
                     'email' => $this->email,
-                    'paymentStatus' => $this->paymentStatus,
-                    'amount' => $this->amount,
+                    'subscriptionId' => $this->subscriptionId,
+                    'customerId' => $this->customerId,
+                    'subscriptionStatus' => $this->subscriptionStatus,
                 ], ['id' => $this->id])
                 ->execute();
         }
@@ -305,7 +310,7 @@ class Payment extends Element
     public function afterDelete(): void
     {
         \Craft::$app->db->createCommand()
-            ->delete(PaymentRecord::tableName(), ['id' => $this->id])
+            ->delete(SubscriptionRecord::tableName(), ['id' => $this->id])
             ->execute();
     }
 }

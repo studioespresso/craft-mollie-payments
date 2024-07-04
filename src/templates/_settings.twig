@@ -1,11 +1,64 @@
 {# @var craft \craft\web\twig\variables\CraftVariable #}
+{% from 'mollie-payments/_includes/macros' import configWarning %}
+
 {% import "_includes/forms" as forms %}
-    {{ forms.autosuggestField({
-        label: 'Mollie API key'|t('mollie-payments'),
-        id: 'apiKey',
-        name: 'settings[apiKey]',
-        value: settings['apiKey'] is iterable  ? settings['apiKey']|json_encode : settings['apiKey'] ,
-        errors: settings.getErrors('apiKey'),
-        suggestEnvVars: true,
-        suggestAliases: true,
-    }) }}
+
+
+<h2>{{ "General Settings"|t('mollie-payments') }}</h2>
+{{ forms.autosuggestField({
+    label: 'Mollie API key'|t('mollie-payments'),
+    id: 'apiKey',
+    name: 'settings[apiKey]',
+    value: settings['apiKey'] is iterable  ? settings['apiKey']|json_encode : settings['apiKey'] ,
+    errors: settings.getErrors('apiKey'),
+    suggestEnvVars: not configWarning('apiKey', 'mollie-payments') ,
+    suggestAliases: true,
+    warning: configWarning('apiKey', 'mollie-payments')
+}) }}
+
+{{ forms.autosuggestField({
+    label: 'Plugin label'|t('mollie-payments'),
+    id: 'pluginLabel',
+    name: 'settings[pluginLabel]',
+    value: settings['pluginLabel'],
+    errors: settings.getErrors('pluginLabel'),
+    warning: configWarning('pluginLabel', 'mollie-payments')
+}) }}
+
+<hr>
+<h2>{{ "Subscriptions"|t('mollie-payments') }}</h2>
+
+{{ forms.autosuggestField({
+    label: 'Template path for "manage subscription" email'|t('mollie-payments'),
+    id: 'manageSubscriptionEmailPath',
+    name: 'settings[manageSubscriptionEmailPath]',
+    value: settings['manageSubscriptionEmailPath'],
+    errors: settings.getErrors('manageSubscriptionEmailPath'),
+    suggestEnvVars: not configWarning('manageSubscriptionEmailPath', 'mollie-payments') ,
+    suggestAliases: false,
+    suggestions:  craft.cp.getTemplateSuggestions(),
+    warning: configWarning('manageSubscriptionEmailPath', 'mollie-payments')
+}) }}
+
+
+{{ forms.autosuggestField({
+    label: 'Subject of the "manage subscription" email'|t('mollie-payments'),
+    instructions: 'To set this subject per site or language, please set it through the plugin config file'|t('mollie-payments'),
+    id: 'manageSubscriptionEmailSubject',
+    name: 'settings[manageSubscriptionEmailSubject]',
+    value: settings['manageSubscriptionEmailSubject'] is iterable  ? settings['manageSubscriptionEmailSubject']|json_encode : settings['manageSubscriptionEmailSubject'] ,
+    errors: settings.getErrors('manageSubscriptionEmailSubject'),
+    warning: configWarning('manageSubscriptionEmailSubject', 'mollie-payments')
+}) }}
+
+{{ forms.autosuggestField({
+    label: 'Route/URL to the "manage your subscription" page'|t('mollie-payments'),
+    id: 'manageSubscriptionRoute',
+    name: 'settings[manageSubscriptionRoute]',
+    value: settings['manageSubscriptionRoute'],
+    errors: settings.getErrors('manageSubscriptionRoute'),
+    suggestEnvVars: not configWarning('manageSubscriptionRoute', 'mollie-payments') ,
+    suggestAliases: false,
+
+    warning: configWarning('manageSubscriptionRoute', 'mollie-payments')
+}) }}

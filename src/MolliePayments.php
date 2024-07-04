@@ -21,17 +21,23 @@ use craft\services\Elements;
 use craft\services\ProjectConfig;
 use craft\web\twig\variables\CraftVariable;
 use craft\web\UrlManager;
+use Mollie\Api\Types\PaymentStatus;
 use studioespresso\molliepayments\behaviours\CraftVariableBehavior;
 use studioespresso\molliepayments\elements\Payment;
 
+use studioespresso\molliepayments\events\TransactionUpdateEvent;
 use studioespresso\molliepayments\models\Settings;
 use studioespresso\molliepayments\services\Currency;
 use studioespresso\molliepayments\services\Export;
 use studioespresso\molliepayments\services\Form;
+use studioespresso\molliepayments\services\Mail;
 use studioespresso\molliepayments\services\Mollie;
 use studioespresso\molliepayments\services\Payment as PaymentServivce;
+use studioespresso\molliepayments\services\Subscriber;
+use studioespresso\molliepayments\services\Subscription;
 use studioespresso\molliepayments\services\Transaction;
 
+use studioespresso\molliepayments\variables\MollieVariable;
 use yii\base\Event;
 
 /**
@@ -47,6 +53,9 @@ use yii\base\Event;
  * @property PaymentServivce $payment
  * @property Currency $currency
  * @property Export $export
+ * @property Subscription $subscription
+ * @property Subscriber $subscriber
+ * @property Mail $mail
  */
 class MolliePayments extends Plugin
 {
@@ -96,8 +105,11 @@ class MolliePayments extends Plugin
             'mollie' => Mollie::class,
             'transaction' => Transaction::class,
             'payment' => PaymentServivce::class,
+            'subscription' => Subscription::class,
+            'subscriber' => Subscriber::class,
             'currency' => Currency::class,
             'export' => Export::class,
+            'mail' => Mail::class,
         ]);
 
         Craft::$app->projectConfig
@@ -116,6 +128,8 @@ class MolliePayments extends Plugin
             function(RegisterUrlRulesEvent $event) {
                 $event->rules['mollie-payments'] = ['template' => 'mollie-payments/_payment/_index.twig'];
                 $event->rules['mollie-payments/payments/<uid:{uid}>'] = 'mollie-payments/payment/edit';
+                $event->rules['mollie-payments/subscriptions'] = ['template' => 'mollie-payments/_subscription/_index.twig'];
+                $event->rules['mollie-payments/subscriptions/<uid:{uid}>'] = 'mollie-payments/subscription/edit';
                 $event->rules['mollie-payments/forms'] = 'mollie-payments/forms/index';
                 $event->rules['mollie-payments/forms/add'] = 'mollie-payments/forms/edit';
                 $event->rules['mollie-payments/forms/<formId:\d+>'] = 'mollie-payments/forms/edit';
@@ -128,7 +142,28 @@ class MolliePayments extends Plugin
             UrlManager::EVENT_REGISTER_SITE_URL_RULES,
             function(RegisterUrlRulesEvent $event) {
                 $event->rules['mollie-payments/payment/redirect'] = 'mollie-payments/payment/redirect';
+                $event->rules['mollie-payments/subscription/redirect'] = 'mollie-payments/subscription/redirect';
                 $event->rules['mollie-payments/payment/webhook'] = 'mollie-payments/payment/webhook';
+                $event->rules['mollie-payments/subscription/webhook'] = 'mollie-payments/subscription/webhook';
+            }
+        );
+
+        Event::on(
+            Transaction::class,
+            MolliePayments::EVENT_AFTER_TRANSACTION_UPDATE,
+            function(TransactionUpdateEvent $event) {
+                $transaction = $event->transaction;
+                $element = $event->element;
+                try {
+                    if (get_class($element) === \studioespresso\molliepayments\elements\Subscription::class) {
+                        if ($transaction->status === PaymentStatus::STATUS_EXPIRED) {
+                            $element->subscriptionStatus = "expired";
+                            Craft::$app->getElements()->saveElement($element);
+                        }
+                    }
+                } catch (\Throwable $e) {
+                    Craft::error($e->getMessage(), __CLASS__);
+                }
             }
         );
 
@@ -141,6 +176,16 @@ class MolliePayments extends Plugin
                 CraftVariableBehavior::class,
             ]);
         });
+
+        Event::on(
+            CraftVariable::class,
+            CraftVariable::EVENT_INIT,
+            function(Event $event) {
+                /** @var CraftVariable $variable */
+                $variable = $event->sender;
+                $variable->set('mollie', MollieVariable::class);
+            }
+        );
 
         Event::on(
             Elements::class,
@@ -163,11 +208,16 @@ class MolliePayments extends Plugin
     {
         $subNavs = [];
         $navItem = parent::getCpNavItem();
-        $navItem['label'] = Craft::t("mollie-payments", "Payments");
+        $navItem['label'] = self::getInstance()->getSettings()->pluginLabel;
 
         $subNavs['payments'] = [
             'label' => Craft::t('mollie-payments', 'Payments'),
             'url' => 'mollie-payments',
+        ];
+
+        $subNavs['subscriptions'] = [
+            'label' => Craft::t('mollie-payments', 'Subscriptions'),
+            'url' => 'mollie-payments/subscriptions',
         ];
 
         if (Craft::$app->getUser()->getIsAdmin() && Craft::$app->getConfig()->getGeneral()->allowAdminChanges) {

@@ -42,6 +42,7 @@ class Form extends Component
         $transaction = Craft::$app->getDb()->beginTransaction();
         $formRecord->uid = $formUid;
         $formRecord->title = $data['title'];
+        $formRecord->type = $data['type'];
         $formRecord->handle = $data['handle'];
         $formRecord->currency = $data['currency'];
         $formRecord->descriptionFormat = $data['descriptionFormat'];
@@ -51,7 +52,13 @@ class Form extends Component
             // Save the field layout
             $layout = FieldLayout::createFromConfig(reset($data['fieldLayouts']));
             $layout->id = $formRecord->fieldLayout;
-            $layout->type = \studioespresso\molliepayments\elements\Payment::class;
+
+            if ($data['type'] === PaymentFormModel::TYPE_PAYMENT) {
+                $layout->type = \studioespresso\molliepayments\elements\Payment::class;
+            } else {
+                $layout->type = \studioespresso\molliepayments\elements\Subscription::class;
+            }
+
             $layout->uid = key($data['fieldLayouts']);
             Craft::$app->getFields()->saveLayout($layout);
             $formRecord->fieldLayout = $layout->id;
@@ -66,13 +73,17 @@ class Form extends Component
         $transaction->commit();
     }
 
-    public function getAllForms()
+    public function getAllForms(): array
     {
-        $forms = PaymentFormRecord::find()->all();
-        return $forms;
+        return PaymentFormRecord::find()->all();
     }
 
-    public function getFormByid($id)
+    public function getAllFormsByType($type): array
+    {
+        return PaymentFormRecord::findAll(['type' => $type]);
+    }
+
+    public function getFormByid($id): PaymentFormRecord
     {
         $form = PaymentFormRecord::findOne(['id' => $id]);
         if (!$form) {
