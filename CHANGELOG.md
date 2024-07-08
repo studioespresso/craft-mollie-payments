@@ -4,7 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## 5.1.0-beta.01 - 2024-07-04
+## 5.1.0-beta.2 - 2024-07-08
+### Fixed
+- Fix for existing transactions that don't have the ``elementTye`` property yet
+
+
+## 5.1.0-beta.1 - 2024-07-04
 ### Added
 - Initial support for Mollie Subscriptions
 
