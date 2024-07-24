@@ -233,7 +233,9 @@ class SubscriptionController extends Controller
 
     public function actionCancel()
     {
-        $this->requirePostRequest();
+        if (!$this->request->isCpRequest) {
+            $this->requirePostRequest();
+        }
 
         $subscription = $this->request->getRequiredBodyParam('subscription');
         $subscriber = $this->request->getRequiredBodyParam('subscriber');
