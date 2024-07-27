@@ -73,4 +73,9 @@ class Subscriber extends Component
         $record->links = $model->links;
         return $record->save();
     }
+
+    public function getAllSubscribers()
+    {
+        return SubscriberRecord::find()->all();
+    }
 }

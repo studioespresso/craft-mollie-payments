@@ -1,0 +1,35 @@
+
+
+<div id="mollie-vue-admin-table"></div>
+
+{% js %}
+    var columns = [
+        {
+            name: '__slot:title',
+            title: Craft.t('app', 'Email')
+        },
+        {
+            name: '__slot:handle',
+            title: Craft.t('mollie-payments', 'Customer ID')
+        },
+        {
+            name: 'handle',
+            title: Craft.t('mollie-payments', 'View on Mollie'),
+            callback: function(value) {
+                return '<a href="https://my.mollie.com/dashboard/customers/' + value +'" class="" target="_blank">Link</a>';
+            }
+        }
+    ];
+
+
+    new Craft.VueAdminTable({
+    container: '#mollie-vue-admin-table',
+    columns: columns,
+    tableDataEndpoint: 'mollie-payments/subscription/get-subscribers' ,
+    deleteAction: 'mollie-payments/subscription/delete-subscriber',
+    deleteConfirmationMessage: "{{ 'Are you sure you want to delete subscriber “{name}”?'|t('mollie-payments') }}",
+    deleteSuccessMessage: "{{ 'Subscriber "{name}" deleted.'|t('mollie-payments') }}",
+    emptyMessage: "{{ 'No subscribers exist yet.'|t('mollie-payments') }}",
+    checkboxes: 1,
+    });
+{% endjs %}
