@@ -129,6 +129,7 @@ class MolliePayments extends Plugin
                 $event->rules['mollie-payments'] = ['template' => 'mollie-payments/_payment/_index.twig'];
                 $event->rules['mollie-payments/payments/<uid:{uid}>'] = 'mollie-payments/payment/edit';
                 $event->rules['mollie-payments/subscriptions'] = ['template' => 'mollie-payments/_subscription/_index.twig'];
+                $event->rules['mollie-payments/subscribers'] = 'mollie-payments/subscription/subscriber-overview';
                 $event->rules['mollie-payments/subscriptions/<uid:{uid}>'] = 'mollie-payments/subscription/edit';
                 $event->rules['mollie-payments/forms'] = 'mollie-payments/forms/index';
                 $event->rules['mollie-payments/forms/add'] = 'mollie-payments/forms/edit';
@@ -218,6 +219,11 @@ class MolliePayments extends Plugin
         $subNavs['subscriptions'] = [
             'label' => Craft::t('mollie-payments', 'Subscriptions'),
             'url' => 'mollie-payments/subscriptions',
+        ];
+
+        $subNavs['subscribers'] = [
+            'label' => Craft::t('mollie-payments', 'Subscribers'),
+            'url' => 'mollie-payments/subscribers',
         ];
 
         if (Craft::$app->getUser()->getIsAdmin() && Craft::$app->getConfig()->getGeneral()->allowAdminChanges) {

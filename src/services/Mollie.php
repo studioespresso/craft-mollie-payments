@@ -7,6 +7,7 @@ use craft\base\Component;
 use craft\helpers\App;
 use craft\helpers\ConfigHelper;
 use craft\helpers\UrlHelper;
+use Mollie\Api\Exceptions\ApiException;
 use Mollie\Api\MollieApiClient;
 use Mollie\Api\Resources\Customer;
 use studioespresso\molliepayments\elements\Payment;
@@ -188,6 +189,15 @@ class Mollie extends Component
             "email" => $email,
         ]);
         return $customer;
+    }
+
+    public function deleteCustomer($id): void
+    {
+        try {
+            $this->mollie->customers->delete($id);
+        } catch(ApiException $e) {
+            Craft::error($e->getMessage(), __METHOD__);
+        }
     }
 
     public function getStatus($orderId)

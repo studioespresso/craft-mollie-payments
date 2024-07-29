@@ -6,6 +6,7 @@ use Craft;
 use craft\base\Element;
 use craft\helpers\ConfigHelper;
 use craft\helpers\UrlHelper;
+use craft\web\assets\admintable\AdminTableAsset;
 use craft\web\Controller;
 use Mollie\Api\Types\PaymentStatus;
 use studioespresso\molliepayments\elements\Subscription;
@@ -233,10 +234,15 @@ class SubscriptionController extends Controller
 
     public function actionCancel()
     {
-        $this->requirePostRequest();
+        if (!$this->request->isCpRequest) {
+            $this->requirePostRequest();
+            $subscription = $this->request->getRequiredBodyParam('subscription');
+            $subscriber = $this->request->getRequiredBodyParam('subscriber');
+        } else {
+            $subscription = $this->request->getRequiredQueryParam('subscription');
+            $subscriber = $this->request->getRequiredQueryParam('subscriber');
+        }
 
-        $subscription = $this->request->getRequiredBodyParam('subscription');
-        $subscriber = $this->request->getRequiredBodyParam('subscriber');
 
         $subscription = Subscription::findOne(['id' => $subscription]);
         $subscriber = SubscriberRecord::findOne(['uid' => $subscriber]);
@@ -261,5 +267,61 @@ class SubscriptionController extends Controller
         }
 
         return $this->redirectToPostedUrl();
+    }
+
+    public function actionSubscriberOverview()
+    {
+        Craft::$app->getView()->registerAssetBundle(AdminTableAsset::class);
+
+        return $this->asCpScreen()
+            ->title(Craft::t('mollie-payments', 'Subscriber overview'))
+            ->contentTemplate('mollie-payments/_subscribers/_index');
+    }
+
+    public function actionGetSubscribers()
+    {
+        $page = $this->request->getQueryParam('page', 1);
+        $baseUrl = 'mollie-payments/subscription/get-subscribers';
+        $data = MolliePayments::getInstance()->subscriber->getAllSubscribers();
+        $subscribers = collect($data)->map(function($subscriber) {
+            return [
+                'title' => $subscriber->email,
+                'id' => $subscriber->customerId,
+            ];
+        });
+
+        $rows = $subscribers->all();
+
+
+        $total = count($rows);
+        $limit = $total < 20 ? $total : 20;
+        $from = ($page - 1) * $limit + 1;
+        $lastPage = (int)ceil($total / $limit);
+        $to = $page === $lastPage ? $total : ($page * $limit);
+        $nextPageUrl = $baseUrl . sprintf('?page=%d', ($page + 1));
+        $prevPageUrl = $baseUrl . sprintf('?page=%d', ($page - 1));
+        $rows = array_slice($rows, $from - 1, $limit);
+
+
+        return $this->asJson([
+            'pagination' => [
+                'total' => (int)$total,
+                'per_page' => (int)$limit,
+                'current_page' => (int)$page,
+                'last_page' => (int)$lastPage,
+                'next_page_url' => $nextPageUrl,
+                'prev_page_url' => $prevPageUrl,
+                'from' => (int)$from,
+                'to' => (int)$to,
+            ],
+            'data' => $rows,
+        ]);
+    }
+
+    public function actionDeleteSubscriber()
+    {
+        MolliePayments::getInstance()->mollie->deleteCustomer($this->request->getRequiredBodyParam('id'));
+        MolliePayments::getInstance()->subscriber->deleteById($this->request->getRequiredBodyParam('id'));
+        return $this->asJson(['success' => true]);
     }
 }

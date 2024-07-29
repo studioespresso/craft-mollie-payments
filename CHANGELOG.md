@@ -4,9 +4,16 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## 5.1.0-beta.2 - 2024-07-08
+## 5.1.0-beta.3 - 2024-07-29
+### Added
+- Added an overview for subscribers
+
 ### Fixed
-- Fix for existing transactions that don't have the ``elementTye`` property yet
+- Fixed an error when canceling a subscription from the CP
+
+## 5.1.0-beta.2 - 2024-07-07
+### Fixed
+- Fix for payments that exist before upgrading to 5.1
 
 
 ## 5.1.0-beta.1 - 2024-07-04
