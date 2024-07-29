@@ -60,7 +60,7 @@ class Subscriber extends Component
         } else {
             $record = new SubscriberRecord();
         }
-        $record->customerId = $model->cufstomerId;
+        $record->customerId = $model->customerId;
         $record->userId = $model->userId;
         $record->email = $model->email;
         $record->locale = $model->locale ?? '';

@@ -291,7 +291,7 @@ class SubscriptionController extends Controller
 
 
         $total = count($rows);
-        $limit = 100;
+        $limit = $total < 20 ? $total : 20;
         $from = ($page - 1) * $limit + 1;
         $lastPage = (int)ceil($total / $limit);
         $to = $page === $lastPage ? $total : ($page * $limit);
