@@ -280,14 +280,15 @@ class SubscriptionController extends Controller
         $page = $this->request->getQueryParam('page', 1);
         $baseUrl = 'mollie-payments/subscription/get-subscribers';
         $data = MolliePayments::getInstance()->subscriber->getAllSubscribers();
-        $subscribers =  collect($data)->map(function ($subscriber) {
+        $subscribers = collect($data)->map(function($subscriber) {
             return [
                 'title' => $subscriber->email,
-                'handle' => $subscriber->customerId,
+                'id' => $subscriber->customerId,
             ];
         });
 
         $rows = $subscribers->all();
+
 
         $total = count($rows);
         $limit = 100;
@@ -312,7 +313,12 @@ class SubscriptionController extends Controller
             ],
             'data' => $rows,
         ]);
+    }
 
-
+    public function actionDeleteSubscriber()
+    {
+        MolliePayments::getInstance()->mollie->deleteCustomer($this->request->getRequiredBodyParam('id'));
+        MolliePayments::getInstance()->subscriber->deleteById($this->request->getRequiredBodyParam('id'));
+        return $this->asJson(['success' => true]);
     }
 }

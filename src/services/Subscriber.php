@@ -49,11 +49,6 @@ class Subscriber extends Component
         $model->metadata = $customer->metadata ?? '';
         $model->links = $customer->_links;
 
-
-        /*if (Craft::$app->getUser()->getIdentity()) {
-            $model->userId = Craft::$app->getUser()->getIdentity()->id;
-            $model->name = Craft::$app->getUser()->getIdentity()->fullName ?? '';
-        }*/
         $this->save($model);
         return $model;
     }
@@ -65,13 +60,21 @@ class Subscriber extends Component
         } else {
             $record = new SubscriberRecord();
         }
-        $record->customerId = $model->customerId;
+        $record->customerId = $model->cufstomerId;
         $record->userId = $model->userId;
         $record->email = $model->email;
         $record->locale = $model->locale ?? '';
         $record->metadata = $model->metadata ?? '';
         $record->links = $model->links;
         return $record->save();
+    }
+
+    public function deleteById($id): void
+    {
+        $record = SubscriberRecord::findOne(['customerId' => $id]);
+        if ($record) {
+            $record->delete();
+        }
     }
 
     public function getAllSubscribers()
