@@ -236,10 +236,13 @@ class SubscriptionController extends Controller
     {
         if (!$this->request->isCpRequest) {
             $this->requirePostRequest();
+            $subscription = $this->request->getRequiredBodyParam('subscription');
+            $subscriber = $this->request->getRequiredBodyParam('subscriber');
+        } else {
+            $subscription = $this->request->getRequiredQueryParam('subscription');
+            $subscriber = $this->request->getRequiredQueryParam('subscriber');
         }
 
-        $subscription = $this->request->getRequiredBodyParam('subscription');
-        $subscriber = $this->request->getRequiredBodyParam('subscriber');
 
         $subscription = Subscription::findOne(['id' => $subscription]);
         $subscriber = SubscriberRecord::findOne(['uid' => $subscriber]);
