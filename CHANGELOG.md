@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 5.0.1 - 2024-08-09
+### Fixed
+- Fixed error on payment overview, introduced by 5.2's new status element ([#71](https://github.com/studioespresso/craft-mollie-payments/issues/71))
+
 ## 5.0.0 - 2024-02-21
 ### Added
 - Full Craft 5 support
