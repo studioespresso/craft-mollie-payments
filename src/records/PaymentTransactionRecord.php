@@ -34,7 +34,7 @@ class PaymentTransactionRecord extends ActiveRecord
         return Cp::statusLabelHtml([
             'color' => $color->value,
             'icon' => null,
-            'label' => $this->status,
+            'label' => \Craft::t('mollie-payments', $this->status),
             'indicatorClass' => null,
         ]);
     }
