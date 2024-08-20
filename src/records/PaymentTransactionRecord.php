@@ -7,6 +7,9 @@ use craft\enums\Color;
 use craft\helpers\Cp;
 use Mollie\Api\Types\PaymentStatus;
 
+/**
+ * @property PaymentStatus $status
+ */
 class PaymentTransactionRecord extends ActiveRecord
 {
     public static function tableName()

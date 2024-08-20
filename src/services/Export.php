@@ -16,7 +16,7 @@ class Export extends Component
     public function run($query, $format = 'csv')
     {
         $results = [];
-        $header = ['form', 'email', 'amount','transaction', 'currency', 'status'];
+        $header = ['form', 'email', 'amount', 'transaction', 'currency', 'status'];
         $customFields = [];
 
         foreach ($query as $payment) {
