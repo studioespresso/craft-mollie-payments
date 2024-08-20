@@ -31,13 +31,14 @@ class Export extends Component
         }
 
         foreach ($query as $payment) {
-            $transaction = MolliePayments::$plugin->transaction->getTransactionbyPayment($payment->id);
             /** @var \studioespresso\molliepayments\elements\Payment $payment */
+            $transaction = MolliePayments::$plugin->transaction->getTransactionbyPayment($payment->id);
+
             $results[$payment->id] = array_merge([
                 'form' => $this->forms[$payment->formId]->title,
                 'email' => $payment->email,
                 'amount' => $payment->amount,
-                'transaction' => $transaction->id,
+                'transaction' => $transaction ? $transaction->id : '',
                 'currency' => $this->forms[$payment->formId]->currency,
                 'status' => $payment->status,
             ]);
