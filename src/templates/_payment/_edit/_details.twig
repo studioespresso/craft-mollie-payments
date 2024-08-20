@@ -1,4 +1,13 @@
 <div id="settings" class="meta">
+    <div class="field" id="email-field">
+            <div class="heading">
+                <label>{{ "Status"|t("mollie-payments") }}</label>
+            </div>
+            <div class="input ltr">
+                {{ element.getCpStatusItem()|raw }}
+            </div>
+
+    </div>
     <div class="field">
         <div class="heading">
             <label>{{ "Form"|t("mollie-payments") }}</label>
