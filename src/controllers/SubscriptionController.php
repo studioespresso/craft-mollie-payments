@@ -292,6 +292,21 @@ class SubscriptionController extends Controller
 
         $rows = $subscribers->all();
 
+        if(!$rows) {
+            return $this->asJson([
+                'pagination' => [
+                    'total' => (int)0,
+                    'per_page' => (int)20,
+                    'current_page' => (int)0,
+                    'last_page' => (int)0,
+                    'next_page_url' => '',
+                    'prev_page_url' => '',
+                    'from' => (int)0,
+                    'to' => (int)0,
+                ],
+                'data' => [],
+            ]);
+        }
 
         $total = count($rows);
         $limit = $total < 20 ? $total : 20;
