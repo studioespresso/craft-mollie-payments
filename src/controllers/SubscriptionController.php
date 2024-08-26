@@ -292,7 +292,7 @@ class SubscriptionController extends Controller
 
         $rows = $subscribers->all();
 
-        if(!$rows) {
+        if (!$rows) {
             return $this->asJson([
                 'pagination' => [
                     'total' => (int)0,
