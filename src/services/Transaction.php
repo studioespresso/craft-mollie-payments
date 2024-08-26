@@ -45,7 +45,7 @@ class Transaction extends Component
         }
 
         if ($transaction->validate() && $transaction->save()) {
-            if (isset ($molliePayment->metadata->elementType) && $molliePayment->metadata->elementType !== null && $molliePayment->metadata->elementType === \studioespresso\molliepayments\elements\Subscription::class) {
+            if (property_exists($molliePayment->metadata,'elementType') && $molliePayment->metadata->elementType === \studioespresso\molliepayments\elements\Subscription::class) {
                 $element = \studioespresso\molliepayments\elements\Subscription::findOne(['id' => $transaction->payment]);
                 $element->subscriptionStatus = $transaction->status;
             } else {

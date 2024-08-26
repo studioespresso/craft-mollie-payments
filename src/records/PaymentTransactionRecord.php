@@ -7,6 +7,9 @@ use craft\enums\Color;
 use craft\helpers\Cp;
 use Mollie\Api\Types\PaymentStatus;
 
+/**
+ * @property PaymentStatus $status
+ */
 class PaymentTransactionRecord extends ActiveRecord
 {
     public static function tableName()
@@ -31,7 +34,7 @@ class PaymentTransactionRecord extends ActiveRecord
         return Cp::statusLabelHtml([
             'color' => $color->value,
             'icon' => null,
-            'label' => $this->status,
+            'label' => \Craft::t('mollie-payments', $this->status),
             'indicatorClass' => null,
         ]);
     }

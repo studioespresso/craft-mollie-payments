@@ -34,6 +34,7 @@ class SettingsController extends Controller
 
         $settings = MolliePayments::getInstance()->getSettings();
         $settings->apiKey = $data['apiKey'];
+        $settings->pluginLabel = $data['pluginLabel'];
         $settings->manageSubscriptionEmailPath = $data['manageSubscriptionEmailPath'];
         $settings->manageSubscriptionEmailSubject = $data['manageSubscriptionEmailSubject'];
         $settings->manageSubscriptionRoute = $data['manageSubscriptionRoute'];

@@ -53,9 +53,9 @@ class SubscriptionQuery extends ElementQuery
         return $this;
     }
 
-    public function subscriptioId($value): self
+    public function subscriptionId($value): self
     {
-        $this->subscriptionIdb = $value;
+        $this->subscriptionId = $value;
         return $this;
     }
 

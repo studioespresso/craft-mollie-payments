@@ -195,7 +195,7 @@ class Mollie extends Component
     {
         try {
             $this->mollie->customers->delete($id);
-        } catch(ApiException $e) {
+        } catch (ApiException $e) {
             Craft::error($e->getMessage(), __METHOD__);
         }
     }

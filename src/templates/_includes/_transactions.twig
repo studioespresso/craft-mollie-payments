@@ -14,7 +14,7 @@
         </td>
         <td {{ 'Date'|t('mollie-payments') }}>{{ transaction.dateUpdated|date('j/m/Y H:i') }}</td>
         <td>
-            <a href="{{ actionUrl('mollie-payments/payment/check-transaction-status', {'id': transaction.id, redirect: element.getCpEditUrl()}) }}">{{ "Check status?"|t('mollie-payments') }}</a>
+            <a href="{{ actionUrl('mollie-payments/payment/check-transaction-status', {'id': transaction.id, redirect: element.getCpEditUrl()}) }}">{{ "Check status"|t('mollie-payments') }}</a>
         </td>
     </tr>
 
@@ -25,11 +25,11 @@
     <table class="data fullwidth collapsible">
         <thead>
         <tr>
-            <th scope="col">{{ 'chrchStatus'|t('mollie-payments') }}</th>
+            <th scope="col">{{ 'Status'|t('mollie-payments') }}</th>
             <th scope="col">{{ 'ID'|t('mollie-payments') }}</th>
             <th scope="col">{{ 'Amount'|t('mollie-payments') }}</th>
             <th scope="col">{{ 'Date'|t('mollie-payments') }}</th>
-            <th scope="col">{{ 'Check status?'|t('mollie-payments') }}</th>
+            <th scope="col">{{ 'Check status'|t('mollie-payments') }}?</th>
             <th></th>
         </tr>
         </thead>

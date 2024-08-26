@@ -15,6 +15,7 @@ use craft\base\Element;
 use craft\elements\db\ElementQueryInterface;
 use craft\elements\User;
 use craft\enums\Color;
+use craft\helpers\Cp;
 use craft\helpers\UrlHelper;
 use studioespresso\molliepayments\actions\ExportAllPaymentsAction;
 use studioespresso\molliepayments\actions\ExportPaymentAction;
@@ -92,6 +93,11 @@ class Payment extends Element
     public static function hasStatuses(): bool
     {
         return true;
+    }
+
+    public function getCpStatusItem()
+    {
+        return Cp::componentStatusLabelHtml($this);
     }
 
     /**

@@ -16,7 +16,7 @@ class Export extends Component
     public function run($query, $format = 'csv')
     {
         $results = [];
-        $header = ['form', 'email', 'amount', 'currency', 'status'];
+        $header = ['form', 'email', 'amount', 'transaction', 'currency', 'status'];
         $customFields = [];
 
         foreach ($query as $payment) {
@@ -29,10 +29,13 @@ class Export extends Component
 
         foreach ($query as $payment) {
             /** @var \studioespresso\molliepayments\elements\Payment $payment */
+            $transaction = MolliePayments::$plugin->transaction->getTransactionbyPayment($payment->id);
+
             $results[$payment->id] = array_merge([
                 'form' => $this->forms[$payment->formId]->title,
                 'email' => $payment->email,
                 'amount' => $payment->amount,
+                'transaction' => $transaction ? $transaction->id : '',
                 'currency' => $this->forms[$payment->formId]->currency,
                 'status' => $payment->status,
             ]);

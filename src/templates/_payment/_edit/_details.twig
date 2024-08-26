@@ -1,0 +1,30 @@
+<div id="settings" class="meta">
+    <div class="field" id="email-field">
+            <div class="heading">
+                <label>{{ "Status"|t("mollie-payments") }}</label>
+            </div>
+            <div class="input ltr">
+                {{ element.getCpStatusItem()|raw }}
+            </div>
+
+    </div>
+    <div class="field">
+        <div class="heading">
+            <label>{{ "Form"|t("mollie-payments") }}</label>
+        </div>
+        <div class="input ltr">{{ form.title }}</div>
+    </div>
+    <div class="field">
+        <div class="heading">
+            <label>{{ "Email"|t("mollie-payments") }}</label>
+        </div>
+        <div class="input ltr">{{ element.email }}</div>
+    </div>
+    <div class="field" id="amount-field">
+        <div class="heading">
+            <label>{{ "Amount"|t("mollie-payments") }}</label>
+        </div>
+        <div class="input ltr">{{ element.amount }} {{ form.currency }}</div>
+    </div>
+</div>
+{% hook 'cp.payments.edit.details' %}

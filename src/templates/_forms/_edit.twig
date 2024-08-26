@@ -61,8 +61,8 @@
 </div>
 
 {% set types = {
-    'payment': 'Single payment',
-    'subscription': 'Subscription (recurring payments)'
+    'payment': 'Single payment'|t('mollie-payments'),
+    'subscription': 'Subscription (recurring payments)'|t('mollie-payments')
 } %}
 
 {% if hasElements %}
