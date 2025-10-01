@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 5.2.5 - 2025-10-01
+### Fixed
+- Fixed on an error when creating a new payment form ([#73](https://github.com/studioespresso/craft-mollie-payments/issues/73))
+
 ## 5.2.4 - 2025-01-18
 ### Fixed
 - Fixed status check for payment elements

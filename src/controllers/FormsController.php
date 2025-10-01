@@ -54,6 +54,11 @@ class FormsController extends Controller
                     $data['hasElements'] = true;
                 }
             }
+        } else {
+            // Create a default field layout for new forms
+            $fieldLayout = new \craft\models\FieldLayout();
+            $fieldLayout->type = Payment::class;
+            $data['layout'] = $fieldLayout;
         }
 
         return $this->asCpScreen()
@@ -90,12 +95,7 @@ class FormsController extends Controller
         $paymentFormModel->descriptionFormat = $data['descriptionFormat'];
 
         $fieldLayout = Craft::$app->getFields()->assembleLayoutFromPost();
-
-        if ($data['type'] === PaymentFormModel::TYPE_PAYMENT) {
-            $fieldLayout->type = Payment::class;
-        } else {
-            $fieldLayout->type = Subscription::class;
-        }
+        $fieldLayout->type = $data['type'] === PaymentFormModel::TYPE_PAYMENT ? Payment::class : Subscription::class;
 
         $paymentFormModel->setFieldLayout($fieldLayout);
 
