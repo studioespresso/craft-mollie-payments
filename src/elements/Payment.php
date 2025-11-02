@@ -293,7 +293,7 @@ class Payment extends Element
                     'email' => $this->email,
                     'paymentStatus' => $this->paymentStatus,
                     'amount' => $this->amount,
-
+                    'method' => $this->method,
                     'formId' => $this->formId,
                 ])
                 ->execute();

@@ -90,6 +90,7 @@ class Mollie extends Component
                 "currency" => $paymentForm->currency,
                 "value" => number_format($payment->amount, 2, '.', ''), // You must send the correct number of decimals, thus we enforce the use of strings
             ],
+            "method" => $payment->method ?: null,
             "description" => $description,
             "redirectUrl" => UrlHelper::url("{$this->baseUrl}mollie-payments/payment/redirect", [
                 "order_id" => $payment->uid,
@@ -263,5 +264,14 @@ class Mollie extends Component
             return false;
         }
         return true;
+    }
+
+    public function getPaymentMethods($formHandle = null): \Mollie\Api\Resources\MethodCollection
+    {
+        $this->mollie = $this->getMollieClient($formHandle);
+        $data = $this->mollie->methods->allActive([
+            'locale' => 'en-US'
+        ]);
+        return $data;
     }
 }
