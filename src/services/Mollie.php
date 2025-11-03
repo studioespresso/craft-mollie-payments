@@ -269,9 +269,51 @@ class Mollie extends Component
     public function getPaymentMethods($formHandle = null): \Mollie\Api\Resources\MethodCollection
     {
         $this->mollie = $this->getMollieClient($formHandle);
-        $data = $this->mollie->methods->allActive([
-            'locale' => 'en-US'
+        return $this->mollie->methods->allActive([
+            'locale' => $this->normalizeLocale(Craft::$app->getLocale()->id)
         ]);
-        return $data;
+    }
+
+    /**
+     * @param $locale
+     * Allowed values: en_US en_GB nl_NL nl_BE fr_FR fr_BE de_DE de_AT de_CH es_ES ca_ES pt_PT it_IT nb_NO sv_SE fi_FI da_DK is_IS hu_HU pl_PL lv_LV lt_LT
+     * @return string
+     */
+    private function normalizeLocale($locale)
+    {
+        $allowedLocales = [
+            'en_US', 'en_GB', 'nl_NL', 'nl_BE', 'fr_FR', 'fr_BE',
+            'de_DE', 'de_AT', 'de_CH', 'es_ES', 'ca_ES', 'pt_PT',
+            'it_IT', 'nb_NO', 'sv_SE', 'fi_FI', 'da_DK', 'is_IS',
+            'hu_HU', 'pl_PL', 'lv_LV', 'lt_LT'
+        ];
+
+        // Normalize the input locale format (convert - to _)
+        $normalized = str_replace('-', '_', $locale);
+        $parts = explode('_', $normalized);
+
+        if (count($parts) > 1) {
+            $normalized = strtolower($parts[0]) . '_' . strtoupper($parts[1]);
+        }
+
+        // Check if the normalized locale is in the allowed list
+        if (in_array($normalized, $allowedLocales)) {
+            return $normalized;
+        }
+
+        // Try to find a fallback based on language code only
+        if (count($parts) > 0) {
+            $languageCode = strtolower($parts[0]);
+
+            // Look for any locale that starts with the same language code
+            foreach ($allowedLocales as $allowedLocale) {
+                if (strpos(strtolower($allowedLocale), $languageCode . '_') === 0) {
+                    return $allowedLocale;
+                }
+            }
+        }
+
+        // Default fallback to en_US if no match found
+        return 'en_US';
     }
 }
