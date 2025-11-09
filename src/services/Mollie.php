@@ -266,12 +266,41 @@ class Mollie extends Component
         return true;
     }
 
-    public function getPaymentMethods($formHandle = null): \Mollie\Api\Resources\MethodCollection
+    /**
+     * Get active payment methods from Mollie
+     *
+     * @param string $formHandle The payment form handle to get the correct API client
+     * @param array $options Optional parameters for filtering payment methods:
+     *   - sequenceType: string - Payment sequence type ('oneoff', 'first', 'recurring')
+     *   - amount: array - Amount with 'value' and 'currency' keys (e.g., ['value' => '10.00', 'currency' => 'EUR'])
+     *   - locale: string - Locale for method names (e.g., 'nl_NL', 'en_US')
+     *   - billingCountry: string - ISO 3166-1 alpha-2 country code (e.g., 'NL', 'BE')
+     *   - resource: string - 'payments' or 'orders'
+     *   - includeWallets: string - Comma-separated wallet types (e.g., 'applepay')
+     *   - include: string - Additional data to include (e.g., 'issuers')
+     *   - profileId: string - Profile ID (required when using OAuth access tokens)
+     *
+     * @return \Mollie\Api\Resources\MethodCollection
+     */
+    public function getPaymentMethods(string $formHandle, array $options = []): \Mollie\Api\Resources\MethodCollection
     {
         $this->mollie = $this->getMollieClient($formHandle);
-        return $this->mollie->methods->allActive([
-            'locale' => $this->normalizeLocale(Craft::$app->getLocale()->id)
-        ]);
+
+        // Add default locale if not provided
+        if (!isset($options['locale'])) {
+            $options['locale'] = $this->normalizeLocale(Craft::$app->getLocale()->id);
+        }
+        if(isset($options['amount'])) {
+            if (!isset($options['amount']['currency'])) {
+                $form = MolliePayments::getInstance()->forms->getFormByHandle($formHandle);
+                $options['amount']['currency'] = $form->currency;
+            }
+            if(isset($options['amount']['value'])) {
+                $options['amount']['value'] = number_format((float)$options['amount']['value'], 2, '.', '');
+            }
+        }
+
+        return $this->mollie->methods->allActive($options);
     }
 
     /**

@@ -21,9 +21,9 @@ class MollieVariable
         return Subscription::findAll(['email' => $subscriber->email]);
     }
 
-    public function getPaymentMethods($formHandle = null)
+    public function getPaymentMethods(string $formHandle, array|null $args)
     {
-        $data =  MolliePayments::getInstance()->mollie->getPaymentMethods($formHandle);
+        $data =  MolliePayments::getInstance()->mollie->getPaymentMethods($formHandle, $args);
         return $data->getArrayCopy() ?? null;
 
     }
