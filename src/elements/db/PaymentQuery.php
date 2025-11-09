@@ -73,6 +73,7 @@ class PaymentQuery extends ElementQuery
         $this->query->select([
             'mollie_payments.email',
             'mollie_payments.amount',
+            'mollie_payments.method',
             'mollie_payments.formId',
             'mollie_payments.paymentStatus',
         ]);

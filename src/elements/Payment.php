@@ -39,6 +39,7 @@ class Payment extends Element
      */
     public $email;
     public $amount = 0;
+    public $method = null;
     public $formId;
     public $paymentStatus;
 
@@ -292,6 +293,7 @@ class Payment extends Element
                     'email' => $this->email,
                     'paymentStatus' => $this->paymentStatus,
                     'amount' => $this->amount,
+                    'method' => $this->method,
                     'formId' => $this->formId,
                 ])
                 ->execute();
@@ -301,6 +303,7 @@ class Payment extends Element
                     'email' => $this->email,
                     'paymentStatus' => $this->paymentStatus,
                     'amount' => $this->amount,
+                    'method' => $this->method,
                 ], ['id' => $this->id])
                 ->execute();
         }

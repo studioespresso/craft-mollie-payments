@@ -90,6 +90,7 @@ class Mollie extends Component
                 "currency" => $paymentForm->currency,
                 "value" => number_format($payment->amount, 2, '.', ''), // You must send the correct number of decimals, thus we enforce the use of strings
             ],
+            "method" => $payment->method ?: null,
             "description" => $description,
             "redirectUrl" => UrlHelper::url("{$this->baseUrl}mollie-payments/payment/redirect", [
                 "order_id" => $payment->uid,
@@ -263,5 +264,85 @@ class Mollie extends Component
             return false;
         }
         return true;
+    }
+
+    /**
+     * Get active payment methods from Mollie
+     *
+     * @param string $formHandle The payment form handle to get the correct API client
+     * @param array $options Optional parameters for filtering payment methods:
+     *   - sequenceType: string - Payment sequence type ('oneoff', 'first', 'recurring')
+     *   - amount: array - Amount with 'value' and 'currency' keys (e.g., ['value' => '10.00', 'currency' => 'EUR'])
+     *   - locale: string - Locale for method names (e.g., 'nl_NL', 'en_US')
+     *   - billingCountry: string - ISO 3166-1 alpha-2 country code (e.g., 'NL', 'BE')
+     *   - resource: string - 'payments' or 'orders'
+     *   - includeWallets: string - Comma-separated wallet types (e.g., 'applepay')
+     *   - include: string - Additional data to include (e.g., 'issuers')
+     *   - profileId: string - Profile ID (required when using OAuth access tokens)
+     *
+     * @return \Mollie\Api\Resources\MethodCollection
+     */
+    public function getPaymentMethods(string $formHandle, array $options = []): \Mollie\Api\Resources\MethodCollection
+    {
+        $this->mollie = $this->getMollieClient($formHandle);
+
+        // Add default locale if not provided
+        if (!isset($options['locale'])) {
+            $options['locale'] = $this->normalizeLocale(Craft::$app->getLocale()->id);
+        }
+        if(isset($options['amount'])) {
+            if (!isset($options['amount']['currency'])) {
+                $form = MolliePayments::getInstance()->forms->getFormByHandle($formHandle);
+                $options['amount']['currency'] = $form->currency;
+            }
+            if(isset($options['amount']['value'])) {
+                $options['amount']['value'] = number_format((float)$options['amount']['value'], 2, '.', '');
+            }
+        }
+
+        return $this->mollie->methods->allActive($options);
+    }
+
+    /**
+     * @param $locale
+     * Allowed values: en_US en_GB nl_NL nl_BE fr_FR fr_BE de_DE de_AT de_CH es_ES ca_ES pt_PT it_IT nb_NO sv_SE fi_FI da_DK is_IS hu_HU pl_PL lv_LV lt_LT
+     * @return string
+     */
+    private function normalizeLocale($locale)
+    {
+        $allowedLocales = [
+            'en_US', 'en_GB', 'nl_NL', 'nl_BE', 'fr_FR', 'fr_BE',
+            'de_DE', 'de_AT', 'de_CH', 'es_ES', 'ca_ES', 'pt_PT',
+            'it_IT', 'nb_NO', 'sv_SE', 'fi_FI', 'da_DK', 'is_IS',
+            'hu_HU', 'pl_PL', 'lv_LV', 'lt_LT'
+        ];
+
+        // Normalize the input locale format (convert - to _)
+        $normalized = str_replace('-', '_', $locale);
+        $parts = explode('_', $normalized);
+
+        if (count($parts) > 1) {
+            $normalized = strtolower($parts[0]) . '_' . strtoupper($parts[1]);
+        }
+
+        // Check if the normalized locale is in the allowed list
+        if (in_array($normalized, $allowedLocales)) {
+            return $normalized;
+        }
+
+        // Try to find a fallback based on language code only
+        if (count($parts) > 0) {
+            $languageCode = strtolower($parts[0]);
+
+            // Look for any locale that starts with the same language code
+            foreach ($allowedLocales as $allowedLocale) {
+                if (strpos(strtolower($allowedLocale), $languageCode . '_') === 0) {
+                    return $allowedLocale;
+                }
+            }
+        }
+
+        // Default fallback to en_US if no match found
+        return 'en_US';
     }
 }

@@ -44,6 +44,7 @@ class PaymentController extends Controller
         $redirect = Craft::$app->request->getBodyParam('redirect');
         $redirect = Craft::$app->security->validateData($redirect);
 
+
         // Check for an existing payment
         if (Craft::$app->getRequest()->getBodyParam('payment') && Craft::$app->getRequest()->getValidatedBodyParam('payment')) {
             $payment = Payment::findOne(['uid' => Craft::$app->getRequest()->getValidatedBodyParam('payment')]);
@@ -78,9 +79,12 @@ class PaymentController extends Controller
                 throw new InvalidConfigException("Incorrect form type for this request", 500);
             }
 
+            $method = Craft::$app->request->getBodyParam('paymentMethod', null);
+
             $payment = new Payment();
             $payment->email = $email;
             $payment->amount = $amount;
+            $payment->method = $method;
             $payment->formId = $paymentForm->id;
             $payment->fieldLayoutId = $paymentForm->fieldLayout;
         }

@@ -33,6 +33,7 @@ module.exports = {
                         {text: 'Basic payment form', link: '/basic-payment-form'},
                         {text: 'Donation form', link: '/donation-payment-form'},
                         {text: 'Multi-step form', link: '/multistep-payment-form'},
+                        {text: 'Payment methods', link: '/payment-methods'},
                         {text: 'craft.payments', link: '/payment-template-function'},
                     ]
             },
