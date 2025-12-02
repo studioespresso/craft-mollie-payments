@@ -25,7 +25,7 @@ cd /path/to/my-craft-project.dev
 composer require studioespresso/craft-mollie-payments
 
 # tell Craft to install the plugin
-./craft install/plugin mollie-payments
+./craft plugin/install mollie-payments
 ```
 
 ## 2. Create a payment form
