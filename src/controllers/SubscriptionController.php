@@ -54,7 +54,6 @@ class SubscriptionController extends Controller
 
         $times = $this->request->getBodyParam('times', null);
         $interval = $this->request->getRequiredBodyParam('interval');
-        $times = $this->request->getBodyParam('times', null);
 
         if (!MolliePayments::$plugin->mollie->validateInterval($interval)) {
             throw new HttpException(400, Craft::t('mollie-payments', 'Interval must be a valid interval'));
