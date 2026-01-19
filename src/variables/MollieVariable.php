@@ -32,4 +32,10 @@ class MollieVariable
         $data = MolliePayments::getInstance()->mollie->getPaymentMethods($formHandle, $args);
         return $data->getArrayCopy() ?? null;
     }
+
+
+    public function getSubscriberByUser(User $user)
+    {
+        return SubscriberRecord::findOne(['userId' => $user->id]);
+    }
 }
