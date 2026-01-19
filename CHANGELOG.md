@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 5.3.1 - 2026-01-19
+### Fixed
+- Fixed an issue with getting subscribers ([#78](https://github.com/studioespresso/craft-mollie-payments/pull/78)
+
 ## 5.3.0 - 2025-11-09
 ### Added
 - Added ``craft.molliePayments.getPaymentMethods()`` ([#75](https://github.com/studioespresso/craft-mollie-payments/issues/75))
