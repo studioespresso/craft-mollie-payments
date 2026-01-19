@@ -12,7 +12,7 @@
         <div class="heading">
             <label>{{ "Form"|t("mollie-payments") }}</label>
         </div>
-        <div class="input ltr">{{ form.title }}</div>
+        <div class="input ltr">{{ paymentForm.title }}</div>
     </div>
     <div class="field">
         <div class="heading">
@@ -24,7 +24,7 @@
         <div class="heading">
             <label>{{ "Amount"|t("mollie-payments") }}</label>
         </div>
-        <div class="input ltr">{{ element.amount }} {{ form.currency }}</div>
+        <div class="input ltr">{{ element.amount }} {{ paymentForm.currency }}</div>
     </div>
 </div>
 {% hook 'cp.payments.edit.details' %}

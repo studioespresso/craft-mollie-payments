@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 5.3.2 - 2026-01-19
+### Fixed
+- Fixed an issue where tabs would not be displayed on the payment detail ([#79](https://github.com/studioespresso/craft-mollie-payments/issues/79))
+
+
 ## 5.3.1 - 2026-01-19
 ### Fixed
 - Fixed an issue with getting subscribers ([#78](https://github.com/studioespresso/craft-mollie-payments/pull/78)

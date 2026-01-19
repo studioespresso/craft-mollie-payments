@@ -190,22 +190,25 @@ class PaymentController extends Controller
         $query->uid = $uid;
         $element = $query->one();
 
-        $form = MolliePayments::getInstance()->forms->getFormByid($element->formId);
+        $paymentForm = MolliePayments::getInstance()->forms->getFormByid($element->formId);
         $transactions = MolliePayments::getInstance()->transaction->getAllByPayment($element->id);
-
+        $layout = $element->getFieldLayout();
+        $form = $layout->createForm($element);
 
         $data = [
             'element' => $element,
             'transactions' => $transactions,
             'form' => $form,
+            'paymentForm' => $paymentForm,
         ];
 
         return $this->asCpScreen()
-            ->title("Payment - {$form->title} - {$element->email}")
+            ->title("Payment - {$paymentForm->title} - {$element->email}")
             ->crumbs([
                 ['label' => 'Payments', 'url' => UrlHelper::cpUrl('mollie-payments')],
                 ['label' => $element->email, 'url' => $element->getCpEditUrl()],
             ])
+            ->tabs($form->getTabMenu())
             ->action('mollie-payments/payment/save-cp')
             ->selectedSubnavItem('payments')
             ->metaSidebarTemplate('mollie-payments/_payment/_edit/_details', $data)

@@ -1,6 +1,7 @@
 name: Code Quality
 on:
   workflow_dispatch:
+  pull_request:
   push:
     branches:
       - develop
@@ -16,6 +17,7 @@ jobs:
     uses: studioespresso/.github/.github/workflows/ci.yml@main
     with:
       craft_version: '5'
+      php_version: "8.3"
       jobs: '["ecs", "phpstan"]'
     secrets:
       token: ${{ secrets.GITHUB_TOKEN }}
