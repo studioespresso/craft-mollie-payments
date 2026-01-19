@@ -1,11 +1,8 @@
 {{ hiddenInput('paymentId', element.id) }}
-{% if element.getFieldLayout() %}
 
-{% set form = element.getFieldLayout().createForm(element) %}
 <div id="fields">
     {{ form.render()|raw }}
 </div>
-{% endif %}
 
 <hr>
 <div>
