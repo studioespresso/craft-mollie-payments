@@ -290,12 +290,12 @@ class Mollie extends Component
         if (!isset($options['locale'])) {
             $options['locale'] = $this->normalizeLocale(Craft::$app->getLocale()->id);
         }
-        if(isset($options['amount'])) {
+        if (isset($options['amount'])) {
             if (!isset($options['amount']['currency'])) {
                 $form = MolliePayments::getInstance()->forms->getFormByHandle($formHandle);
                 $options['amount']['currency'] = $form->currency;
             }
-            if(isset($options['amount']['value'])) {
+            if (isset($options['amount']['value'])) {
                 $options['amount']['value'] = number_format((float)$options['amount']['value'], 2, '.', '');
             }
         }
@@ -314,7 +314,7 @@ class Mollie extends Component
             'en_US', 'en_GB', 'nl_NL', 'nl_BE', 'fr_FR', 'fr_BE',
             'de_DE', 'de_AT', 'de_CH', 'es_ES', 'ca_ES', 'pt_PT',
             'it_IT', 'nb_NO', 'sv_SE', 'fi_FI', 'da_DK', 'is_IS',
-            'hu_HU', 'pl_PL', 'lv_LV', 'lt_LT'
+            'hu_HU', 'pl_PL', 'lv_LV', 'lt_LT',
         ];
 
         // Normalize the input locale format (convert - to _)

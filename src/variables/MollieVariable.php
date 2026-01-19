@@ -12,7 +12,7 @@ class MollieVariable
     public function getSubscriptionsByUid($uid)
     {
         $subscriber = SubscriberRecord::findOne(['uid' => $uid]);
-        if(!$subscriber) {
+        if (!$subscriber) {
             return [];
         }
         return Subscription::findAll(['email' => $subscriber->email]);
@@ -21,7 +21,7 @@ class MollieVariable
     public function getSubscriptionsByUser(User $user)
     {
         $subscriber = SubscriberRecord::findOne(['userId' => $user->id]);
-        if(!$subscriber) {
+        if (!$subscriber) {
             return [];
         }
         return Subscription::findAll(['email' => $subscriber->email]);
@@ -29,8 +29,7 @@ class MollieVariable
 
     public function getPaymentMethods(string $formHandle, array|null $args)
     {
-        $data =  MolliePayments::getInstance()->mollie->getPaymentMethods($formHandle, $args);
+        $data = MolliePayments::getInstance()->mollie->getPaymentMethods($formHandle, $args);
         return $data->getArrayCopy() ?? null;
-
     }
 }
