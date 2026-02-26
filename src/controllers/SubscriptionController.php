@@ -236,9 +236,9 @@ class SubscriptionController extends Controller
             return null;
         }
 
-        $customer = SubscriberRecord::findOne(['email' => $email]);
-        if ($customer) {
-            MolliePayments::getInstance()->mail->sendSubscriptionAccessEmail($customer);
+        $customers = SubscriberRecord::findAll(['email' => $email]);
+        if ($customers) {
+            MolliePayments::getInstance()->mail->sendSubscriptionAccessEmail($customers[0]);
         }
 
         if ($this->request->isAjax) {

@@ -169,7 +169,7 @@ class Mollie extends Component
                 $description = "Order #{$element->id}";
             }
 
-            $subscriber = MolliePayments::$plugin->subscriber->getByEmail($element->email);
+            $subscriber = MolliePayments::$plugin->subscriber->getByEmail($element->email, $element->formId);
 
             $startDate = DateTimeHelper::now()->modify("+ {$element->interval}");
             $customer = $this->getCustomer($subscriber->customerId, $form->handle);

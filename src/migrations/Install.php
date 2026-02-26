@@ -122,6 +122,7 @@ class Install extends Migration
             [
                 'id' => $this->primaryKey(),
                 'email' => $this->string()->notNull(),
+                'formId' => $this->integer()->null(),
                 'customerId' => $this->string(30),
                 'userId' => $this->integer(),
                 'locale' => $this->string(5),
@@ -149,6 +150,22 @@ class Install extends Migration
             null
         );
 
+
+        $this->createIndex(
+            'idx_mollie_subscribers_email_formId',
+            SubscriberRecord::tableName(),
+            ['email', 'formId']
+        );
+
+        $this->addForeignKey(
+            $this->db->getForeignKeyName(SubscriberRecord::tableName(), 'formId'),
+            SubscriberRecord::tableName(),
+            'formId',
+            PaymentFormRecord::tableName(),
+            'id',
+            'SET NULL',
+            null
+        );
 
         $this->dropForeignKeyIfExists(PaymentTransactionRecord::tableName(), 'payment');
     }

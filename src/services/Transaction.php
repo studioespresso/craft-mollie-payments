@@ -28,9 +28,12 @@ class Transaction extends Component
     {
         $transaction->status = $molliePayment->status;
         $transaction->method = $molliePayment->method;
-
+        dd($molliePayment->refunds());
         if ($molliePayment->refunds()->count > 0) {
-            if ($molliePayment->getAmountRefunded() === $molliePayment->getSettlementAmount()) {
+            $transaction->refundAmount = $molliePayment->getAmountRefunded()->value;
+            if ($molliePayment->getAmountRefunded() < $molliePayment->getSettlementAmount()) {
+                $transaction->status = "partially refunded";
+            } elseif ($molliePayment->getAmountRefunded() === $molliePayment->getSettlementAmount()) {
                 $transaction->status = "refunded";
             }
         }
@@ -45,12 +48,13 @@ class Transaction extends Component
         }
 
         if ($transaction->validate() && $transaction->save()) {
-            if (property_exists($molliePayment->metadata,'elementType') && $molliePayment->metadata->elementType === \studioespresso\molliepayments\elements\Subscription::class) {
+            if (property_exists($molliePayment->metadata, 'elementType') && $molliePayment->metadata->elementType === \studioespresso\molliepayments\elements\Subscription::class) {
                 $element = \studioespresso\molliepayments\elements\Subscription::findOne(['id' => $transaction->payment]);
                 $element->subscriptionStatus = $transaction->status;
             } else {
                 $element = Payment::findOne(['id' => $transaction->payment]);
                 $element->paymentStatus = $transaction->status;
+                $element->refundAmount = $transaction->refundAmount;
                 Craft::$app->getElements()->saveElement($element);
             }
             $this->fireEventAfterTransactionUpdate($transaction, $element, $molliePayment->status);

@@ -20,9 +20,18 @@ class Subscriber extends Component
         }
     }
 
-    public function getByEmail($email): SubscriberModel
+    public function getByEmail($email, $formId = null): SubscriberModel
     {
-        $record = SubscriberRecord::findOne(['email' => $email]);
+        $record = null;
+        if ($formId) {
+            $record = SubscriberRecord::findOne(['email' => $email, 'formId' => $formId]);
+        }
+        if (!$record) {
+            $record = SubscriberRecord::findOne(['email' => $email, 'formId' => null]);
+        }
+        if (!$record) {
+            $record = SubscriberRecord::findOne(['email' => $email]);
+        }
         $model = new SubscriberModel();
         $model->setAttributes($record->getAttributes());
         return $model;
@@ -30,7 +39,10 @@ class Subscriber extends Component
 
     public function getOrCreateSubscriberByEmail($email, $formHandle): SubscriberModel
     {
-        $record = SubscriberRecord::findOne(['email' => $email]);
+        $form = MolliePayments::getInstance()->forms->getFormByHandle($formHandle);
+        $formId = $form ? $form->id : null;
+
+        $record = SubscriberRecord::findOne(['email' => $email, 'formId' => $formId]);
         if ($record) {
             $model = new SubscriberModel();
             $model->setAttributes($record->getAttributes());
@@ -43,6 +55,7 @@ class Subscriber extends Component
         if (Craft::$app->getUser()->getIdentity()) {
             $model->userId = Craft::$app->getUser()->getIdentity()->id;
         }
+        $model->formId = $formId;
         $model->customerId = $customer->id;
         $model->email = $customer->email;
         $model->locale = $customer->locale ?? '';
@@ -61,6 +74,7 @@ class Subscriber extends Component
             $record = new SubscriberRecord();
         }
         $record->customerId = $model->customerId;
+        $record->formId = $model->formId;
         $record->userId = $model->userId;
         $record->email = $model->email;
         $record->locale = $model->locale ?? '';

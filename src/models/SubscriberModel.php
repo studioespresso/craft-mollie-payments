@@ -10,6 +10,8 @@ class SubscriberModel extends Model
 
     public $email;
 
+    public $formId;
+
     public $customerId;
 
     public $userId;
@@ -24,7 +26,7 @@ class SubscriberModel extends Model
     {
         return [
             [['email', ], 'required'],
-            [['email', 'customerId', 'userId', 'locale', 'metadata', 'links'], 'safe'],
+            [['email', 'formId', 'customerId', 'userId', 'locale', 'metadata', 'links'], 'safe'],
         ];
     }
 }
