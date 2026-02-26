@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 5.4.0 - 2026-02-26
+### Fixed
+- Fixed an issue where subscribers were shared across Mollie accounts when using `apiKeyPerForm`, causing a 404 error when the same email subscribed via forms with different API keys
+
 ## 5.3.2 - 2026-01-19
 ### Added
 - Added ``getSubscriberByUser()`` ([#80](https://github.com/studioespresso/craft-mollie-payments/pull/80))
