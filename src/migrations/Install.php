@@ -73,6 +73,7 @@ class Install extends Migration
             'email' => $this->string()->notNull(),
             'paymentStatus' => $this->string()->notNull(),
             'amount' => $this->decimal("10,2")->notNull(),
+            'refundAmount' => $this->decimal("10,2")->null(),
             'method' => $this->string()->null(),
             'formId' => $this->integer()->notNull(),
             'dateCreated' => $this->dateTime()->notNull(),
