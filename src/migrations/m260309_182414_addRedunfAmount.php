@@ -2,13 +2,14 @@
 
 namespace studioespresso\molliepayments\migrations;
 
+use Craft;
 use craft\db\Migration;
 use studioespresso\molliepayments\records\PaymentRecord;
 
 /**
- * m260309_000000_addRefundAmountToPayments migration.
+ * m260309_182414_addRedunfAmount migration.
  */
-class m260309_000000_addRefundAmountToPayments extends Migration
+class m260309_182414_addRedunfAmount extends Migration
 {
     /**
      * @inheritdoc
