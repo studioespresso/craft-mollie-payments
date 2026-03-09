@@ -86,7 +86,7 @@ class MolliePayments extends Plugin
     /**
      * @var string
      */
-    public string $schemaVersion = '5.2.0';
+    public string $schemaVersion = '5.4.1';
 
     // Public Methods
     // =========================================================================

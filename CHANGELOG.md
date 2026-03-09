@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 5.4.1 - 2026-03-09
+### Fixed
+- Fixed a missing migration for refundAmount
+
 ## 5.4.0 - 2026-02-26
 ### Fixed
 - Fixed an issue where subscribers were shared across Mollie accounts when using `apiKeyPerForm`, causing a 404 error when the same email subscribed via forms with different API keys
