@@ -279,7 +279,7 @@ class PaymentController extends Controller
             }
             return $this->asSuccess("Transaction already up to date", [], $redirect);
         } catch (\Throwable $e) {
-            return $this->asFailure("Something went wrong checking the status for this payment", [], $redirect);
+            return $this->asFailure("Something went wrong checking the status for this payment");
         }
     }
 
