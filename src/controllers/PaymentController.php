@@ -273,13 +273,15 @@ class PaymentController extends Controller
             $form = MolliePayments::getInstance()->forms->getFormByid($element->formId);
             $molliePayment = MolliePayments::getInstance()->mollie->getStatus($id, $form->handle);
 
-            if ($transaction->status !== $molliePayment->status) {
+            if ($transaction->status !== $molliePayment->status || $element->paymentStatus !== $molliePayment->status) {
                 MolliePayments::getInstance()->transaction->updateTransaction($transaction, $molliePayment);
                 return $this->asSuccess("Transaction status updated", [], $redirect);
             }
             return $this->asSuccess("Transaction already up to date", [], $redirect);
         } catch (\Throwable $e) {
-            return $this->asFailure("Something went wrong checking the status for this payment", [], $redirect);
+            Craft::error("Error checking transaction status for {$id}: " . $e->getMessage() . "\n" . $e->getTraceAsString(), 'mollie-payments');
+            $this->setFailFlash("Something went wrong checking the status for this payment: " . $e->getMessage());
+            return $this->redirect($redirect);
         }
     }
 

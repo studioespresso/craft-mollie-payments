@@ -28,8 +28,9 @@ class Transaction extends Component
     {
         $transaction->status = $molliePayment->status;
         $transaction->method = $molliePayment->method;
+        $refundAmount = null;
         if ($molliePayment->refunds()->count > 0) {
-            $transaction->refundAmount = $molliePayment->getAmountRefunded()->value;
+            $refundAmount = $molliePayment->getAmountRefunded()->value;
             if ($molliePayment->getAmountRefunded() < $molliePayment->getSettlementAmount()) {
                 $transaction->status = "partially refunded";
             } elseif ($molliePayment->getAmountRefunded() === $molliePayment->getSettlementAmount()) {
@@ -53,7 +54,7 @@ class Transaction extends Component
             } else {
                 $element = Payment::findOne(['id' => $transaction->payment]);
                 $element->paymentStatus = $transaction->status;
-                $element->refundAmount = $transaction->refundAmount;
+                $element->refundAmount = $refundAmount;
                 Craft::$app->getElements()->saveElement($element);
             }
             $this->fireEventAfterTransactionUpdate($transaction, $element, $molliePayment->status);
