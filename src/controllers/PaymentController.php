@@ -279,7 +279,9 @@ class PaymentController extends Controller
             }
             return $this->asSuccess("Transaction already up to date", [], $redirect);
         } catch (\Throwable $e) {
-            return $this->asFailure("Something went wrong checking the status for this payment");
+            Craft::error("Error checking transaction status for {$id}: " . $e->getMessage() . "\n" . $e->getTraceAsString(), 'mollie-payments');
+            $this->setFailFlash("Something went wrong checking the status for this payment: " . $e->getMessage());
+            return $this->redirect($redirect);
         }
     }
 
