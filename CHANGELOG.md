@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 5.4.2 - 2026-03-16
+### Fixed
+- Fixed an error related to  refundAmount ([#82](https://github.com/studioespresso/craft-mollie-payments/pull/82))
+
 ## 5.4.1 - 2026-03-09
 ### Fixed
 - Fixed a missing migration for refundAmount
