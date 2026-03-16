@@ -273,7 +273,7 @@ class PaymentController extends Controller
             $form = MolliePayments::getInstance()->forms->getFormByid($element->formId);
             $molliePayment = MolliePayments::getInstance()->mollie->getStatus($id, $form->handle);
 
-            if ($transaction->status !== $molliePayment->status) {
+            if ($transaction->status !== $molliePayment->status || $element->paymentStatus !== $molliePayment->status) {
                 MolliePayments::getInstance()->transaction->updateTransaction($transaction, $molliePayment);
                 return $this->asSuccess("Transaction status updated", [], $redirect);
             }
