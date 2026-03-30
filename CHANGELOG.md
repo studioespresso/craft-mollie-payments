@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 5.4.4 - 2026-03-30
+### Fixed
+- Fall back to searching subscribers and subscriptions by email when we can't find by user ID.
+
 ## 5.4.3 - 2026-03-30
 ### Fixed
 - Fall back to searching subscribers and subscriptions by email when we can't find by user ID.

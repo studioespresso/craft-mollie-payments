@@ -22,7 +22,7 @@ class MollieVariable
     {
         $subscriber = SubscriberRecord::findOne(['userId' => $user->id]);
         if (!$subscriber) {
-            $subscriber = Subscription::findAll(['email' => $user->email]);
+            $subscriber = SubscriberRecord::findOne(['email' => $user->email]);
         }
 
         if (!$subscriber) {
