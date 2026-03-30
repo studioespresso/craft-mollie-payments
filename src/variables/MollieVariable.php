@@ -18,12 +18,17 @@ class MollieVariable
         return Subscription::findAll(['email' => $subscriber->email]);
     }
 
-    public function getSubscriptionsByUser(User $user)
+    public function getSubscriptionsByUser(User $user): array
     {
         $subscriber = SubscriberRecord::findOne(['userId' => $user->id]);
         if (!$subscriber) {
+            $subscriber = Subscription::findAll(['email' => $user->email]);
+        }
+
+        if (!$subscriber) {
             return [];
         }
+
         return Subscription::findAll(['email' => $subscriber->email]);
     }
 
@@ -36,6 +41,11 @@ class MollieVariable
 
     public function getSubscriberByUser(User $user)
     {
-        return SubscriberRecord::findOne(['userId' => $user->id]);
+        $subscriber = SubscriberRecord::findOne(['userId' => $user->id]);
+        if (!$subscriber) {
+            $subscriber = SubscriberRecord::findOne(['email' => $user->email]);
+        }
+
+        return $subscriber ?? null;
     }
 }
