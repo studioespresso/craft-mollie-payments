@@ -29,7 +29,7 @@ class Transaction extends Component
         $transaction->status = $molliePayment->status;
         $transaction->method = $molliePayment->method;
         $refundAmount = null;
-        if ($molliePayment->refunds()->count > 0) {
+        if ($molliePayment->refunds()->count() > 0) {
             $refundAmount = $molliePayment->getAmountRefunded()->value;
             if ($molliePayment->getAmountRefunded() < $molliePayment->getSettlementAmount()) {
                 $transaction->status = "partially refunded";

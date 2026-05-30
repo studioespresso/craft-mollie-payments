@@ -25,9 +25,9 @@ class PaymentTransactionRecord extends ActiveRecord
     public function getStatusComponent()
     {
         $color = match ($this->status) {
-            PaymentStatus::STATUS_OPEN, PaymentStatus::STATUS_PENDING, => Color::Gray,
-            PaymentStatus::STATUS_PAID, PaymentStatus::STATUS_AUTHORIZED, 'free' => Color::Green,
-            PaymentStatus::STATUS_EXPIRED, PaymentStatus::STATUS_CANCELED, PaymentStatus::STATUS_FAILED => Color::Red,
+            PaymentStatus::OPEN, PaymentStatus::PENDING, => Color::Gray,
+            PaymentStatus::PAID, PaymentStatus::AUTHORIZED, 'free' => Color::Green,
+            PaymentStatus::EXPIRED, PaymentStatus::CANCELED, PaymentStatus::FAILED => Color::Red,
             default => Color::Gray,
         };
 

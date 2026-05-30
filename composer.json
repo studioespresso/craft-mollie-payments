@@ -3,7 +3,7 @@
     "minimum-stability": "alpha",
     "description": "Easily accept payments with Mollie Payments",
     "type": "craft-plugin",
-    "version": "5.4.4",
+    "version": "6.0.0-alpha.1",
     "keywords": [
         "craft",
         "cms",
@@ -24,7 +24,7 @@
     ],
     "require": {
         "craftcms/cms": "^5.2",
-        "mollie/mollie-api-php": "^2.0"
+        "mollie/mollie-api-php": "^3.0"
     },
     "require-dev": {
         "craftcms/ecs": "dev-main",
