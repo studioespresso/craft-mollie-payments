@@ -23,7 +23,8 @@
         }
     ],
     "require": {
-        "craftcms/cms": "^5.2",
+        "craftcms/cms": "^6.0.0-alpha.5",
+        "craftcms/yii2-adapter": "^6.0.0",
         "mollie/mollie-api-php": "^3.0"
     },
     "require-dev": {
