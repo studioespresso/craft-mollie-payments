@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 5.4.5 - 2026-06-29
+### Fixed
+- Fixed `createSubscription()` failing with a Mollie 422 (`Start date is invalid`) because the `startDate` was formatted with `YYYY-MM-DD` instead of PHP's `Y-m-d` ([#83](https://github.com/studioespresso/craft-mollie-payments/issues/83))
+### Added
+- Added a `mollie-payments/subscriptions/recover` console command to retroactively create Mollie subscriptions for ones that got stuck (paid first payment, but `subscriptionStatus` still `pending` with no `subscriptionId`) due to the `startDate` bug. The first charge is anchored to the original billing cadence (the first `paidAt + N×interval` that is today or later) so the customer's billing day is preserved and no already-paid period is re-charged. Before creating, it checks Mollie for an existing matching subscription and links to it rather than creating a duplicate. Supports `--dry-run`.
+- `Mollie::createSubscription()` now accepts an optional `$startDate`, defaulting to the previous `now + interval` behaviour.
+- Added `Mollie::getExistingSubscription()` to find a customer's existing (non-canceled) subscription matching an element, to guard against duplicate creation.
+
 ## 5.4.4 - 2026-03-30
 ### Fixed
 - Fall back to searching subscribers and subscriptions by email when we can't find by user ID.
