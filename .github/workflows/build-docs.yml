@@ -6,6 +6,11 @@ on:
       - master
       - v5
       - develop-v5
+    paths:
+      - 'docs/**'
+      - 'package.json'
+      - 'yarn.lock'
+      - '.github/workflows/build-docs.yml'
 jobs:
   deploy:
     runs-on: ubuntu-latest
