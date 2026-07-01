@@ -107,6 +107,9 @@ The first charge is anchored to the original billing cadence: it's set to the fi
 > Mollie does not allow a `startDate` in the past, so any billing cycles that elapsed while the subscription was stuck cannot be reclaimed. The first recovered charge is the next upcoming cycle.
 
 #### Avoiding duplicates
-Before creating anything, the command checks Mollie for an existing, non-canceled subscription for that customer matching the amount, currency, interval and description. If one is found (for example, it was created in Mollie but its id was never stored locally), the command links to it instead of creating a duplicate.
+The command guards against duplicates on two levels:
+
+- **Repeated signup attempts** — a stuck first payment often led customers to try again, leaving several `pending` subscriptions for the same person. The command groups stuck subscriptions by customer + amount + interval and only recovers the one with the most recent payment; the rest are marked `canceled`. This way a customer ends up with exactly one active subscription and is never billed twice.
+- **Already created in Mollie** — before creating anything, it checks Mollie for an existing, non-canceled subscription for that customer matching the amount, currency and interval. If one is found (for example, it was created in Mollie but its id was never stored locally), the command links to it instead of creating a duplicate.
 
 The command is safe to run multiple times: once a subscription has a `subscriptionId` it is no longer selected.

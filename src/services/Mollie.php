@@ -231,8 +231,10 @@ class Mollie extends Component
 
     /**
      * Looks up an existing, non-canceled Mollie subscription for the customer that matches this
-     * element (same amount, currency, interval and description). Used to avoid creating duplicates
-     * when recovering subscriptions whose local subscriptionId was never stored (see #83).
+     * element (same amount, currency and interval). Used to avoid creating duplicates when recovering
+     * subscriptions whose local subscriptionId was never stored (see #83). The match intentionally
+     * ignores the description: a customer's subscription is identified by amount + interval, which is
+     * the same key the recovery command uses to deduplicate stuck subscriptions.
      *
      * @return \Mollie\Api\Resources\Subscription|null
      */
@@ -249,7 +251,6 @@ class Mollie extends Component
                 return null;
             }
 
-            $description = $this->buildSubscriptionDescription($element, $form);
             $amount = number_format((float)$element->amount, 2, '.', '');
 
             foreach ($customer->subscriptions() as $subscription) {
@@ -259,7 +260,6 @@ class Mollie extends Component
                 if (number_format((float)$subscription->amount->value, 2, '.', '') === $amount
                     && $subscription->amount->currency === $form->currency
                     && $subscription->interval === $element->interval
-                    && $subscription->description === $description
                 ) {
                     return $subscription;
                 }

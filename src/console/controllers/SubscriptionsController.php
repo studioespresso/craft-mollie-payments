@@ -57,9 +57,13 @@ class SubscriptionsController extends Controller
      *
      * Mollie does not resend webhooks for old payments, so these have to be recovered manually.
      *
-     * Before creating anything, each subscription is checked against Mollie: if the customer
-     * already has a matching, non-canceled subscription (e.g. one that was created but whose id was
-     * never stored locally), it is linked instead of re-created, so no duplicates are made.
+     * Duplicate protection works on two levels:
+     *  - Stuck subscriptions are grouped by customer + amount + interval. Only the record with the
+     *    most recent payment is recovered per group; the others are marked "canceled" so the
+     *    customer ends up with exactly one active subscription and is never billed twice.
+     *  - Before creating anything, the customer is checked against Mollie: if a matching, non-canceled
+     *    subscription already exists (e.g. one that was created but whose id was never stored locally),
+     *    it is linked instead of re-created.
      *
      * The first charge is anchored to the original billing cadence: it's set to the first
      * occurrence of (paidAt + N×interval) that is today or later. This keeps the customer's
@@ -92,19 +96,47 @@ class SubscriptionsController extends Controller
             return ExitCode::OK;
         }
 
-        $this->stdout(sprintf('Found %d stuck subscription(s).%s', count($ids), PHP_EOL), Console::FG_YELLOW);
+        // Group the candidates by customer + amount + interval so we recover only one subscription
+        // per group. Within a group the record with the most recent payment wins; the rest are
+        // duplicates (repeated signup attempts) that should not become extra Mollie subscriptions.
+        $missing = 0;
+        $groups = [];
+        foreach ($ids as $id) {
+            $element = Subscription::find()->id($id)->one();
+            if (!$element) {
+                $this->stdout("  ! could not load subscription #$id, skipping" . PHP_EOL, Console::FG_RED);
+                $missing++;
+                continue;
+            }
+            $groups[$this->dedupeKey($element)][] = [
+                'element' => $element,
+                'paidAt' => $this->getPaidAt($id),
+            ];
+        }
+
+        // Most recent payment first, so $group[0] is the record we recover.
+        foreach ($groups as &$group) {
+            usort($group, fn($a, $b) => ($b['paidAt']?->getTimestamp() ?? 0) <=> ($a['paidAt']?->getTimestamp() ?? 0));
+        }
+        unset($group);
+
+        $this->stdout(sprintf('Found %d stuck subscription(s) in %d group(s).%s', count($ids), count($groups), PHP_EOL), Console::FG_YELLOW);
 
         if ($this->dryRun) {
-            foreach ($ids as $id) {
-                $element = Subscription::find()->id($id)->one();
-                $label = $element?->email ?? "#$id";
-                if ($element && ($existing = MolliePayments::getInstance()->mollie->getExistingSubscription($element))) {
-                    $this->stdout("  [dry-run] subscription #$id ($label) already exists in Mollie ({$existing->id}) — would link, not create" . PHP_EOL);
-                    continue;
+            foreach ($groups as $group) {
+                $winner = $group[0]['element'];
+                $existing = MolliePayments::getInstance()->mollie->getExistingSubscription($winner);
+                if ($existing) {
+                    $this->stdout("  [dry-run] #{$winner->id} ({$winner->email}) already exists in Mollie ({$existing->id}) — would link" . PHP_EOL);
+                } else {
+                    $startDate = $this->resolveStartDate($winner->id, $winner->interval);
+                    $when = $startDate ? $startDate->format('Y-m-d') : 'now + interval (no paid date found)';
+                    $this->stdout("  [dry-run] would recover #{$winner->id} ({$winner->email}) — first charge: $when" . PHP_EOL);
                 }
-                $startDate = $this->resolveStartDate($id, $element?->interval);
-                $when = $startDate ? $startDate->format('Y-m-d') : 'now + interval (no paid date found)';
-                $this->stdout("  [dry-run] would recover subscription #$id ($label) — first charge: $when" . PHP_EOL);
+                for ($i = 1, $n = count($group); $i < $n; $i++) {
+                    $dup = $group[$i]['element'];
+                    $this->stdout("  [dry-run]   ↳ duplicate #{$dup->id} ({$dup->email}) — would be marked canceled" . PHP_EOL, Console::FG_YELLOW);
+                }
             }
             $this->stdout('Dry run complete — nothing was created in Mollie.' . PHP_EOL, Console::FG_GREEN);
             return ExitCode::OK;
@@ -112,40 +144,80 @@ class SubscriptionsController extends Controller
 
         $recovered = 0;
         $adopted = 0;
-        $failed = 0;
-        foreach ($ids as $id) {
-            $element = Subscription::find()->id($id)->one();
-            if (!$element) {
-                $this->stdout("  ! could not load subscription #$id, skipping" . PHP_EOL, Console::FG_RED);
-                $failed++;
-                continue;
-            }
+        $duplicates = 0;
+        $failed = $missing;
+        foreach ($groups as $group) {
+            $winner = $group[0]['element'];
 
-            // Avoid creating a duplicate: if Mollie already has a matching subscription (e.g. it was
-            // created but the local subscriptionId never got stored), link to it instead of re-creating.
-            $existing = MolliePayments::getInstance()->mollie->getExistingSubscription($element);
+            // Reuse an existing Mollie subscription if there is one, otherwise create it.
+            $existing = MolliePayments::getInstance()->mollie->getExistingSubscription($winner);
             if ($existing) {
-                $element->subscriptionId = $existing->id;
-                $element->subscriptionStatus = 'active';
-                \Craft::$app->getElements()->saveElement($element);
-                $this->stdout("  • subscription #$id ({$element->email}) already exists in Mollie ({$existing->id}) — linked, not re-created" . PHP_EOL, Console::FG_YELLOW);
+                $winner->subscriptionId = $existing->id;
+                $winner->subscriptionStatus = 'active';
+                \Craft::$app->getElements()->saveElement($winner);
+                $this->stdout("  • #{$winner->id} ({$winner->email}) already exists in Mollie ({$existing->id}) — linked" . PHP_EOL, Console::FG_YELLOW);
                 $adopted++;
-                continue;
+            } else {
+                $startDate = $this->resolveStartDate($winner->id, $winner->interval);
+                $when = $startDate ? $startDate->format('Y-m-d') : 'now + interval';
+                if (MolliePayments::getInstance()->mollie->createSubscription($winner, $startDate)) {
+                    $this->stdout("  ✓ recovered #{$winner->id} ({$winner->email}) → {$winner->subscriptionId}, first charge $when" . PHP_EOL, Console::FG_GREEN);
+                    $recovered++;
+                } else {
+                    $this->stdout("  ✗ failed to recover #{$winner->id} ({$winner->email}) — check the logs" . PHP_EOL, Console::FG_RED);
+                    $failed++;
+                    // Leave the duplicates untouched so the group can be retried on a later run.
+                    continue;
+                }
             }
 
-            $startDate = $this->resolveStartDate($id, $element->interval);
-            $when = $startDate ? $startDate->format('Y-m-d') : 'now + interval';
-            if (MolliePayments::getInstance()->mollie->createSubscription($element, $startDate)) {
-                $this->stdout("  ✓ recovered subscription #$id ({$element->email}) → {$element->subscriptionId}, first charge $when" . PHP_EOL, Console::FG_GREEN);
-                $recovered++;
-            } else {
-                $this->stdout("  ✗ failed to recover subscription #$id ({$element->email}) — check the logs" . PHP_EOL, Console::FG_RED);
-                $failed++;
+            // Mark the remaining records in the group as canceled so they don't become extra
+            // subscriptions and drop out of future runs.
+            for ($i = 1, $n = count($group); $i < $n; $i++) {
+                $dup = $group[$i]['element'];
+                $dup->subscriptionStatus = 'canceled';
+                \Craft::$app->getElements()->saveElement($dup);
+                $this->stdout("      ↳ marked duplicate #{$dup->id} ({$dup->email}) as canceled" . PHP_EOL, Console::FG_YELLOW);
+                $duplicates++;
             }
         }
 
-        $this->stdout(sprintf('Done. %d created, %d linked to existing, %d failed.%s', $recovered, $adopted, $failed, PHP_EOL), $failed ? Console::FG_YELLOW : Console::FG_GREEN);
+        $this->stdout(sprintf('Done. %d created, %d linked to existing, %d duplicates canceled, %d failed.%s', $recovered, $adopted, $duplicates, $failed, PHP_EOL), $failed ? Console::FG_YELLOW : Console::FG_GREEN);
         return $failed ? ExitCode::UNSPECIFIED_ERROR : ExitCode::OK;
+    }
+
+    /**
+     * Builds the grouping key used to detect duplicate stuck subscriptions: a subscription is
+     * considered the same when it's for the same customer (form + email), amount and interval.
+     */
+    private function dedupeKey(Subscription $element): string
+    {
+        return implode('|', [
+            (string)$element->formId,
+            mb_strtolower(trim((string)$element->email)),
+            number_format((float)$element->amount, 2, '.', ''),
+            (string)$element->interval,
+        ]);
+    }
+
+    /**
+     * Returns the date of the subscription's earliest paid transaction, or null when there isn't one.
+     *
+     * @return \DateTimeInterface|null
+     */
+    private function getPaidAt(int $subscriptionId): ?\DateTimeInterface
+    {
+        /** @var PaymentTransactionRecord|null $transaction */
+        $transaction = PaymentTransactionRecord::find()
+            ->where(['payment' => $subscriptionId, 'status' => PaymentStatus::STATUS_PAID])
+            ->orderBy(['dateCreated' => SORT_ASC])
+            ->one();
+
+        if (!$transaction) {
+            return null;
+        }
+
+        return DateTimeHelper::toDateTime($transaction->paidAt ?: $transaction->dateCreated) ?: null;
     }
 
     /**
@@ -163,17 +235,7 @@ class SubscriptionsController extends Controller
             return null;
         }
 
-        /** @var PaymentTransactionRecord|null $transaction */
-        $transaction = PaymentTransactionRecord::find()
-            ->where(['payment' => $subscriptionId, 'status' => PaymentStatus::STATUS_PAID])
-            ->orderBy(['dateCreated' => SORT_ASC])
-            ->one();
-
-        if (!$transaction) {
-            return null;
-        }
-
-        $paidAt = DateTimeHelper::toDateTime($transaction->paidAt ?: $transaction->dateCreated);
+        $paidAt = $this->getPaidAt($subscriptionId);
         if (!$paidAt) {
             return null;
         }

@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 5.4.6 - 2026-07-01
+### Fixed
+- The `mollie-payments/subscriptions/recover` command now deduplicates stuck subscriptions: they are grouped by customer + amount + interval, only the record with the most recent payment is recovered, and the remaining duplicates (from repeated signup attempts) are marked `canceled`. This prevents a customer from ending up with multiple recurring subscriptions.
+### Changed
+- `Mollie::getExistingSubscription()` now matches an existing Mollie subscription on amount + currency + interval (previously it also required the description to match), consistent with how the recovery command identifies a customer's subscription.
+
 ## 5.4.5 - 2026-06-29
 ### Fixed
 - Fixed `createSubscription()` failing with a Mollie 422 (`Start date is invalid`) because the `startDate` was formatted with `YYYY-MM-DD` instead of PHP's `Y-m-d` ([#83](https://github.com/studioespresso/craft-mollie-payments/issues/83))
