@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 5.4.7 - 2026-07-01
+### Fixed
+- `mollie-payments/subscriptions/recover` now skips stuck subscriptions whose customer **already has an active subscription** for the same form + amount + interval (checked against the local database), marking the stuck records `canceled` instead of creating a duplicate. The previous Mollie-API-only check could miss an existing subscription and create a second one.
+### Added
+- Added an `--exclude` option to the recover command to skip specific email addresses entirely (e.g. test accounts): `--exclude="a@x.com,b@y.com"`.
+
 ## 5.4.6 - 2026-07-01
 ### Fixed
 - The `mollie-payments/subscriptions/recover` command now deduplicates stuck subscriptions: they are grouped by customer + amount + interval, only the record with the most recent payment is recovered, and the remaining duplicates (from repeated signup attempts) are marked `canceled`. This prevents a customer from ending up with multiple recurring subscriptions.

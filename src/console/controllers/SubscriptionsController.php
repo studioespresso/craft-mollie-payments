@@ -19,9 +19,14 @@ use yii\console\ExitCode;
 class SubscriptionsController extends Controller
 {
     /**
-     * @var bool Whether to only list the subscriptions that would be recovered, without calling Mollie.
+     * @var bool Whether to only list what would happen, without creating or canceling anything.
      */
     public bool $dryRun = false;
+
+    /**
+     * @var string Comma-separated email addresses to skip entirely (e.g. test accounts).
+     */
+    public string $exclude = '';
 
     /**
      * @inheritdoc
@@ -31,6 +36,7 @@ class SubscriptionsController extends Controller
         $options = parent::options($actionID);
         if ($actionID === 'recover') {
             $options[] = 'dryRun';
+            $options[] = 'exclude';
         }
         return $options;
     }
@@ -57,13 +63,16 @@ class SubscriptionsController extends Controller
      *
      * Mollie does not resend webhooks for old payments, so these have to be recovered manually.
      *
-     * Duplicate protection works on two levels:
-     *  - Stuck subscriptions are grouped by customer + amount + interval. Only the record with the
-     *    most recent payment is recovered per group; the others are marked "canceled" so the
-     *    customer ends up with exactly one active subscription and is never billed twice.
-     *  - Before creating anything, the customer is checked against Mollie: if a matching, non-canceled
-     *    subscription already exists (e.g. one that was created but whose id was never stored locally),
-     *    it is linked instead of re-created.
+     * Duplicate protection works on several levels:
+     *  - If the customer already has a non-canceled subscription (with a subscriptionId) for the same
+     *    form + amount + interval, the stuck records are failed duplicates of it: they are marked
+     *    "canceled" and nothing is created. This is checked against the local database, which stays
+     *    reliable even when the Mollie API lookup misses the existing subscription.
+     *  - Otherwise stuck subscriptions are grouped by form + email + amount + interval; only the record
+     *    with the most recent payment is recovered per group and the rest are marked "canceled", so a
+     *    customer never ends up with multiple recurring subscriptions.
+     *  - As a final net before creating, the customer is checked against Mollie and an existing matching
+     *    subscription is linked instead of re-created.
      *
      * The first charge is anchored to the original billing cadence: it's set to the first
      * occurrence of (paidAt + N×interval) that is today or later. This keeps the customer's
@@ -72,8 +81,9 @@ class SubscriptionsController extends Controller
      * be reclaimed.
      *
      * Usage:
-     *   ./craft mollie-payments/subscriptions/recover            # recover stuck subscriptions
-     *   ./craft mollie-payments/subscriptions/recover --dry-run  # only list what would be recovered
+     *   ./craft mollie-payments/subscriptions/recover                      # recover stuck subscriptions
+     *   ./craft mollie-payments/subscriptions/recover --dry-run            # list what would happen, no changes
+     *   ./craft mollie-payments/subscriptions/recover --exclude="a@x,b@y"  # skip specific emails (e.g. tests)
      *
      * @return int
      */
@@ -122,34 +132,68 @@ class SubscriptionsController extends Controller
 
         $this->stdout(sprintf('Found %d stuck subscription(s) in %d group(s).%s', count($ids), count($groups), PHP_EOL), Console::FG_YELLOW);
 
+        // Emails to skip entirely (e.g. test accounts).
+        $excluded = array_filter(array_map(
+            fn($e) => mb_strtolower(trim($e)),
+            $this->exclude !== '' ? explode(',', $this->exclude) : []
+        ));
+
         if ($this->dryRun) {
             foreach ($groups as $group) {
                 $winner = $group[0]['element'];
-                $existing = MolliePayments::getInstance()->mollie->getExistingSubscription($winner);
-                if ($existing) {
-                    $this->stdout("  [dry-run] #{$winner->id} ({$winner->email}) already exists in Mollie ({$existing->id}) — would link" . PHP_EOL);
-                } else {
-                    $startDate = $this->resolveStartDate($winner->id, $winner->interval);
-                    $when = $startDate ? $startDate->format('Y-m-d') : 'now + interval (no paid date found)';
-                    $this->stdout("  [dry-run] would recover #{$winner->id} ({$winner->email}) — first charge: $when" . PHP_EOL);
+                $count = count($group);
+
+                if (in_array(mb_strtolower(trim((string)$winner->email)), $excluded, true)) {
+                    $this->stdout("  [dry-run] ⊘ {$winner->email} — excluded, would skip $count record(s)" . PHP_EOL, Console::FG_GREY);
+                    continue;
                 }
-                for ($i = 1, $n = count($group); $i < $n; $i++) {
+
+                if ($activeId = $this->findActiveSubscriptionId($winner)) {
+                    $this->stdout("  [dry-run] #{$winner->id} ({$winner->email}) already has an active subscription ($activeId) — would cancel $count stuck duplicate(s), create nothing" . PHP_EOL, Console::FG_YELLOW);
+                    continue;
+                }
+
+                $startDate = $this->resolveStartDate($winner->id, $winner->interval);
+                $when = $startDate ? $startDate->format('Y-m-d') : 'now + interval (no paid date found)';
+                $this->stdout("  [dry-run] would recover #{$winner->id} ({$winner->email}) — first charge: $when" . PHP_EOL);
+                for ($i = 1; $i < $count; $i++) {
                     $dup = $group[$i]['element'];
                     $this->stdout("  [dry-run]   ↳ duplicate #{$dup->id} ({$dup->email}) — would be marked canceled" . PHP_EOL, Console::FG_YELLOW);
                 }
             }
-            $this->stdout('Dry run complete — nothing was created in Mollie.' . PHP_EOL, Console::FG_GREEN);
+            $this->stdout('Dry run complete — nothing was changed.' . PHP_EOL, Console::FG_GREEN);
             return ExitCode::OK;
         }
 
         $recovered = 0;
         $adopted = 0;
         $duplicates = 0;
+        $excludedCount = 0;
         $failed = $missing;
         foreach ($groups as $group) {
             $winner = $group[0]['element'];
+            $count = count($group);
 
-            // Reuse an existing Mollie subscription if there is one, otherwise create it.
+            // Skip excluded accounts (e.g. tests) entirely.
+            if (in_array(mb_strtolower(trim((string)$winner->email)), $excluded, true)) {
+                $this->stdout("  ⊘ skipped {$winner->email} — excluded ($count record(s))" . PHP_EOL, Console::FG_GREY);
+                $excludedCount += $count;
+                continue;
+            }
+
+            // If the customer already has an active subscription for this form + amount + interval, the
+            // stuck records are failed duplicates of it: cancel them all and create nothing.
+            if ($activeId = $this->findActiveSubscriptionId($winner)) {
+                foreach ($group as $entry) {
+                    $entry['element']->subscriptionStatus = 'canceled';
+                    \Craft::$app->getElements()->saveElement($entry['element']);
+                    $duplicates++;
+                }
+                $this->stdout("  • #{$winner->id} ({$winner->email}) already has an active subscription ($activeId) — canceled $count stuck duplicate(s)" . PHP_EOL, Console::FG_YELLOW);
+                continue;
+            }
+
+            // Final net: reuse an existing Mollie subscription if the API reports one, otherwise create.
             $existing = MolliePayments::getInstance()->mollie->getExistingSubscription($winner);
             if ($existing) {
                 $winner->subscriptionId = $existing->id;
@@ -171,9 +215,8 @@ class SubscriptionsController extends Controller
                 }
             }
 
-            // Mark the remaining records in the group as canceled so they don't become extra
-            // subscriptions and drop out of future runs.
-            for ($i = 1, $n = count($group); $i < $n; $i++) {
+            // Cancel the remaining within-group duplicates.
+            for ($i = 1; $i < $count; $i++) {
                 $dup = $group[$i]['element'];
                 $dup->subscriptionStatus = 'canceled';
                 \Craft::$app->getElements()->saveElement($dup);
@@ -182,7 +225,7 @@ class SubscriptionsController extends Controller
             }
         }
 
-        $this->stdout(sprintf('Done. %d created, %d linked to existing, %d duplicates canceled, %d failed.%s', $recovered, $adopted, $duplicates, $failed, PHP_EOL), $failed ? Console::FG_YELLOW : Console::FG_GREEN);
+        $this->stdout(sprintf('Done. %d created, %d linked, %d duplicates canceled, %d excluded, %d failed.%s', $recovered, $adopted, $duplicates, $excludedCount, $failed, PHP_EOL), $failed ? Console::FG_YELLOW : Console::FG_GREEN);
         return $failed ? ExitCode::UNSPECIFIED_ERROR : ExitCode::OK;
     }
 
@@ -198,6 +241,28 @@ class SubscriptionsController extends Controller
             number_format((float)$element->amount, 2, '.', ''),
             (string)$element->interval,
         ]);
+    }
+
+    /**
+     * Returns the subscriptionId of an existing, non-canceled subscription for the same customer
+     * (form + email), amount and interval — proof the customer is already subscribed, so any stuck
+     * records are failed duplicates. Checked against the local database, which stays reliable even
+     * when the Mollie API lookup misses the subscription (e.g. it lives under a different customer).
+     */
+    private function findActiveSubscriptionId(Subscription $element): ?string
+    {
+        return (new Query())
+            ->select(['subscriptionId'])
+            ->from(SubscriptionRecord::tableName())
+            ->where([
+                'formId' => $element->formId,
+                'amount' => $element->amount,
+                'interval' => $element->interval,
+            ])
+            ->andWhere(['not', ['subscriptionId' => null]])
+            ->andWhere(['<>', 'subscriptionStatus', 'canceled'])
+            ->andWhere('LOWER([[email]]) = :email', [':email' => mb_strtolower(trim((string)$element->email))])
+            ->scalar() ?: null;
     }
 
     /**
