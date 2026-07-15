@@ -157,28 +157,32 @@ class Mollie extends Component
         return $response->_links->checkout->href;
     }
 
-    public function createSubscription(Subscription $element)
+    /**
+     * @param Subscription $element
+     * @param \DateTimeInterface|null $startDate The date of the first charge. Defaults to "now + interval".
+     *                                           Used by the recovery command to anchor recovered subscriptions
+     *                                           to their original billing cadence (see #83).
+     * @return bool
+     */
+    public function createSubscription(Subscription $element, ?\DateTimeInterface $startDate = null): bool
     {
         try {
             /** @var  $customer */
             $form = MolliePayments::$plugin->forms->getFormByid($element->formId);
-
-            if ($form->descriptionFormat) {
-                $description = Craft::$app->getView()->renderObjectTemplate($form->descriptionFormat, $element);
-            } else {
-                $description = "Order #{$element->id}";
-            }
+            $description = $this->buildSubscriptionDescription($element, $form);
 
             $subscriber = MolliePayments::$plugin->subscriber->getByEmail($element->email, $element->formId);
 
-            $startDate = DateTimeHelper::now()->modify("+ {$element->interval}");
+            if ($startDate === null) {
+                $startDate = DateTimeHelper::now()->modify("+ {$element->interval}");
+            }
             $customer = $this->getCustomer($subscriber->customerId, $form->handle);
             $data = [
                 "amount" => [
                     "value" => $element->amount,
                     "currency" => $form->currency,
                 ],
-                "startDate" => $startDate->format('YYYY-MM-DD'),
+                "startDate" => $startDate->format('Y-m-d'),
                 "interval" => $element->interval,
                 "description" => $description,
                 "webhookUrl" => "{$this->baseUrl}mollie-payments/subscription/webhook",
@@ -193,10 +197,12 @@ class Mollie extends Component
                 $element->subscriptionStatus = "active";
                 $element->subscriptionId = $response->id;
                 Craft::$app->getElements()->saveElement($element);
+                return true;
             }
+            return false;
         } catch (\Throwable $e) {
             Craft::error($e->getMessage(), __METHOD__);
-            return;
+            return false;
         }
     }
 
@@ -210,6 +216,58 @@ class Mollie extends Component
         } catch (\Exception $e) {
             return;
         }
+    }
+
+    /**
+     * Builds the Mollie subscription description for the given element.
+     */
+    public function buildSubscriptionDescription(Subscription $element, $form): string
+    {
+        if ($form->descriptionFormat) {
+            return Craft::$app->getView()->renderObjectTemplate($form->descriptionFormat, $element);
+        }
+        return "Order #{$element->id}";
+    }
+
+    /**
+     * Looks up an existing, non-canceled Mollie subscription for the customer that matches this
+     * element (same amount, currency and interval). Used to avoid creating duplicates when recovering
+     * subscriptions whose local subscriptionId was never stored (see #83). The match intentionally
+     * ignores the description: a customer's subscription is identified by amount + interval, which is
+     * the same key the recovery command uses to deduplicate stuck subscriptions.
+     *
+     * @return \Mollie\Api\Resources\Subscription|null
+     */
+    public function getExistingSubscription(Subscription $element): ?\Mollie\Api\Resources\Subscription
+    {
+        try {
+            $form = MolliePayments::$plugin->forms->getFormByid($element->formId);
+            $subscriber = MolliePayments::$plugin->subscriber->getByEmail($element->email, $element->formId);
+            if (!$subscriber || !$subscriber->customerId) {
+                return null;
+            }
+            $customer = $this->getCustomer($subscriber->customerId, $form->handle);
+            if (!$customer) {
+                return null;
+            }
+
+            $amount = number_format((float)$element->amount, 2, '.', '');
+
+            foreach ($customer->subscriptions() as $subscription) {
+                if ($subscription->isCanceled()) {
+                    continue;
+                }
+                if (number_format((float)$subscription->amount->value, 2, '.', '') === $amount
+                    && $subscription->amount->currency === $form->currency
+                    && $subscription->interval === $element->interval
+                ) {
+                    return $subscription;
+                }
+            }
+        } catch (\Throwable $e) {
+            Craft::error($e->getMessage(), __METHOD__);
+        }
+        return null;
     }
 
     /**
