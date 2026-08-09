@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## ## 6.0.0-alpha.3 - 2026-07-15
+### Added
+- Backported 5.4.8 into Craft 6
+
 ## ## 6.0.0-alpha.2 - 2026-07-15
 ### Added
 - Backported 5.4.5 to 5.4.7 into Craft 6
@@ -11,6 +15,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ## 6.0.0-alpha.1 - 2026-05-30
 ### Added
 - Initial support for Craft 6.0.0
+
+## 5.4.8 - 2026-08-08
+### Fixed
+- `$allowAnonymous` on the subscription controller still listed the old `get-customer` action id, so front-end requests to `mollie-payments/subscription/get-link-for-customer` were blocked for guests. ([#84](https://github.com/studioespresso/craft-mollie-payments/issues/84))
 
 ## 5.4.7 - 2026-07-01
 ### Fixed

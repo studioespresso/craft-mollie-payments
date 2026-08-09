@@ -20,7 +20,7 @@ use yii\web\NotFoundHttpException;
 
 class SubscriptionController extends Controller
 {
-    protected array|int|bool $allowAnonymous = ['subscribe', 'redirect', 'webhook', 'get-customer', 'cancel'];
+    protected array|int|bool $allowAnonymous = ['subscribe', 'redirect', 'webhook', 'get-link-for-customer', 'cancel'];
 
     public function beforeAction($action): bool
     {
