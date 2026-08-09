@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 5.4.8 - 2026-08-08
+### Fixed
+- `$allowAnonymous` on the subscription controller still listed the old `get-customer` action id, so front-end requests to `mollie-payments/subscription/get-link-for-customer` were blocked for guests. ([#84](https://github.com/studioespresso/craft-mollie-payments/issues/84))
+
 ## 5.4.7 - 2026-07-01
 ### Fixed
 - `mollie-payments/subscriptions/recover` now skips stuck subscriptions whose customer **already has an active subscription** for the same form + amount + interval (checked against the local database), marking the stuck records `canceled` instead of creating a duplicate. The previous Mollie-API-only check could miss an existing subscription and create a second one.
