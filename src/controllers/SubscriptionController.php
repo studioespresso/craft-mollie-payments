@@ -176,16 +176,23 @@ class SubscriptionController extends Controller
     {
         $id = Craft::$app->getRequest()->getRequiredParam('id');
         $transaction = MolliePayments::getInstance()->transaction->getTransactionbyId($id);
-        $element = Subscription::findOne(['id' => $transaction->payment]);
-        $form = MolliePayments::getInstance()->forms->getFormByid($element->formId);
-        $molliePayment = MolliePayments::getInstance()->mollie->getStatus($id, $form->handle);
 
-        // If we have a subscription id, the payment belongs to an active subscription
-        // So we need to create a new transaction for it.
-        if ($molliePayment->subscriptionId && !$transaction) {
+        if (!$transaction) {
+            // Recurring charges are created by Mollie itself and have no local transaction
+            // record yet, so we can't resolve a form handle before asking Mollie about the
+            // payment. Fall back to the default API key to look it up.
+            $molliePayment = MolliePayments::getInstance()->mollie->getStatus($id, null);
+
+            if (!$molliePayment->subscriptionId) {
+                return;
+            }
+
             $subscription = Subscription::findOne(['subscriptionId' => $molliePayment->subscriptionId]);
-            $form = $subscription->getForm();
+            if (!$subscription) {
+                return;
+            }
 
+            $form = $subscription->getForm();
             $model = new PaymentTransactionModel();
             $model->id = $molliePayment->id;
             $model->payment = $subscription->id;
@@ -193,8 +200,15 @@ class SubscriptionController extends Controller
             $model->amount = $molliePayment->amount->value;
             $model->status = $molliePayment->status;
             MolliePayments::getInstance()->transaction->save($model);
+
+            $transaction = MolliePayments::getInstance()->transaction->getTransactionbyId($id);
+            MolliePayments::getInstance()->transaction->updateTransaction($transaction, $molliePayment);
             return;
         }
+
+        $element = Subscription::findOne(['id' => $transaction->payment]);
+        $form = MolliePayments::getInstance()->forms->getFormByid($element->formId);
+        $molliePayment = MolliePayments::getInstance()->mollie->getStatus($id, $form->handle);
 
         MolliePayments::getInstance()->transaction->updateTransaction($transaction, $molliePayment);
         $subscriptionElement = Subscription::findOne(['id' => $transaction->payment]);
