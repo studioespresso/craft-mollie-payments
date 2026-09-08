@@ -120,3 +120,19 @@ Use `--exclude` to skip specific email addresses entirely — handy for test acc
 ```
 
 The command is safe to run multiple times: once a subscription has a `subscriptionId` it is no longer selected.
+
+## Recovering missing payment dates <Badge type="info" text="5.4.9" />
+
+Recurring charges are created by Mollie's own subscription engine, so the plugin has no local transaction for them when their webhook comes in. Before 5.4.9 that path stored the charge with `status = paid` but never filled in `paidAt` or `method`, so anything that treats a truthy `paidAt` as "this was paid" (exports, reports) silently skipped those charges.
+
+The fix only applies to charges from 5.4.9 onwards — Mollie does not resend webhooks for older payments. To repair the ones already stored, the plugin ships a console command:
+
+```sh
+# List what would be backfilled, without writing anything
+./craft mollie-payments/transactions/backfill-paid-at --dry-run
+
+# Backfill paidAt and method
+./craft mollie-payments/transactions/backfill-paid-at
+```
+
+It selects every transaction with `status = paid` and no `paidAt`, re-fetches the payment from Mollie and stores the `paidAt` and `method` Mollie reports. Transactions Mollie no longer reports as paid are left untouched and listed separately, so the command is safe to run multiple times.

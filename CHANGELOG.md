@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 5.4.9 - 2026-09-08
+### Fixed
+- Recurring subscription charges were stored with `status = paid` but no `paidAt` or `method`. The subscription webhook looked up the local transaction before checking whether it exists, so charges created by Mollie's own subscription engine (which have no local record yet) fell through to a path that never called `updateTransaction()`. ([#85](https://github.com/studioespresso/craft-mollie-payments/pull/85))
+- `Transaction::updateTransaction()` no longer relies on the Mollie payment's metadata to figure out which element a transaction belongs to. Recurring charges don't carry that metadata, which made the lookup fatal; the element is now resolved from the transaction itself when the metadata doesn't say.
+### Added
+- Added a `mollie-payments/transactions/backfill-paid-at` console command to repair transactions that are already stored as `paid` without a `paidAt`. It re-fetches each payment from Mollie and fills in `paidAt`/`method`. Supports `--dry-run`.
+### Changed
+- `Mollie::createSubscription()` now sends `elementType`/`formId` metadata with the subscription, so the payments Mollie generates for it arrive at the webhook with the element they belong to.
+
 ## 5.4.8 - 2026-08-08
 ### Fixed
 - `$allowAnonymous` on the subscription controller still listed the old `get-customer` action id, so front-end requests to `mollie-payments/subscription/get-link-for-customer` were blocked for guests. ([#84](https://github.com/studioespresso/craft-mollie-payments/issues/84))
