@@ -22,6 +22,7 @@ module.exports = {
                         {text: 'Getting started', link: '/general'},
                         {text: 'Core concepts', link: '/element'},
                         {text: 'Settings', link: '/settings'},
+                        {text: 'Console commands', link: '/console-commands'},
 
                     ]
             },
