@@ -2,9 +2,10 @@
 
 namespace studioespresso\molliepayments\console\controllers;
 
-use Craft;
 use craft\console\Controller;
 use craft\helpers\Console;
+use craft\helpers\Json;
+use studioespresso\molliepayments\elements\Payment;
 use studioespresso\molliepayments\elements\Subscription;
 use studioespresso\molliepayments\MolliePayments;
 use studioespresso\molliepayments\records\PaymentTransactionRecord;
@@ -44,6 +45,9 @@ class TransactionsController extends Controller
      * currency/status, never paidAt/method, because it never called updateTransaction(). Once
      * that root cause is fixed, this recovers any transactions already stuck in that state.
      *
+     * Transactions belonging to a payment element are handled the same way, so any other
+     * transaction that ended up without a paidAt is picked up as well.
+     *
      * Usage:
      *   ./craft mollie-payments/transactions/backfill-paid-at              # backfill
      *   ./craft mollie-payments/transactions/backfill-paid-at --dry-run    # list only, no writes
@@ -66,40 +70,48 @@ class TransactionsController extends Controller
         $stats = ['fixed' => 0, 'stillUnpaid' => 0, 'failed' => 0];
 
         foreach ($rows as $row) {
-            $element = Subscription::findOne(['id' => $row->payment]);
+            $element = Subscription::findOne(['id' => $row->payment]) ?? Payment::findOne(['id' => $row->payment]);
             if (!$element) {
-                $this->stderr("  x transaction {$row->id}: no Subscription element #{$row->payment} found — skipping.\n", Console::FG_RED);
+                $this->stderr("  x transaction {$row->id}: no subscription or payment element #{$row->payment} found — skipping.\n", Console::FG_RED);
                 $stats['failed']++;
                 continue;
             }
+
+            $label = $element instanceof Subscription ? 'subscription' : 'payment';
 
             try {
                 $form = $element->getForm();
                 $molliePayment = MolliePayments::getInstance()->mollie->getStatus($row->id, $form->handle);
             } catch (\Throwable $e) {
-                $this->stderr("  x transaction {$row->id} (subscription #{$element->id}, {$element->email}): could not fetch from Mollie — {$e->getMessage()}\n", Console::FG_RED);
+                $this->stderr("  x transaction {$row->id} ({$label} #{$element->id}, {$element->email}): could not fetch from Mollie — {$e->getMessage()}\n", Console::FG_RED);
                 $stats['failed']++;
                 continue;
             }
 
             if (!$molliePayment->isPaid()) {
-                $this->stdout("  ! transaction {$row->id} (subscription #{$element->id}, {$element->email}): Mollie now reports status={$molliePayment->status}, not paid — skipping.\n", Console::FG_YELLOW);
+                $this->stdout("  ! transaction {$row->id} ({$label} #{$element->id}, {$element->email}): Mollie now reports status={$molliePayment->status}, not paid — skipping.\n", Console::FG_YELLOW);
                 $stats['stillUnpaid']++;
                 continue;
             }
 
             if ($this->dryRun) {
-                $this->stdout("  [dry-run] transaction {$row->id} (subscription #{$element->id}, {$element->email}): would set paidAt={$molliePayment->paidAt} method={$molliePayment->method}\n");
+                $this->stdout("  [dry-run] transaction {$row->id} ({$label} #{$element->id}, {$element->email}): would set paidAt={$molliePayment->paidAt} method={$molliePayment->method}\n");
                 $stats['fixed']++;
                 continue;
             }
 
-            Craft::$app->db->createCommand()->update(PaymentTransactionRecord::tableName(), [
-                'paidAt' => $molliePayment->paidAt,
-                'method' => $molliePayment->method,
-            ], ['id' => $row->id])->execute();
+            // Saving through the record runs the values through Db::prepareValueForDb(), which is
+            // what turns Mollie's ISO-8601 timestamp into the UTC datetime the column expects.
+            $row->paidAt = $molliePayment->paidAt;
+            $row->method = $molliePayment->method;
 
-            $this->stdout("  \u{2713} transaction {$row->id} (subscription #{$element->id}, {$element->email}): set paidAt={$molliePayment->paidAt} method={$molliePayment->method}\n", Console::FG_GREEN);
+            if (!$row->save()) {
+                $this->stderr("  x transaction {$row->id} ({$label} #{$element->id}, {$element->email}): could not save — " . Json::encode($row->getErrors()) . "\n", Console::FG_RED);
+                $stats['failed']++;
+                continue;
+            }
+
+            $this->stdout("  \u{2713} transaction {$row->id} ({$label} #{$element->id}, {$element->email}): set paidAt={$row->paidAt} method={$row->method}\n", Console::FG_GREEN);
             $stats['fixed']++;
         }
 
@@ -109,4 +121,3 @@ class TransactionsController extends Controller
         return $stats['failed'] ? ExitCode::UNSPECIFIED_ERROR : ExitCode::OK;
     }
 }
-
