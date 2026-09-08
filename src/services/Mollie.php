@@ -186,6 +186,12 @@ class Mollie extends Component
                 "interval" => $element->interval,
                 "description" => $description,
                 "webhookUrl" => "{$this->baseUrl}mollie-payments/subscription/webhook",
+                // Mollie copies this onto every payment it generates for this subscription,
+                // so recurring charges arrive at the webhook with the element they belong to.
+                "metadata" => [
+                    "elementType" => Subscription::class,
+                    "formId" => $form->id,
+                ],
             ];
 
             if ($element->times) {

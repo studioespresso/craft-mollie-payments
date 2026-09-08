@@ -5,6 +5,7 @@ namespace studioespresso\molliepayments\services;
 use Craft;
 use craft\base\Component;
 use studioespresso\molliepayments\elements\Payment;
+use studioespresso\molliepayments\elements\Subscription;
 use studioespresso\molliepayments\events\TransactionUpdateEvent;
 use studioespresso\molliepayments\models\PaymentTransactionModel;
 use studioespresso\molliepayments\MolliePayments;
@@ -48,11 +49,25 @@ class Transaction extends Component
         }
 
         if ($transaction->validate() && $transaction->save()) {
-            if (property_exists($molliePayment->metadata, 'elementType') && $molliePayment->metadata->elementType === \studioespresso\molliepayments\elements\Subscription::class) {
-                $element = \studioespresso\molliepayments\elements\Subscription::findOne(['id' => $transaction->payment]);
+            // Recurring charges are created by Mollie's own subscription engine, so they don't
+            // always carry the metadata we set ourselves. Fall back to resolving the element
+            // from the transaction when the metadata doesn't tell us what we're dealing with.
+            $elementType = is_object($molliePayment->metadata) ? ($molliePayment->metadata->elementType ?? null) : null;
+            $element = match ($elementType) {
+                Subscription::class => Subscription::findOne(['id' => $transaction->payment]),
+                Payment::class => Payment::findOne(['id' => $transaction->payment]),
+                default => Subscription::findOne(['id' => $transaction->payment])
+                    ?? Payment::findOne(['id' => $transaction->payment]),
+            };
+
+            if (!$element) {
+                Craft::error("No element found for transaction {$transaction->id}", __METHOD__);
+                return;
+            }
+
+            if ($element instanceof Subscription) {
                 $element->subscriptionStatus = $transaction->status;
             } else {
-                $element = Payment::findOne(['id' => $transaction->payment]);
                 $element->paymentStatus = $transaction->status;
                 $element->refundAmount = $refundAmount;
                 Craft::$app->getElements()->saveElement($element);
@@ -63,7 +78,7 @@ class Transaction extends Component
 
     public function fireEventAfterTransactionUpdate($transaction, $element, $status)
     {
-        if (get_class($element) === \studioespresso\molliepayments\elements\Subscription::class) {
+        if (get_class($element) === Subscription::class) {
             $this->trigger(MolliePayments::EVENT_AFTER_TRANSACTION_UPDATE,
                 new TransactionUpdateEvent([
                     'transaction' => $transaction,
