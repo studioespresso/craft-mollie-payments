@@ -179,7 +179,9 @@ class Mollie extends Component
             $customer = $this->getCustomer($subscriber->customerId, $form->handle);
             $data = [
                 "amount" => [
-                    "value" => $element->amount,
+                    // Mollie wants a string with two decimals, so don't send the raw amount:
+                    // a float or int one (10.0 -> "10") is rejected with a 422.
+                    "value" => number_format((float)$element->amount, 2, '.', ''),
                     "currency" => $form->currency,
                 ],
                 "startDate" => $startDate->format('Y-m-d'),

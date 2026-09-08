@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ## 5.4.9 - 2026-09-08
 ### Fixed
 - Recurring subscription charges were stored with `status = paid` but no `paidAt` or `method`. The subscription webhook looked up the local transaction before checking whether it exists, so charges created by Mollie's own subscription engine (which have no local record yet) fell through to a path that never called `updateTransaction()`. ([#85](https://github.com/studioespresso/craft-mollie-payments/pull/85))
+- `Mollie::createSubscription()` sent the element's amount as-is, so a float or int amount (`10.00` → `10`) was rejected by Mollie with a 422 and the subscription silently failed to be created. It's now formatted to two decimals like every other amount the plugin sends.
 - `Transaction::updateTransaction()` no longer relies on the Mollie payment's metadata to figure out which element a transaction belongs to. Recurring charges don't carry that metadata, which made the lookup fatal; the element is now resolved from the transaction itself when the metadata doesn't say.
 ### Added
 - Added a `mollie-payments/transactions/backfill-paid-at` console command to repair transactions that are already stored as `paid` without a `paidAt`. It re-fetches each payment from Mollie and fills in `paidAt`/`method`. Supports `--dry-run`.
