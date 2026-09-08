@@ -181,6 +181,8 @@ class SubscriptionController extends Controller
             // Recurring charges are created by Mollie itself and have no local transaction
             // record yet, so we can't resolve a form handle before asking Mollie about the
             // payment. Fall back to the default API key to look it up.
+            // Note: on installs using `apiKeyPerForm`, a charge belonging to a form with its
+            // own key can't be resolved here.
             $molliePayment = MolliePayments::getInstance()->mollie->getStatus($id, null);
 
             if (!$molliePayment->subscriptionId) {
@@ -199,8 +201,13 @@ class SubscriptionController extends Controller
             $model->currency = $form->currency;
             $model->amount = $molliePayment->amount->value;
             $model->status = $molliePayment->status;
-            MolliePayments::getInstance()->transaction->save($model);
+            if (!MolliePayments::getInstance()->transaction->save($model)) {
+                Craft::error("Could not create a transaction for recurring payment {$molliePayment->id}", __METHOD__);
+                return;
+            }
 
+            // save() only persists id/payment/amount/currency/status, so re-fetch the record and
+            // run it through updateTransaction() to get paidAt/method set as well.
             $transaction = MolliePayments::getInstance()->transaction->getTransactionbyId($id);
             MolliePayments::getInstance()->transaction->updateTransaction($transaction, $molliePayment);
             return;
@@ -213,7 +220,7 @@ class SubscriptionController extends Controller
         MolliePayments::getInstance()->transaction->updateTransaction($transaction, $molliePayment);
         $subscriptionElement = Subscription::findOne(['id' => $transaction->payment]);
         if (in_array($molliePayment->status, [PaymentStatus::STATUS_PAID, PaymentStatus::STATUS_OPEN])
-            && $molliePayment->metadata->createSubscription
+            && ($molliePayment->metadata->createSubscription ?? false)
             && !$molliePayment->subscriptionId
         ) {
             MolliePayments::$plugin->mollie->createSubscription($subscriptionElement);
